@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>bog@khumba.net</email>
+    <name>Bryan Gardiner</name>
+  </maintainer>
+
+  <longdescription>
+    A KWin script to show window geometry information when moving or
+    resizing windows.  A reimplementation of a removed feature from
+    Plasma 5.24 onwards.
+  </longdescription>
+</pkgmetadata>

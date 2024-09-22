@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>gentoo+bugs@flussence.eu</email>
+		<name>flussence</name>
+	</maintainer>
+	<upstream>
+		<bugs-to>https://github.com/dimtpap/obs-pipewire-audio-capture/issues</bugs-to>
+		<changelog>https://github.com/dimtpap/obs-pipewire-audio-capture/releases.atom</changelog>
+		<remote-id type="github">dimtpap/obs-pipewire-audio-capture</remote-id>
+	</upstream>
+</pkgmetadata>

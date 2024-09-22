@@ -1,0 +1,12 @@
+=app-misc/tracker-9999 
+=app-misc/tracker-miners-9999 
+=x11-themes/gnome-backgrounds-9999 
+=gnome-base/gnome-desktop-9999 
+=gnome-base/gsettings-desktop-schemas-9999 
+=gnome-base/gnome-light-9999 
+=gnome-base/gnome-shell-9999 
+=gnome-base/gnome-panel-9999 
+=gnome-base/nautilus-9999 
+=sys-apps/xdg-desktop-portal-gnome-9999
+=x11-wm/mutter-9999
+=gnome-extra/sushi-9999

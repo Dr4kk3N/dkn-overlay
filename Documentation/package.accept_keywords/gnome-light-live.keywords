@@ -1,0 +1,23 @@
+gnome-base/gnome-light **
+gnome-base/gnome-session **
+gnome-base/gnome-control-center **
+gnome-base/gnome-shell **
+gnome-base/gnome-panel **
+gnome-base/gnome-menus **
+gnome-base/nautilus **
+gnome-extra/sushi **
+sys-apps/xdg-desktop-portal-gnome **
+x11-wm/mutter **
+app-misc/tracker **
+app-misc/tracker-miners **
+x11-themes/gnome-backgrounds **
+gnome-base/gnome-desktop **
+gnome-base/gsettings-desktop-schemas **
+gnome-base/gnome-settings-daemon **
+app-text/evince **
+gnome-extra/gnome-shell-extensions **
+gnome-base/gnome-core-libs **
+x11-themes/adwaita-icon-theme **
+gui-apps/gnome-console **
+net-wireless/gnome-bluetooth **
+
