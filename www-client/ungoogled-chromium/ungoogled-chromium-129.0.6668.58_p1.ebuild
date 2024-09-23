@@ -54,13 +54,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="3a44f4d87c58e2e1ee53e5ad3a7fdf1f057c2d86"
+UGC_COMMIT_ID="77ed0175c9b3148f32983ceb077fb4fdcb6f7305"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="92b738a28cbac49622d6bfb477e7e90af1bffe21"
+CROMITE_COMMIT_ID="bbcb812cffa4e2815760cd7fc3e34b00b4e39ea1"
 
 declare -A CHROMIUM_COMMITS=(
 	["587c2cf8b11d3c32fa26887063eda3171a3d353e"]="third_party/ruy/src"
@@ -473,6 +473,7 @@ src_prepare() {
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-127-separate-qt56.patch"
 		"${FILESDIR}/ai_context_bound_object_set-variant.patch" #130+
+		"${FILESDIR}/chromium-129-re2-dep.patch"
 	)
 
 	ewarn

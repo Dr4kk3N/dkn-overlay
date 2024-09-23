@@ -19,12 +19,14 @@ then
 			  'externals/cryptopp-cmake' \
 			  'externals/cryptoppwin' \
 			  'externals/date' \
+			  'externals/dear_imgui' \
 			  'externals/ext-boost' \
 			  'externals/ffmpeg-core' \
 			  'externals/fmt' \
 			  'externals/glslang' \
 			  'externals/half' \
 			  'externals/magic_enum' \
+			  'externals/pugixml' \
 			  'externals/robin-map' \
 			  'externals/sdl3' \
 			  'externals/sirit' \
@@ -32,7 +34,7 @@ then
 			  'externals/tracy' \
 			  'externals/vma' \
 			  'externals/vulkan-headers' \
-			  'externals/winpthread' \
+			  'externals/winpthreads' \
 			  'externals/xbyak' \
 			  'externals/xxhash' \
 			  'externals/zlib-ng' \
@@ -107,9 +109,9 @@ BDEPEND="
 	)
 "
 
-#PATCHES=(
-#	"${FILESDIR}"/${PN}-typo.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/vk_instance.patch
+)
 
 pkg_setup() {
 	if use llvm && has_version sys-devel/llvm[!debug=]; then
@@ -120,11 +122,11 @@ pkg_setup() {
 	use llvm && llvm-r1_pkg_setup
 }
 
-src_prepare() {
-	default
+#src_prepare() {
+#	default
 #	sed -i -e "/^PLATFORM_SYMBOLS/a '__gentoo_check_ldflags__'," bin/symbols-check.py || die
-	cmake_src_prepare
-}
+#	cmake_src_prepare
+#}
 
 src_configure() {
 	local mycmakeargs=(
