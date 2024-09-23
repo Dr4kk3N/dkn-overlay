@@ -110,9 +110,9 @@ BDEPEND="
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}"/vk_instance.patch
-)
+#PATCHES=(
+#	"${FILESDIR}"/vk_instance.patch
+#)
 
 pkg_setup() {
 	if use llvm && has_version sys-devel/llvm[!debug=]; then
