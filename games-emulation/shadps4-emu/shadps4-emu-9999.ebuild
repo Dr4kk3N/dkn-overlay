@@ -9,7 +9,7 @@ LLVM_OPTIONAL=1
 
 inherit cmake desktop xdg fcaps flag-o-matic llvm-r1 toolchain-funcs
 
-DESCRIPTION="PlayStation 4 emulator BloodBorne Branch"
+DESCRIPTION="An early PlayStation 4 emulator written in C++."
 HOMEPAGE="https://github.com/shadps4-emu/shadPS4"
 
 if [[ ${PV} == *9999 ]]
