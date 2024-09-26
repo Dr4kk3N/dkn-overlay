@@ -54,7 +54,7 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="77ed0175c9b3148f32983ceb077fb4fdcb6f7305"
+UGC_COMMIT_ID="5bffff5d8d98c344a82e9a89357696974a15bf71"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
@@ -473,7 +473,6 @@ src_prepare() {
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-127-separate-qt56.patch"
 		"${FILESDIR}/ai_context_bound_object_set-variant.patch" #130+
-		"${FILESDIR}/chromium-129-re2-dep.patch"
 	)
 
 	ewarn

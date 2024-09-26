@@ -177,7 +177,7 @@ src_configure() {
 		$(meson_feature javascript)
 		$(meson_feature jpeg2k jpeg2000)
 		$(meson_feature jpegxl jpeg-xl)
-		$(meson_feature lua)
+		$(meson_use lua)
 		$(meson_feature mng)
 		$(meson_feature openexr)
 		$(meson_feature openmp)

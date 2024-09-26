@@ -109,9 +109,9 @@ BDEPEND="
 	)
 "
 
-#PATCHES=(
-#	"${FILESDIR}"/vk_instance.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/tile_manager.patch
+)
 
 pkg_setup() {
 	if use llvm && has_version sys-devel/llvm[!debug=]; then
