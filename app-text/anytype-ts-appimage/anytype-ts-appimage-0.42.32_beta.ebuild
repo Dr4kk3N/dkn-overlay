@@ -14,7 +14,7 @@ RESTRICT="strip"
 inherit xdg-utils
 
 SRC_URI="
-  amd64? ( https://github.com/anyproto/anytype-ts/releases/download/v0.42.29-beta/Anytype-0.42.29-beta.AppImage -> ${P}-Anytype-${PV}.AppImage )
+  amd64? ( https://github.com/anyproto/anytype-ts/releases/download/v0.42.32-beta/Anytype-0.42.32-beta.AppImage -> ${P}-Anytype-${PV}.AppImage )
 "
 
 src_unpack() {
