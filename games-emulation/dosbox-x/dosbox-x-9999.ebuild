@@ -49,7 +49,7 @@ BDEPEND="
 # this ebuild already unconditionally pulls in media-libs/alsa-lib.
 RDEPEND="
 	media-libs/alsa-lib
-	media-libs/libsdl2[X,alsa,opengl?,sound,threads,video]
+	media-libs/libsdl2[X,alsa,opengl?,sound,video]
 	media-libs/sdl2-net
 	net-libs/libpcap
 	sys-libs/zlib
