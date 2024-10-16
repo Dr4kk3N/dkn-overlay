@@ -5,7 +5,7 @@ EAPI=8
 
 inherit fcaps meson
 
-RESHADE_COMMIT="9fdbea6892f9959fdc18095d035976c574b268b7"
+RESHADE_COMMIT="696b14cd6006ae9ca174e6164450619ace043283"
 MY_PV=$(ver_rs 3 -)
 MY_PV="${MY_PV//_/-}"
 
@@ -28,19 +28,15 @@ fi
 
 LICENSE="BSD-2"
 SLOT="0"
-IUSE="pipewire +wsi-layer"
+IUSE="avif libei pipewire sdl +wsi-layer"
 
 RDEPEND="
-	>=dev-libs/libliftoff-0.4.1
-	>=dev-libs/wayland-1.21
-	>=dev-libs/wayland-protocols-1.17
+	>=dev-libs/libliftoff-0.5.0
+	>=dev-libs/wayland-1.23
 	gui-libs/wlroots[X,libinput(+)]
-	>=media-libs/libavif-1.0.0:=
 	>=media-libs/libdisplay-info-0.1.1
-	media-libs/libsdl2[video,vulkan]
 	media-libs/vulkan-loader
 	sys-apps/hwdata
-	dev-libs/libei
 	sys-libs/libcap
 	>=x11-libs/libdrm-2.4.109
 	x11-libs/libX11
@@ -56,16 +52,20 @@ RDEPEND="
 	x11-libs/libXres
 	x11-libs/libXtst
 	x11-libs/libXxf86vm
+	avif? ( >=media-libs/libavif-1.0.0:= )
+        libei? ( dev-libs/libei )
 	pipewire? ( >=media-video/pipewire-0.3:= )
+	sdl? ( media-libs/libsdl2[video,vulkan] )
 	wsi-layer? ( x11-libs/libxcb )
 "
 DEPEND="
 	${RDEPEND}
-	dev-libs/stb
+	>=dev-libs/wayland-protocols-1.34
+        >=dev-libs/stb-20240201-r1
 	dev-util/vulkan-headers
 	media-libs/glm
 	dev-util/spirv-headers
-	wsi-layer? ( >=media-libs/vkroots-0_p20231108 )
+	wsi-layer? ( >=media-libs/vkroots-0_p20240403 )
 "
 BDEPEND="
 	dev-util/glslang
@@ -75,6 +75,10 @@ BDEPEND="
 "
 
 S="${WORKDIR}/${PN}-${MY_PV}"
+
+PATCHES=(
+        "${FILESDIR}"/${PN}-deprecated-stb.patch
+)
 
 FILECAPS=(
 	cap_sys_nice usr/bin/${PN}
@@ -109,10 +113,14 @@ src_prepare() {
 src_configure() {
 	local emesonargs=(
 		--force-fallback-for=
+		-Ddrm_backend=enabled
+                $(meson_feature sdl sdl2_backend)
 		-Dbenchmark=disabled
 		-Denable_openvr_support=false
 		$(meson_feature pipewire)
 		$(meson_use wsi-layer enable_gamescope_wsi_layer)
+		$(meson_feature avif avif_screenshots)
+                $(meson_feature libei input_emulation)
 	)
 	meson_src_configure
 }
