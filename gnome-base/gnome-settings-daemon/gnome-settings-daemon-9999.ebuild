@@ -93,7 +93,7 @@ PATCHES=(
 	"${FILESDIR}"/42.1-build-Make-wacom-optional-and-controllable-via-meson.patch
 	"${FILESDIR}"/${PN}-3.38.1-build-Allow-NM-optional-on-Linux.patch
 	# https://bugs.gentoo.org/937244 , is merged so it should not be needed since 46.1
-	"${FILESDIR}"/${PN}-46.0-add-elogind-support.patch
+	# "${FILESDIR}"/${PN}-46.0-add-elogind-support.patch
 )
 
 python_check_deps() {
