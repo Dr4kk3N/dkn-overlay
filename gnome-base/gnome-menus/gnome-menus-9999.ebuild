@@ -3,20 +3,20 @@
 
 EAPI=8
 
-#inherit gnome2
+inherit gnome2-utils
 
 DESCRIPTION="Library and layout configuration for the Desktop Menu fd.o specification"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/gnome-menus"
 
-#if [[ ${PV} == 9999 ]]; then
+if [[ ${PV} == 9999 ]]; then
         EGIT_REPO_URI="https://gitlab.gnome.org/GNOME/gnome-menus.git"
         inherit git-r3
-#else
-#       SRC_URI="
-#               https://download.gnome.org/sources/${MY_P}.tar.xz
-#       "
-#	KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
-#fi
+else
+       SRC_URI="
+               https://download.gnome.org/sources/${MY_P}.tar.xz
+       "
+	KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+fi
 
 LICENSE="GPL-2+ LGPL-2+"
 SLOT="4"
