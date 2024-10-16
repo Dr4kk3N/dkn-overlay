@@ -20,4 +20,5 @@ gnome-base/gnome-core-libs **
 x11-themes/adwaita-icon-theme **
 gui-apps/gnome-console **
 net-wireless/gnome-bluetooth **
+gnome-extra/tecla **
 
