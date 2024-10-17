@@ -20,6 +20,7 @@ then
 			  'externals/cryptoppwin' \
 			  'externals/date' \
 			  'externals/dear_imgui' \
+			  'externals/discord-rpc' \
 			  'externals/ext-boost' \
 			  'externals/ffmpeg-core' \
 			  'externals/fmt' \
@@ -109,9 +110,9 @@ BDEPEND="
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}"/tile_manager.patch
-)
+#PATCHES=(
+#	"${FILESDIR}"/tile_manager.patch
+#)
 
 pkg_setup() {
 	if use llvm && has_version sys-devel/llvm[!debug=]; then
