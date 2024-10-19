@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 MY_PN=${PN/-bin/}
 MY_BIN="D${MY_PN/d/}"
@@ -16,7 +16,7 @@ SRC_URI="https://dl-canary.discordapp.net/apps/linux/${PV}/${MY_PN}-${PV}.deb"
 LICENSE="all-rights-reserved"
 SLOT="0"
 KEYWORDS="~amd64"
-RESTRICT="mirror bindist"
+RESTRICT="bindist mirror strip test"
 
 RDEPEND="
 	app-accessibility/at-spi2-atk:2
@@ -55,10 +55,12 @@ S="${WORKDIR}"
 
 QA_PREBUILT="
 	opt/discord-canary/${MY_BIN}
+	opt/discord-canary/chrome_crashpad_handler
 	opt/discord-canary/chrome-sandbox
 	opt/discord-canary/libffmpeg.so
 	opt/discord-canary/libvk_swiftshader.so
 	opt/discord-canary/libvulkan.so
+	opt/discord-canary/libvulkan.so.1
 	opt/discord-canary/libEGL.so
 	opt/discord-canary/libGLESv2.so
 	opt/discord-canary/libVkICD_mock_icd.so
@@ -78,12 +80,14 @@ src_prepare() {
 }
 
 src_install() {
-	newicon usr/share/${MY_PN}/${MY_PN//-canary}.png ${MY_PN}.png
+	newicon usr/share/${MY_PN}/${MY_PN//-canary/}.png ${MY_PN}.png
 	domenu usr/share/${MY_PN}/${MY_PN}.desktop
 
+	rm usr/share/${MY_PN}/postinst.sh
 	insinto /opt/${MY_PN}
 	doins -r usr/share/${MY_PN}/.
 	fperms +x /opt/${MY_PN}/${MY_BIN}
+	fperms +x /opt/${MY_PN}/{chrome-sandbox,chrome_crashpad_handler}
 	dosym ../../opt/${MY_PN}/${MY_BIN} usr/bin/${MY_PN}
 
 	pax-mark -m "${ED}"/opt/${MY_PN}/${MY_PN}
