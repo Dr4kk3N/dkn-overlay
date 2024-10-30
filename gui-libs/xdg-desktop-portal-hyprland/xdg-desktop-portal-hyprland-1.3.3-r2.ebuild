@@ -18,25 +18,17 @@ fi
 
 LICENSE="MIT"
 SLOT="0"
-IUSE="elogind qt6 systemd"
+IUSE="elogind systemd"
 REQUIRED_USE="?? ( elogind systemd )"
 
 DEPEND="
-	>=media-video/pipewire-0.3.41:=
+	>=media-video/pipewire-1.2.0:=
 	dev-cpp/sdbus-c++
 	dev-libs/hyprlang:=
 	dev-libs/inih
 	dev-libs/wayland
-	qt6? (
-		dev-qt/qtbase:6[gui,widgets]
-		dev-qt/qtwayland:6
-	)
-	!qt6? (
-		dev-qt/qtcore
-		dev-qt/qtgui
-		dev-qt/qtwidgets
-		dev-qt/qtwayland:5
-	)
+	dev-qt/qtbase:6[gui,widgets]
+	dev-qt/qtwayland:6
 	media-libs/mesa
 	sys-apps/util-linux
 	x11-libs/libdrm
@@ -75,7 +67,6 @@ pkg_setup() {
 
 src_prepare() {
 	eapply "${FILESDIR}/xdg-desktop-portal-hyprland-1.3.2_use_sys_sdbus-c++.patch"
-	eapply "${FILESDIR}/xdg-desktop-portal-hyprland-1.3.2_fix_pipewire.patch"
 	sed -i "/add_compile_options(-O3)/d" "${S}/CMakeLists.txt" || die
 	cmake_src_prepare
 }
