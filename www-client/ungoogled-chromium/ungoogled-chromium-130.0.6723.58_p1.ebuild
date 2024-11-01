@@ -6,9 +6,10 @@ EAPI=8
 PYTHON_COMPAT=( python3_{11..13} )
 PYTHON_REQ_USE="xml(+)"
 
-CHROMIUM_LANGS="af am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
-	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr
-	sv sw ta te th tr uk ur vi zh-CN zh-TW"
+CHROMIUM_LANGS="af am ar as az be bg bn bs ca cs cy da de el en-GB es es-419 et eu fa fi fil
+	fr fr-CA gl gu he hi hr hu hy id is it ja ka kk km kn ko ky lo lt lv mk ml mn mr ms my
+	nb ne nl or pa pl pt-BR pt-PT ro ru si sk sl sq sr sr-Latn sv sw ta te th tr uk ur uz
+	vi zh-CN zh-HK zh-TW zu"
 
 inherit check-reqs chromium-2 desktop flag-o-matic llvm ninja-utils pax-utils
 inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
@@ -32,7 +33,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libevent +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless hevc kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine"
 RESTRICT="
@@ -54,21 +55,26 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="477f402fbd18a21ee272516d7e773cd33dc61d62"
+# UGC_COMMIT_ID="962eb12897faba46b7c2e576e7b95275824a5d7b"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="d4e0398fed306a35df814f6217fe53099032af50"
+CROMITE_COMMIT_ID="00f5239a3c15b6c898b246664f654c19f25b9122"
 
 declare -A CHROMIUM_COMMITS=(
 	["587c2cf8b11d3c32fa26887063eda3171a3d353e"]="third_party/ruy/src"
 	["-84fcdd0620a72aa73ea521c682fb246067f2c14d"]="."
-	["32e65e4c14034d82fd856b38f37e9389ed500495"]="." #130+
-	["9cf5bed15b577aade699d1704bc2967f5bf6963e"]="." #130+
-	["4b232f209824053242aa34d14eb860e392ad30b1"]="." #130+
-	["2d529e8960f7b46957445333ca25e6a53ca3141c"]="." #130+
+	["dc9db222b929f5da415216134b77d7f3bf141813"]="." #131+
+	["7e28832cd3320d2b603e6ef9468581e1c65c14f1"]="." #131+
+	["b51da416e04ecc9edafff531f9678c6404e654b7"]="." #131+
+	["4c49d7f04f43ab4757637cac21cfef7c0cd060fc"]="." #131+
+	["47fb59539e5744467eb6f7aae52f5a169910d56c"]="." #131+
+	["39583ff118920284de516d262979960e7159bcfc"]="." #131+
+	["c502d310d8cb91f1c1098a7287e75114023e57f0"]="." #131+
+	["40c273b2c0f5f26e16e67428ceaafd8b339bb61f"]="." #131+
+	["8739a5b33176e82e06a746163c0c76de4908ced9"]="." #131+
 )
 
 UGC_PV="${PV/_p/-}"
@@ -424,8 +430,7 @@ src_unpack() {
 	fi
 
 	einfo "Unpacking chromium-${PV/_*}.tar.xz to ${WORKDIR}"
-	tar ${XCLD} \
-		-xf "${DISTDIR}/chromium-${PV/_*}.tar.xz" -C "${WORKDIR}" || die
+	tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}.tar.xz" -C "${WORKDIR}" || die
 
 	unpack ${UGC_URL#*->}
 	# Warned you!
@@ -468,11 +473,11 @@ src_prepare() {
 		"${FILESDIR}/chromium-127-crabby.patch"
 		"${FILESDIR}/chromium-128-gtk-fix-prefers-color-scheme-query.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
-		"${FILESDIR}/chromium-129-fontations.patch"
+		"${FILESDIR}/chromium-130-fontations.patch"
 		"${FILESDIR}/chromium-129-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-127-separate-qt56.patch"
-		"${FILESDIR}/ai_context_bound_object_set-variant.patch" #130+
+		"${FILESDIR}/more-locales.patch"
 	)
 
 	ewarn
@@ -483,7 +488,7 @@ src_prepare() {
 
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-129-libstdc++.patch"
+			"${FILESDIR}/chromium-130-libstdc++.patch"
 			"${FILESDIR}/font-gc-r2.patch"
 		)
 	fi
@@ -779,7 +784,6 @@ src_prepare() {
 		buildtools/third_party/libc++
 		buildtools/third_party/libc++abi
 		chrome/third_party/mozilla_security_manager
-		courgette/third_party
 	)
 	use cromite && keeplibs+=(
 		cromite_flags/third_party
@@ -873,6 +877,7 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/package/lib/esm/third_party/rxjs
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/mitt
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/rxjs
+		third_party/devtools-frontend/src/front_end/third_party/third-party-web
 		third_party/devtools-frontend/src/front_end/third_party/vscode.web-custom-data
 		third_party/devtools-frontend/src/front_end/third_party/wasmparser
 		third_party/devtools-frontend/src/front_end/third_party/web-vitals
@@ -882,6 +887,7 @@ src_prepare() {
 		third_party/eigen3
 		third_party/emoji-segmenter
 		third_party/farmhash
+		third_party/fast_float
 		third_party/fdlibm
 		third_party/fft2d
 		third_party/flatbuffers
