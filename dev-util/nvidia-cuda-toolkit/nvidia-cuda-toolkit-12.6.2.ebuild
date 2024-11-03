@@ -5,7 +5,7 @@ EAPI=8
 
 inherit check-reqs toolchain-funcs unpacker
 
-DRIVER_PV="550.54.14"
+DRIVER_PV="560.35.03"
 
 DESCRIPTION="NVIDIA CUDA Toolkit (compiler and friends)"
 HOMEPAGE="https://developer.nvidia.com/cuda-zone"
@@ -21,20 +21,17 @@ RESTRICT="bindist mirror"
 # since CUDA 11, the bundled toolkit driver (== ${DRIVER_PV}) and the
 # actual required minimum driver version are different.
 RDEPEND="
-	<sys-devel/gcc-14_pre[cxx]
-	>=x11-drivers/nvidia-drivers-525.60.13
+	virtual/libcrypt
 	examples? (
 		media-libs/freeglut
 		media-libs/glu
 	)
 	nsight? (
+		app-crypt/mit-krb5
 		dev-libs/libpfm
 		dev-libs/wayland
 		dev-qt/qtwayland:6
-		|| (
-			dev-libs/openssl-compat:1.1.1
-			dev-libs/openssl:0/1.1
-		)
+		>=dev-libs/openssl-3
 		media-libs/tiff-compat:4
 		sys-libs/zlib
 	)
@@ -209,12 +206,11 @@ src_install() {
 
 		# fix broken RPATHs
 		patchelf --set-rpath '$ORIGIN' \
-		"${ED}"/${cudadir}/${ncu_dir}/host/linux-desktop-glibc_2_11_3-x64/{libarrow.so,libparquet.so.500.0.0} || die
+		"${ED}"/${cudadir}/${ncu_dir}/host/{linux-desktop-glibc_2_11_3-x64,target-linux-x64}/{libarrow.so,libparquet.so.500.0.0} || die
 		patchelf --set-rpath '$ORIGIN' \
-		"${ED}"/${cudadir}/${nsys_dir}/host-linux-x64/{libarrow.so,libparquet.so.500.0.0} || die
+		"${ED}"/${cudadir}/${nsys_dir}/{host-linux-x64,target-linux-x64}/{libarrow.so,libparquet.so.500.0.0} || die
 
 		# remove foreign archs (triggers SONAME warning, #749903)
-		rm -r "${ED}"/${cudadir}/${ncu_dir}/target/linux-desktop-glibc_2_19_0-ppc64le || die
 		rm -r "${ED}"/${cudadir}/${ncu_dir}/target/linux-desktop-t210-a64 || die
 
 		# unbundle libstdc++
@@ -267,6 +263,11 @@ src_install() {
 	rm "${ED}"/${cudadir}/targets/x86_64-linux/include/include || die
 	rm "${ED}"/${cudadir}/targets/x86_64-linux/lib/lib64 || die
 
+	# Remove dead gdb plugins
+	if use debugger; then
+		rm "${ED}"/${cudadir}/bin/cuda-gdb-python3.{8,9}-tui || die
+	fi
+
 	newenvd - 99cuda <<-EOF
 		PATH=${ecudadir}/bin${pathextradirs}
 		ROOTPATH=${ecudadir}/bin
@@ -279,21 +280,11 @@ src_install() {
 		SEARCH_DIRS_MASK="${ecudadir}"
 	EOF
 
-	# To address the sandbox errors encountered in packages with CUDA,
-	# such as those documented in https://bugs.gentoo.org/926116, it is
-	# necessary to modify the sandbox environment settings. This change
-	# specifically targets issues during the execution of
-	# CMakeDetermineCompilerABI_CUDA.bin, as observed in a range of
-	# software including caffe2, opencv, vtk, cholmod, and openvdb
-	# (refer to https://forums.gentoo.org/viewtopic-p-8789206.html).
-	# Granting access to /proc/self within the sandbox is essential for
-	# these applications to correctly determine the CUDA compiler ABI
-	# without triggering sandbox violations. While opening up /proc/self
-	# may seem to have security implications, its impact is limited as
-	# it only exposes information about the processes inside the same
-	# sandbox environment. The proposed configuration is as follows:
+	# https://bugs.gentoo.org/926116
 	insinto /etc/sandbox.d
-	newins - 20cuda <<<'SANDBOX_PREDICT="/proc/self/task"'
+	newins - 80${PN} <<-EOF
+		SANDBOX_PREDICT="/proc/self/task"
+	EOF
 }
 
 pkg_postinst_check() {
