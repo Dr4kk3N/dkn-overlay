@@ -21,6 +21,7 @@ RESTRICT="bindist mirror"
 # since CUDA 11, the bundled toolkit driver (== ${DRIVER_PV}) and the
 # actual required minimum driver version are different.
 RDEPEND="
+	<sys-devel/gcc-14_pre[cxx]
 	virtual/libcrypt
 	examples? (
 		media-libs/freeglut
