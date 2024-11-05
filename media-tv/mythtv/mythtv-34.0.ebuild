@@ -6,7 +6,7 @@ EAPI=8
 DISABLE_AUTOFORMATTING="yes"
 PYTHON_COMPAT=( python3_{10..11} )
 
-inherit edo flag-o-matic java-pkg-opt-2 java-ant-2 python-any-r1
+inherit edo flag-o-matic java-pkg-opt-2 python-any-r1 #java-ant-2
 inherit qmake-utils readme.gentoo-r1 systemd toolchain-funcs user-info
 
 DESCRIPTION="Open Source DVR and media center hub"
