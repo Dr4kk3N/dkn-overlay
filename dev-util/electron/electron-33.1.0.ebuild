@@ -15,11 +15,11 @@ inherit check-reqs chromium-2 desktop flag-o-matic llvm ninja-utils pax-utils
 inherit python-any-r1 readme.gentoo-r1 toolchain-funcs xdg-utils
 
 CHROMIUM_VERSION_WARNING="false"
-CHROMIUM_VERSION="130.0.6723.59"
+CHROMIUM_VERSION="130.0.6723.91"
 CHROMIUM_P="chromium-${CHROMIUM_VERSION}"
 NODE_VERSION="20.18.0"
 NODE_P="node-v${NODE_VERSION}"
-UGC_PVR="130.0.6723.58-1"
+UGC_PVR="${CHROMIUM_VERSION}-1"
 UGC_PF="ungoogled-chromium-${UGC_PVR}"
 UGC_WD="${WORKDIR}/${UGC_PF}"
 
@@ -41,6 +41,7 @@ SRC_URI="mirror+https://commondatastorage.googleapis.com/chromium-browser-offici
 		https://deps.gentoo.zip/chromium-ppc64le-gentoo-patches-1.tar.xz
 	)
 
+	https://codeload.github.com/nodejs/nan/tar.gz/e14bdcd1f72d62bca1d541b66da43130384ec213
 	https://codeload.github.com/nodejs/nan/tar.gz/e14bdcd1f72d62bca1d541b66da43130384ec213
 	https://codeload.github.com/nodejs/nan/tar.gz/e14bdcd1f72d62bca1d541b66da43130384ec213
 	https://registry.yarnpkg.com/@azure/abort-controller/-/abort-controller-1.0.4.tgz -> @azure-abort-controller-1.0.4.tgz
@@ -656,7 +657,6 @@ SRC_URI="mirror+https://commondatastorage.googleapis.com/chromium-browser-offici
 	https://registry.yarnpkg.com/linkify-it/-/linkify-it-4.0.1.tgz
 	https://registry.yarnpkg.com/linkify-it/-/linkify-it-5.0.0.tgz
 	https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.2.11.tgz
-	https://registry.yarnpkg.com/lint/-/lint-1.1.2.tgz
 	https://registry.yarnpkg.com/listr2/-/listr2-2.2.0.tgz
 	https://registry.yarnpkg.com/load-json-file/-/load-json-file-5.3.0.tgz
 	https://registry.yarnpkg.com/load-plugin/-/load-plugin-4.0.1.tgz
@@ -1135,7 +1135,7 @@ SRC_URI="mirror+https://commondatastorage.googleapis.com/chromium-browser-offici
 
 LICENSE="BSD"
 SLOT="$(ver_cut 1)/$(ver_cut 2-)"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libevent +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth +clang cups cpu_flags_arm_neon custom-cflags debug dev-dependencies gtk4 hangouts hevc kerberos libcxx nvidia optimize-thinlto optimize-webui pax-kernel pgo +proprietary-codecs pulseaudio screencast selinux thinlto ungoogled vaapi wayland"
 RESTRICT="
