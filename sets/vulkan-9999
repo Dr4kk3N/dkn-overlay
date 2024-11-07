@@ -1,0 +1,11 @@
+=dev-util/vulkan-headers-9999
+=dev-util/spirv-headers-9999
+=dev-util/spirv-tools-9999
+=dev-util/glslang-9999
+=dev-util/vulkan-utility-libraries-9999
+=media-libs/vulkan-layers-9999
+=media-libs/vulkan-loader-9999
+=dev-util/vulkan-tools-9999
+=media-libs/vulkan-demos-9999
+=app-benchmarks/vkmark-9999
+
