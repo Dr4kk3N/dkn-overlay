@@ -15,7 +15,8 @@ HOMEPAGE="https://github.com/shadps4-emu/shadPS4"
 if [[ ${PV} == *9999 ]]
 then
 	EGIT_REPO_URI="https://github.com/shadps4-emu/shadPS4.git"
-	EGIT_SUBMODULES=( 'externals/cryptopp' \
+	EGIT_SUBMODULES=( 'externals/LibAtrac9' \
+			  'externals/cryptopp' \
 			  'externals/cryptopp-cmake' \
 			  'externals/cryptoppwin' \
 			  'externals/date' \
