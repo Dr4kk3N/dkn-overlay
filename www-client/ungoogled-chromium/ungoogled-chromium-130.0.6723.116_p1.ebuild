@@ -30,6 +30,8 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 		https://deps.gentoo.zip/chromium-ppc64le-gentoo-patches-1.tar.xz
 	)
 "
+# Gentoo tarball:
+# https://chromium-tarballs.distfiles.gentoo.org/chromium-${PV/_*}.tar.xz -> chromium-${PV/_*}-gentoo.tar.xz
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
@@ -55,13 +57,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-# UGC_COMMIT_ID="962eb12897faba46b7c2e576e7b95275824a5d7b"
+#UGC_COMMIT_ID="0b5e4035314cb3da8956526db31806771ddf1238"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="00f5239a3c15b6c898b246664f654c19f25b9122"
+CROMITE_COMMIT_ID="eae1e049fa1afb405bd1debdebdbbd407af6d2ac"
 
 declare -A CHROMIUM_COMMITS=(
 	["587c2cf8b11d3c32fa26887063eda3171a3d353e"]="third_party/ruy/src"
@@ -430,6 +432,8 @@ src_unpack() {
 	fi
 
 	einfo "Unpacking chromium-${PV/_*}.tar.xz to ${WORKDIR}"
+	# Gentoo tarball:
+	# tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}-gentoo.tar.xz" -C "${WORKDIR}" || die
 	tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}.tar.xz" -C "${WORKDIR}" || die
 
 	unpack ${UGC_URL#*->}
@@ -477,7 +481,6 @@ src_prepare() {
 		"${FILESDIR}/chromium-129-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-127-separate-qt56.patch"
-		"${FILESDIR}/more-locales.patch"
 	)
 
 	ewarn
@@ -1880,3 +1883,4 @@ git_wrapper () {
 		git "$@" || die
 	fi
 }
+
