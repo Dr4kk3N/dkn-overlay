@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,7 +9,7 @@ CHROMIUM_LANGS="am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
 
 inherit chromium-2 desktop unpacker xdg
 
-DESCRIPTION="Microsoft Teams, an Office 365 multimedia collaboration client, Insiders Build"
+DESCRIPTION="Microsoft Teams, an Office 365 multimedia collaboration client, pre-release"
 HOMEPAGE="https://products.office.com/en-us/microsoft-teams/group-chat-software/"
 SRC_URI="https://packages.microsoft.com/repos/ms-teams/pool/main/t/${PN}/${PN}_${PV}_amd64.deb"
 
@@ -20,13 +20,18 @@ RESTRICT="bindist mirror splitdebug test"
 IUSE="swiftshader system-ffmpeg"
 
 QA_PREBUILT="*"
-
+# libasound2 (>= 1.0.16), libatk-bridge2.0-0 (>= 2.5.3), libatk1.0-0 (>= 2.2.0), libatspi2.0-0 (>= 2.9.90), libc6 (>= 2.17), libcairo2 (>= 1.10.0)
+# libcups2 (>= 1.7.0), libdrm2 (>= 2.4.38), libexpat1 (>= 2.0.1), libgbm1 (>= 17.1.0~rc2), libgcc1 (>= 1:3.0), libgdk-pixbuf2.0-0 (>= 2.22.0),
+# libglib2.0-0 (>= 2.39.4), libgtk-3-0 (>= 3.19.12), libnspr4 (>= 2:4.9-2~), libnss3 (>= 2:3.22), libpango-1.0-0 (>= 1.14.0), libpangocairo-1.0-0 (>= 1.14.0),
+# libx11-6 (>= 2:1.4.99.1), libx11-xcb1, libxcb-dri3-0, libxcb1 (>= 1.6), libxcomposite1 (>= 1:0.3-1), libxcursor1 (>> 1.1.2), libxdamage1 (>= 1:1.1),
+# libxext6, libxfixes3, libxi6 (>= 2:1.2.99.4), libxrandr2, libxrender1, libxtst6, apt-transport-https, libfontconfig1 (>= 2.11.0), libdbus-1-3 (>= 1.6.18),
+# libstdc++6 (>= 4.8.1)
 RDEPEND="
-	!net-im/teams
-	app-accessibility/at-spi2-core:2
-	app-accessibility/at-spi2-atk:2
+	|| (
+		>=app-accessibility/at-spi2-core-2.46.0:2
+		( app-accessibility/at-spi2-atk dev-libs/atk )
+	)
 	app-crypt/libsecret
-	dev-libs/atk
 	dev-libs/expat
 	dev-libs/glib
 	dev-libs/nspr
@@ -69,6 +74,7 @@ src_prepare() {
 }
 
 src_install() {
+	rm -f _gpgorigin || die
 	rm -r "usr/share/${PN}/resources/assets/"{.gitignore,macos,tlb,windows,x86,x64,arm64} || die
 	rm -r "usr/share/${PN}/resources/tmp" || die
 	rm "usr/share/${PN}/chrome-sandbox" || die
