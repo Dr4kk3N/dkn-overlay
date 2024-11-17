@@ -5,9 +5,11 @@ EAPI=8
 
 inherit cmake-multilib
 
+# PHASH="d95f5bad2459608816cbf24f14dcab618a4a9ab7"
+
 DESCRIPTION="Simple Direct Media Layer"
 HOMEPAGE="https://libsdl.org/"
-SRC_URI="https://github.com/libsdl-org/SDL/archive/refs/tags/prerelease-3.1.1.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/libsdl-org/SDL/archive/refs/tags/preview-${PV}.zip -> ${P}.zip"
 
 LICENSE="ZLIB"
 SLOT="0"
@@ -87,7 +89,7 @@ DEPEND="
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
-S="${WORKDIR}/SDL-prerelease-${PV}"
+S="${WORKDIR}/SDL-preview-${PV}"
 
 multilib_src_configure() {
 	local mycmakeargs=(
@@ -115,7 +117,6 @@ multilib_src_configure() {
 		-DSDL_ALTIVEC=$(usex cpu_flags_ppc_altivec ON OFF)
 		-DSDL_ARMSIMD=$(usex cpu_flags_arm_simd ON OFF)
 		-DSDL_ARMNEON=$(usex cpu_flags_arm_neon ON OFF)
-		-DSDL_ARMNEON_BLITTERS=$(usex cpu_flags_arm_neon ON OFF)
 		-DSDL_LSX=$(usex cpu_flags_loong_lsx ON OFF)
 		-DSDL_LASX=$(usex cpu_flags_loong_lasx ON OFF)
 
@@ -182,7 +183,6 @@ multilib_src_configure() {
 		-DSDL_STATIC=$(usex static-libs ON OFF)
 		-DSDL_TEST_LIBRARY=$(usex test ON OFF)
 
-		-DSDL_STATIC_PIC=$(usex pic ON OFF)
 		-DSDL_TESTS=$(usex test ON OFF)
 		-DSDL_INSTALL_TESTS=$(usex test ON OFF)
 		-DSDL_TESTS_LINK_SHARED=$(usex test ON OFF)
