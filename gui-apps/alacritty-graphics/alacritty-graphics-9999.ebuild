@@ -56,7 +56,7 @@ RDEPEND="${DEPEND}
 
 BDEPEND="
 	dev-build/cmake
-	>=virtual/rust-1.74.0
+	>=dev-lang/rust-1.74.0-r100
 	app-text/scdoc
 "
 
