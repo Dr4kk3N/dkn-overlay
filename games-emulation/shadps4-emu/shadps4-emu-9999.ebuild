@@ -27,6 +27,7 @@ then
 			  'externals/fmt' \
 			  'externals/glslang' \
 			  'externals/half' \
+			  'externals/libpng' \
 			  'externals/magic_enum' \
 			  'externals/pugixml' \
 			  'externals/robin-map' \

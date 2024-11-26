@@ -3,9 +3,9 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{11..13} )
 
-inherit python-any-r1 xdg cmake
+inherit flag-o-matic python-any-r1 xdg cmake
 
 DESCRIPTION="A PSP emulator written in C++"
 HOMEPAGE="https://www.ppsspp.org/
@@ -33,7 +33,7 @@ RDEPEND="
 	media-libs/glew:=
 	media-libs/libpng:=
 	media-libs/libsdl2[joystick]
-	media-video/ffmpeg
+	media-video/ffmpeg:0/58.60.60
 	sys-libs/zlib:=
 	virtual/opengl
 	qt5? (
@@ -55,8 +55,7 @@ BDEPEND="
 "
 
 PATCHES=(
-#	"${FILESDIR}/${PN}-1.17.1-avcodec-18825.patch"
-#	"${FILESDIR}/${PN}-1.17.1-ccache-18826.patch"
+	"${FILESDIR}/${PN}-1.17.1-SpvBuilder-cstdint.patch"
 	"${FILESDIR}/${PN}-1.17.1-cmake-cxx.patch"
 	"${FILESDIR}/${PN}-CMakeLists-flags.patch"
 )
@@ -66,19 +65,22 @@ pkg_setup() {
 }
 
 src_configure() {
+	# bug https://bugs.gentoo.org/926079
+	filter-lto
+
 	local -a mycmakeargs=(
-		-DBUILD_SHARED_LIBS=OFF
-		-DCMAKE_SKIP_RPATH=ON
-		-DHEADLESS=OFF
-		-DUSE_CCACHE=OFF
-		-DUSE_SYSTEM_FFMPEG=ON
-		-DUSE_SYSTEM_LIBZIP=ON
-		-DUSE_SYSTEM_SNAPPY=ON
-		-DUSE_SYSTEM_ZSTD=ON
-		-DUSE_DISCORD=$(usex discord)
-		-DUSE_WAYLAND_WSI=$(usex wayland)
-		-DUSING_QT_UI=$(usex qt5)
-		-DUNITTEST=$(usex test)
+		-DBUILD_SHARED_LIBS="OFF"
+		-DCMAKE_SKIP_RPATH="ON"
+		-DHEADLESS="OFF"
+		-DUSE_CCACHE="OFF"
+		-DUSE_SYSTEM_FFMPEG="ON"
+		-DUSE_SYSTEM_LIBZIP="ON"
+		-DUSE_SYSTEM_SNAPPY="ON"
+		-DUSE_SYSTEM_ZSTD="ON"
+		-DUSE_DISCORD="$(usex discord)"
+		-DUSE_WAYLAND_WSI="$(usex wayland)"
+		-DUSING_QT_UI="$(usex qt5)"
+		-DUNITTEST="$(usex test)"
 	)
 	cmake_src_configure
 }
