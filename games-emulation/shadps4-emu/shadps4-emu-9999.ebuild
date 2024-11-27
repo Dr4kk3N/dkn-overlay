@@ -43,6 +43,7 @@ then
 			  'externals/zlib-ng' \
 			  'externals/zydis' \
 			  'externals/zydis/dependencies/zycore' \
+			  'externals/zlib-ng/zlibstatic-ngd' \
 			  'externals/sirit/externals/SPIRV-Headers'
 			)
 	inherit git-r3
@@ -131,12 +132,16 @@ pkg_setup() {
 #	cmake_src_prepare
 #}
 
+#  sed -i '/three/cyour text' /tmp/file      work/shadps4-emu-9999_build/externals/zlib-ng/zlibstatic-ngd
+
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=OFF # to remove after unbundling
 		#-DSDL_SHARED=ON
 		-DUSE_LINKED_FFMPEG=yes
 		-DENABLE_QT_GUI=yes
+		-DCMAKE_C_COMPILER=clang
+		-DCMAKE_CXX_COMPILER=clang++
 		-DUSE_VULKAN=$(usex vulkan)
 		-DWAYLAND_API=$(usex wayland)
 		-DCHECK_ALSA=$(usex alsa)
