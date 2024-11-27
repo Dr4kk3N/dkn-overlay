@@ -13,6 +13,7 @@ if [[ ${PV} == *9999 ]]; then
 	EGIT_REPO_URI="https://github.com/dolphin-emu/dolphin"
 	EGIT_SUBMODULES=(
 		Externals/mGBA/mgba
+		Externals/SDL/SDL
 		Externals/implot/implot
 		Externals/tinygltf/tinygltf
 		Externals/Vulkan-Headers
