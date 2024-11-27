@@ -10,8 +10,8 @@ HOMEPAGE="https://cemu.info/ https://github.com/cemu-project/Cemu"
 SHA="6f9f3d52ea12d3951b2d9d71806f18fea46140e3"
 MY_PN="Cemu"
 GLSLANG_SHA="36d08c0d940cf307a23928299ef52c7970d8cee6"
-IMGUI_PV="1.88"
-SRC_URI="https://github.com/cemu-project/${MY_PN}/archive/${SHA}.tar.gz -> ${P}.tar.gz
+IMGUI_PV="1.89.5"
+SRC_URI="https://github.com/cemu-project/Cemu/archive/refs/tags/v2.4.tar.gz -> ${P}.tar.gz
 	https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_PV}.tar.gz -> ${PN}-imgui-${IMGUI_PV}.tar.gz
 	https://github.com/KhronosGroup/glslang/archive/${GLSLANG_SHA}.tar.gz -> glslang-${GLSLANG_SHA:0:7}.tar.gz"
 
@@ -44,7 +44,7 @@ DEPEND="app-arch/zarchive
 RDEPEND="${DEPEND}"
 BDEPEND="media-libs/glm"
 
-S="${WORKDIR}/${MY_PN}-${SHA}"
+S="${WORKDIR}/${MY_PN}-${PV}"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0002-remove-default-from-system-g.patch"
