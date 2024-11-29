@@ -6,49 +6,47 @@
 EAPI=8
 
 CRATES="
-	ab_glyph@0.2.28
+	ab_glyph@0.2.29
 	ab_glyph_rasterizer@0.1.8
-	accesskit@0.12.3
-	adler@1.0.2
+	accesskit@0.16.3
+	adler2@2.0.0
 	ahash@0.8.11
 	aho-corasick@1.1.3
-	allocator-api2@0.2.18
-	android-activity@0.5.2
+	allocator-api2@0.2.20
+	android-activity@0.6.0
 	android-properties@0.2.2
 	android_system_properties@0.1.5
-	anyhow@1.0.86
-	arboard@3.4.0
+	anyhow@1.0.93
+	arboard@3.4.1
 	arc-swap@1.7.1
-	arrayvec@0.7.4
+	arrayvec@0.7.6
 	as-raw-xcb-connection@1.0.1
-	ash@0.37.3+1.3.251
+	ash@0.38.0+1.3.281
 	atomic-waker@1.1.2
-	autocfg@1.3.0
+	autocfg@1.4.0
 	base64@0.21.7
 	basic-toml@0.1.9
-	bit-set@0.5.3
-	bit-vec@0.6.3
+	bit-set@0.6.0
+	bit-vec@0.7.0
 	bitflags@1.3.2
 	bitflags@2.6.0
 	block-buffer@0.10.4
 	block-sys@0.2.1
-	block2@0.3.0
 	block2@0.5.1
 	block@0.1.6
-	bstr@1.10.0
+	bstr@1.11.0
 	bumpalo@3.16.0
-	bytemuck@1.16.3
-	bytemuck_derive@1.7.0
+	bytemuck@1.20.0
+	bytemuck_derive@1.8.0
 	byteorder-lite@0.1.0
-	bytes@1.7.1
-	calloop-wayland-source@0.2.0
+	bytes@1.8.0
 	calloop-wayland-source@0.3.0
-	calloop@0.12.4
 	calloop@0.13.0
-	cc@1.1.10
+	cc@1.2.1
 	cesu8@1.1.0
 	cfg-if@1.0.0
 	cfg_aliases@0.1.1
+	cfg_aliases@0.2.1
 	cgl@0.3.2
 	clipboard-win@5.4.0
 	clru@0.6.2
@@ -60,9 +58,10 @@ CRATES="
 	concurrent-queue@2.5.0
 	core-foundation-sys@0.8.7
 	core-foundation@0.9.4
+	core-foundation@0.10.0
 	core-graphics-types@0.1.3
 	core-graphics@0.23.2
-	cpufeatures@0.2.13
+	cpufeatures@0.2.16
 	crc32fast@1.4.2
 	crossbeam-channel@0.5.13
 	crossbeam-utils@0.8.20
@@ -75,7 +74,7 @@ CRATES="
 	darling@0.20.10
 	darling_core@0.20.10
 	darling_macro@0.20.10
-	dashmap@5.5.3
+	dashmap@6.1.0
 	deranged@0.3.11
 	digest@0.10.7
 	directories@5.0.1
@@ -85,29 +84,31 @@ CRATES="
 	dlib@0.5.2
 	document-features@0.2.10
 	downcast-rs@1.2.1
+	dpi@0.1.1
 	dunce@1.0.5
-	ecolor@0.28.1
-	eframe@0.28.1
-	egui-wgpu@0.28.1
-	egui-winit@0.28.1
-	egui@0.28.1
-	egui_glow@0.28.1
-	egui_plot@0.28.1
-	emath@0.28.1
+	ecolor@0.29.1
+	eframe@0.29.1
+	egui-wgpu@0.29.1
+	egui-winit@0.29.1
+	egui@0.29.1
+	egui_glow@0.29.1
+	egui_plot@0.29.0
+	emath@0.29.1
 	enum-map-derive@0.17.0
 	enum-map@2.7.3
 	enumn@0.1.14
 	enumset@1.1.5
 	enumset_derive@0.10.0
-	epaint@0.28.1
+	epaint@0.29.1
+	epaint_default_fonts@0.29.1
 	equivalent@1.0.1
 	errno@0.3.9
-	error-code@3.2.0
+	error-code@3.3.1
 	faster-hex@0.9.0
-	fastrand@2.1.0
-	fdeflate@0.3.4
+	fastrand@2.2.0
+	fdeflate@0.3.6
 	find-crate@0.6.3
-	flate2@1.0.31
+	flate2@1.0.35
 	fluent-bundle@0.15.3
 	fluent-langneg@0.13.0
 	fluent-syntax@0.11.1
@@ -121,16 +122,16 @@ CRATES="
 	gethostname@0.4.3
 	getrandom@0.2.15
 	gix-actor@0.31.5
-	gix-chunk@0.4.8
+	gix-chunk@0.4.10
 	gix-commitgraph@0.24.3
-	gix-config-value@0.14.7
+	gix-config-value@0.14.10
 	gix-config@0.38.0
 	gix-date@0.8.7
 	gix-diff@0.44.1
 	gix-discover@0.33.0
 	gix-features@0.38.2
-	gix-fs@0.11.2
-	gix-glob@0.16.4
+	gix-fs@0.11.3
+	gix-glob@0.16.5
 	gix-hash@0.14.2
 	gix-hashtable@0.5.2
 	gix-lock@14.0.0
@@ -138,77 +139,88 @@ CRATES="
 	gix-object@0.42.3
 	gix-odb@0.61.1
 	gix-pack@0.51.1
-	gix-path@0.10.9
-	gix-quote@0.4.12
+	gix-path@0.10.13
+	gix-quote@0.4.14
 	gix-ref@0.45.0
 	gix-refspec@0.23.1
 	gix-revision@0.27.2
 	gix-revwalk@0.13.2
-	gix-sec@0.10.7
+	gix-sec@0.10.10
 	gix-tempfile@14.0.1
 	gix-trace@0.1.9
 	gix-traverse@0.39.2
-	gix-url@0.27.4
-	gix-utils@0.1.12
+	gix-url@0.27.5
+	gix-utils@0.1.13
 	gix-validate@0.8.5
 	gix@0.64.0
 	gl_generator@0.14.0
 	glow@0.13.1
+	glow@0.14.2
 	glutin-winit@0.4.2
 	glutin@0.31.3
 	glutin_egl_sys@0.6.0
 	glutin_glx_sys@0.5.0
-	glutin_wgl_sys@0.5.0
+	glutin_wgl_sys@0.6.0
 	gpu-alloc-types@0.3.0
 	gpu-alloc@0.6.0
-	gpu-allocator@0.25.0
+	gpu-allocator@0.26.0
 	gpu-descriptor-types@0.2.0
 	gpu-descriptor@0.3.0
-	hashbrown@0.14.5
+	hashbrown@0.15.2
 	hassle-rs@0.11.0
 	hermit-abi@0.4.0
 	hexf-parse@0.2.1
 	home@0.5.9
 	i18n-config@0.4.7
-	i18n-embed-fl@0.7.0
-	i18n-embed-impl@0.8.3
-	i18n-embed@0.14.1
+	i18n-embed-fl@0.9.2
+	i18n-embed-impl@0.8.4
+	i18n-embed@0.15.2
+	icu_collections@1.5.0
+	icu_locid@1.5.0
+	icu_locid_transform@1.5.0
+	icu_locid_transform_data@1.5.0
+	icu_normalizer@1.5.0
+	icu_normalizer_data@1.5.0
+	icu_properties@1.5.1
+	icu_properties_data@1.5.0
+	icu_provider_macros@1.5.0
 	icrate@0.0.4
 	ident_case@1.0.1
-	idna@0.5.0
-	image@0.25.2
-	indexmap@2.4.0
+	idna@1.0.3
+	idna_adapter@1.2.0
+	image@0.25.5
+	indexmap@2.6.0
 	intl-memoizer@0.5.2
 	intl_pluralrules@7.0.2
-	itoa@1.0.11
+	itoa@1.0.14
 	jni-sys@0.3.0
 	jni@0.21.1
 	jobserver@0.1.32
-	js-sys@0.3.70
+	js-sys@0.3.72
 	khronos-egl@6.0.0
 	khronos_api@3.1.0
 	lazy_static@1.5.0
-	libc@0.2.155
-	libloading@0.7.4
+	libc@0.2.166
 	libloading@0.8.5
-	libredox@0.0.2
 	libredox@0.1.3
 	linux-raw-sys@0.4.14
+	litemap@0.7.4
 	litrs@0.4.1
 	locale_config@0.3.0
 	lock_api@0.4.12
 	log@0.4.22
 	malloc_buf@0.0.6
 	memchr@2.7.4
-	memmap2@0.9.4
+	memmap2@0.9.5
 	memoffset@0.9.1
-	metal@0.28.0
-	miniz_oxide@0.7.4
+	metal@0.29.0
+	miniz_oxide@0.8.0
 	mio@0.8.11
-	naga@0.20.0
+	naga@22.1.0
 	ndk-context@0.1.1
 	ndk-sys@0.5.0+25.2.9519653
-	ndk@0.8.0
+	ndk-sys@0.6.0+11769913
+	ndk@0.9.0
 	nohash-hasher@0.2.0
 	num-complex@0.4.6
 	num-conv@0.1.0
@@ -223,67 +235,79 @@ CRATES="
 	objc-foundation@0.1.1
 	objc-sys@0.3.5
 	objc2-app-kit@0.2.2
+	objc2-cloud-kit@0.2.2
+	objc2-contacts@0.2.2
 	objc2-core-data@0.2.2
 	objc2-core-image@0.2.2
+	objc2-core-location@0.2.2
+	objc2-link-presentation@0.2.2
 	objc2-encode@3.0.0
 	objc2-encode@4.0.3
 	objc2-foundation@0.2.2
 	objc2-metal@0.2.2
 	objc2-quartz-core@0.2.2
+	objc2-symbols@0.2.2
+	objc2-ui-kit@0.2.2
+	objc2-uniform-type-identifiers@0.2.2
+	objc2-user-notifications@0.2.2
 	objc2@0.4.1
 	objc2@0.5.2
 	objc@0.2.7
 	objc_id@0.1.1
-	once_cell@1.19.0
+	once_cell@1.20.2
 	option-ext@0.2.0
-	orbclient@0.3.47
-	owned_ttf_parser@0.24.0
+	orbclient@0.3.48
+	owned_ttf_parser@0.25.0
 	owning_ref@0.4.1
 	parking_lot@0.12.3
 	parking_lot_core@0.9.10
 	paste@1.0.15
 	percent-encoding@2.3.1
-	pin-project-lite@0.2.14
-	pkg-config@0.3.30
-	png@0.17.13
-	polling@3.7.3
+	pin-project@1.1.7
+	pin-project-internal@1.1.7
+	pin-project-lite@0.2.15
+	pkg-config@0.3.31
+	png@0.17.14
+	polling@3.7.4
+	pollster@0.3.0
 	powerfmt@0.2.0
 	presser@0.3.1
-	proc-macro-crate@3.1.0
-	proc-macro-error-attr@1.0.4
-	proc-macro-error@1.0.4
-	proc-macro2@1.0.86
+	proc-macro-crate@3.2.0
+	proc-macro-error-attr2@2.0.0
+	proc-macro-error2@2.0.1
+	proc-macro2@1.0.92
 	prodash@28.0.0
-	profiling@1.0.15
-	quick-xml@0.34.0
-	quote@1.0.36
+	profiling@1.0.16
+	quick-xml@0.36.2
+	quote@1.0.37
 	raw-window-handle@0.5.2
 	raw-window-handle@0.6.2
 	redox_syscall@0.3.5
 	redox_syscall@0.4.1
-	redox_syscall@0.5.3
+	redox_syscall@0.5.7
 	redox_users@0.4.5
-	regex-automata@0.4.7
-	regex-syntax@0.8.4
-	regex@1.10.6
+	regex-automata@0.4.9
+	regex-syntax@0.8.5
+	regex@1.11.1
 	renderdoc-sys@1.1.0
 	ron@0.8.1
 	rust-embed-impl@8.5.0
 	rust-embed-utils@8.5.0
 	rust-embed@8.5.0
 	rustc-hash@1.1.0
-	rustix@0.38.34
+	rustix@0.38.41
 	ryu@1.0.18
 	same-file@1.0.6
 	scoped-tls@1.0.1
 	scopeguard@1.2.0
 	self_cell@0.10.3
 	self_cell@1.0.4
-	serde@1.0.207
-	serde_derive@1.0.207
-	serde_json@1.0.124
+	serde@1.0.215
+	serde_derive@1.0.215
+	serde_json@1.0.133
 	sha1_smol@1.0.1
 	sha2@0.10.8
+	shlex@1.3.0
 	signal-hook-mio@0.2.4
 	signal-hook-registry@1.4.2
 	signal-hook@0.3.17
@@ -298,13 +322,17 @@ CRATES="
 	spirv@0.3.0+sdk-1.3.268.0
 	stable_deref_trait@1.2.0
 	static_assertions@1.1.0
-	strsim@0.10.0
+	strsim@0.11.1
 	syn@1.0.109
-	syn@2.0.74
-	tempfile@3.12.0
+	syn@2.0.89
+	synstructure@0.13.1
+	tempfile@3.14.0
 	termcolor@1.4.1
 	thiserror-impl@1.0.63
-	thiserror@1.0.63
+	thiserror@1.0.69
+	thiserror@2.0.3
+	thiserror-impl@1.0.69
+	thiserror-impl@2.0.3
 	time-core@0.1.2
 	time-macros@0.2.18
 	time@0.3.36
@@ -313,49 +341,49 @@ CRATES="
 	tinyvec_macros@0.1.1
 	toml@0.5.11
 	toml_datetime@0.6.8
-	toml_edit@0.21.1
-	tracing-core@0.1.32
-	tracing@0.1.40
-	ttf-parser@0.24.1
+	toml_edit@0.22.22
+	tracing-core@0.1.33
+	tracing@0.1.41
+	ttf-parser@0.25.0
 	type-map@0.5.0
 	typenum@1.17.0
 	unic-langid-impl@0.9.5
 	unic-langid@0.9.5
 	unicode-bidi@0.3.15
 	unicode-bom@2.0.3
-	unicode-ident@1.0.12
-	unicode-normalization@0.1.23
-	unicode-segmentation@1.11.0
-	unicode-width@0.1.13
-	unicode-xid@0.2.4
-	url@2.5.2
+	unicode-ident@1.0.14
+	unicode-normalization@0.1.24
+	unicode-segmentation@1.12.0
+	unicode-width@0.1.14
+	unicode-xid@0.2.6
+	url@2.5.4
+	utf16_iter@1.0.5
+	utf8_iter@1.0.4
 	version_check@0.9.5
 	walkdir@2.5.0
 	wasi@0.11.0+wasi-snapshot-preview1
-	wasm-bindgen-backend@0.2.93
-	wasm-bindgen-futures@0.4.43
-	wasm-bindgen-macro-support@0.2.93
-	wasm-bindgen-macro@0.2.93
-	wasm-bindgen-shared@0.2.93
-	wasm-bindgen@0.2.93
-	wayland-backend@0.3.6
+	wasm-bindgen-backend@0.2.95
+	wasm-bindgen-futures@0.4.45
+	wasm-bindgen-macro-support@0.2.95
+	wasm-bindgen-macro@0.2.95
+	wasm-bindgen-shared@0.2.95
+	wasm-bindgen@0.2.95
+	wayland-backend@0.3.7
 	wayland-client@0.31.5
 	wayland-csd-frame@0.3.0
-	wayland-cursor@0.31.5
-	wayland-protocols-plasma@0.2.0
-	wayland-protocols-wlr@0.2.0
-	wayland-protocols-wlr@0.3.3
-	wayland-protocols@0.31.2
-	wayland-protocols@0.32.3
-	wayland-scanner@0.31.4
-	wayland-sys@0.31.4
-	web-sys@0.3.70
-	web-time@0.2.4
-	webbrowser@1.0.1
-	wgpu-core@0.21.1
-	wgpu-hal@0.21.1
-	wgpu-types@0.20.0
-	wgpu@0.20.1
+	wayland-cursor@0.31.7
+	wayland-protocols-plasma@0.3.5
+	wayland-protocols-wlr@0.3.5
+	wayland-protocols@0.32.5
+	wayland-scanner@0.31.5
+	wayland-sys@0.31.5
+	web-sys@0.3.72
+	web-time@1.1.0
+	webbrowser@1.0.2
+	wgpu-core@22.1.0
+	wgpu-hal@22.0.0
+	wgpu-types@22.0.0
+	wgpu@22.1.0
 	widestring@1.1.0
 	winapi-i686-pc-windows-gnu@0.4.0
 	winapi-util@0.1.9
@@ -392,9 +420,11 @@ CRATES="
 	windows_x86_64_msvc@0.42.2
 	windows_x86_64_msvc@0.48.5
 	windows_x86_64_msvc@0.52.6
-	winit@0.29.15
+	winit@0.30.5
 	winnow@0.5.40
-	winnow@0.6.18
+	winnow@0.6.20
+	write16@1.0.0
+	writeable@0.5.5
 	x11-dl@2.21.0
 	x11rb-protocol@0.13.1
 	x11rb@0.13.1
@@ -402,9 +432,15 @@ CRATES="
 	xi-unicode@0.3.0
 	xkbcommon-dl@0.4.2
 	xkeysym@0.2.1
-	xml-rs@0.8.21
+	xml-rs@0.8.23
+	yoke@0.7.5
+	yoke-derive@0.7.5
 	zerocopy-derive@0.7.35
 	zerocopy@0.7.35
+	zerofrom@0.1.5
+	zerofrom-derive@0.1.5
+	zerovec@0.10.4
+	zerovec-derive@0.10.3
 "
 
 declare -A GIT_CRATES=(
