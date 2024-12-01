@@ -370,7 +370,7 @@ CRATES="
 	wasm-bindgen-shared@0.2.95
 	wasm-bindgen@0.2.95
 	wayland-backend@0.3.7
-	wayland-client@0.31.5
+	wayland-client@0.31.7
 	wayland-csd-frame@0.3.0
 	wayland-cursor@0.31.7
 	wayland-protocols-plasma@0.3.5
