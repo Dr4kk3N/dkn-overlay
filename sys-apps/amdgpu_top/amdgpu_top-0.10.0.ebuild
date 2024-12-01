@@ -184,6 +184,7 @@ CRATES="
 	icu_normalizer_data@1.5.0
 	icu_properties@1.5.1
 	icu_properties_data@1.5.0
+	icu_provider@1.5.0
 	icu_provider_macros@1.5.0
 	icrate@0.0.4
 	ident_case@1.0.1
