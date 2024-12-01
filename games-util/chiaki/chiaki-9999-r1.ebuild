@@ -46,7 +46,7 @@ DEPEND="${RDEPEND}"
 
 BDEPEND="
 	${PYTHON_DEPS}
-	$(python_gen_cond_dep 'dev-python/protobuf-python[${PYTHON_USEDEP}]')
+	$(python_gen_cond_dep 'dev-python/protobuf[${PYTHON_USEDEP}]')
 	dev-libs/protobuf
 	virtual/pkgconfig
 "

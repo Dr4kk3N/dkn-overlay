@@ -146,8 +146,8 @@ CRATES="
 	gix-revision@0.27.2
 	gix-revwalk@0.13.2
 	gix-sec@0.10.10
-	gix-tempfile@14.0.1
-	gix-trace@0.1.9
+	gix-tempfile@14.0.2
+	gix-trace@0.1.11
 	gix-traverse@0.39.2
 	gix-url@0.27.5
 	gix-utils@0.1.13
