@@ -166,6 +166,7 @@ CRATES="
 	gpu-allocator@0.26.0
 	gpu-descriptor-types@0.2.0
 	gpu-descriptor@0.3.0
+	hashbrown@0.14.5
 	hashbrown@0.15.2
 	hassle-rs@0.11.0
 	hermit-abi@0.4.0
