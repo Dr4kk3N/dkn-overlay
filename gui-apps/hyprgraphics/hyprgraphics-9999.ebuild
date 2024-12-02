@@ -5,16 +5,16 @@ EAPI=8
 
 inherit cmake
 
-DESCRIPTION="blazing fast wayland wallpaper utility with IPC controls."
-HOMEPAGE="https://github.com/hyprwm/Hyprpaper"
+DESCRIPTION="small C++ library with graphics."
+HOMEPAGE="https://github.com/hyprwm/Hyprgraphics"
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/hyprwm/hyprpaper/"
+	EGIT_REPO_URI="https://github.com/hyprwm/hyprgraphics/"
 else
 	COMMIT="571f495e88cf9a758698d937d65b9ba35d6eab13"
-	SRC_URI="https://github.com/hyprwm/hyprpaper/archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
-	S="${WORKDIR}/hyprpaper-${COMMIT}"
+	SRC_URI="https://github.com/hyprwm/hyprgraphics/archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
+	S="${WORKDIR}/hyprgraphics-${COMMIT}"
 	KEYWORDS="~amd64"
 fi
 
@@ -27,7 +27,6 @@ DEPEND="
 	media-libs/libjpeg-turbo
 	x11-libs/cairo
 	x11-libs/pango
-	gui-apps/hyprgraphics
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
@@ -36,10 +35,5 @@ BDEPEND="
 "
 
 src_compile() {
-	emake protocols
 	cmake_src_compile
-}
-
-src_install() {
-	dobin "${BUILD_DIR}/hyprpaper"
 }
