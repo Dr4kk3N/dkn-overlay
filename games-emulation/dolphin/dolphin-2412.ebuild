@@ -19,7 +19,6 @@ if [[ ${PV} == *9999 ]]; then
 		Externals/VulkanMemoryAllocator
 		Externals/zlib-ng/zlib-ng
 		Externals/minizip-ng/minizip-ng
-		#Externals/xxhash/xxHash
 	)
 else
 	MGBA_COMMIT=8739b22fbc90fdf0b4f6612ef9c0520f0ba44a51
@@ -29,7 +28,6 @@ else
 	VULKANMEMORYALLOCATOR_COMMIT=009ecd192c1289c7529bff248a16cfe896254816
 	ZLIB_NG_COMMIT=ce01b1e41da298334f8214389cc9369540a7560f
 	MINIZIP_NG_COMMIT=3eed562ef0ea3516db30d1c8ecb0e1b486d8cb70
-	#XXHASH_COMMIT=bbb27a5efb85b92a0486cf361a8635715a53f6ba
 	SRC_URI="
 		https://github.com/dolphin-emu/dolphin/archive/${PV}.tar.gz
 			-> ${P}.tar.gz
@@ -45,8 +43,6 @@ else
 			-> zlib-ng-${ZLIB_NG_COMMIT}.tar.gz
 		https://github.com/zlib-ng/minizip-ng/archive/${MINIZIP_NG_COMMIT}.tar.gz
 			-> minizip-ng-${MINIZIP_NG_COMMIT}.tar.gz
-		#https://github.com/Cyan4973/xxHash/archive/${XXHASH_COMMIT}.tar.gz
-                #        -> xxhash-${XXHASH_COMMIT}.tar.gz
 		mgba? (
 			https://github.com/mgba-emu/mgba/archive/${MGBA_COMMIT}.tar.gz
 				-> mgba-${MGBA_COMMIT}.tar.gz
@@ -155,11 +151,9 @@ declare -A KEEP_BUNDLED=(
 	[FatFs]=FatFs
 	[Vulkan-Headers]="|| ( Apache-2.0 MIT )"
 	[VulkanMemoryAllocator]=MIT
-	# [xxhash]=BSD-2
 )
 
 PATCHES=(
-#	"${FILESDIR}"/dolphin-2407-libfmt-11-fix.patch
 	"${FILESDIR}"/dolphin-2407-minizip.patch
 )
 
