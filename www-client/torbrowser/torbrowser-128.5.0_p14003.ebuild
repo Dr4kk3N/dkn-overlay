@@ -3,28 +3,34 @@
 
 EAPI=8
 
-FIREFOX_PATCHSET="firefox-115esr-patches-13.tar.xz"
+FIREFOX_PATCHSET="firefox-128esr-patches-04.tar.xz"
 
-LLVM_MAX_SLOT=18
+LLVM_COMPAT=( 17 18 19 )
 
-PYTHON_COMPAT=( python3_{10..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 PYTHON_REQ_USE="ncurses,sqlite,ssl"
+
+# This will also filter rust versions that don't match LLVM_COMPAT in the non-clang path; this is fine.
+RUST_NEEDS_LLVM=1
+# If not building with clang we need at least rust 1.76
+RUST_MIN_VER=1.77.1
 
 WANT_AUTOCONF="2.1"
 
 # Convert the ebuild version to the upstream Mozilla version
 MOZ_PV="${PV/_p*}esr"
 
-# see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-13.5/projects/firefox/config?ref_type=heads#L17
-# and https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-13.5/projects/browser/config?ref_type=heads#L107
+# see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-14.0/projects/firefox/config?ref_type=heads#L17
+# and https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-14.0/projects/browser/config?ref_type=heads#L111
 # and https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/tags
-TOR_PV="13.5.6"
+TOR_PV="14.0.3"
 TOR_TAG="${TOR_PV%.*}-1-build2"
-NOSCRIPT_VERSION="11.4.40"
-CHANGELOG_TAG="${TOR_PV}-build1"
+NOSCRIPT_VERSION="11.5.2"
+NOSCRIPT_ID="4379558"
+CHANGELOG_TAG="${TOR_PV}-build2"
 
-inherit autotools check-reqs desktop flag-o-matic linux-info \
-	llvm multiprocessing pax-utils python-any-r1 toolchain-funcs xdg
+inherit autotools check-reqs desktop flag-o-matic linux-info llvm-r1 multiprocessing \
+	pax-utils python-any-r1 rust toolchain-funcs xdg
 
 TOR_SRC_BASE_URI="https://dist.torproject.org/torbrowser/${TOR_PV}"
 TOR_SRC_ARCHIVE_URI="https://archive.torproject.org/tor-package-archive/torbrowser/${TOR_PV}"
@@ -33,80 +39,52 @@ PATCH_URIS=(
 	https://dev.gentoo.org/~juippis/mozilla/patchsets/${FIREFOX_PATCHSET}
 )
 
+DESCRIPTION="Private browsing without tracking, surveillance, or censorship"
+HOMEPAGE="https://www.torproject.org/ https://gitlab.torproject.org/tpo/applications/tor-browser/"
 SRC_URI="
 	${TOR_SRC_BASE_URI}/src-firefox-tor-browser-${MOZ_PV}-${TOR_TAG}.tar.xz
 	${TOR_SRC_ARCHIVE_URI}/src-firefox-tor-browser-${MOZ_PV}-${TOR_TAG}.tar.xz
 	${TOR_SRC_BASE_URI}/tor-browser-linux-x86_64-${TOR_PV}.tar.xz
 	${TOR_SRC_ARCHIVE_URI}/tor-browser-linux-x86_64-${TOR_PV}.tar.xz
-	https://addons.mozilla.org/firefox/downloads/file/3954910/noscript-${NOSCRIPT_VERSION}.xpi
+	https://addons.mozilla.org/firefox/downloads/file/${NOSCRIPT_ID}/noscript-${NOSCRIPT_VERSION}.xpi
 	https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/raw/tbb-${CHANGELOG_TAG}/projects/browser/Bundle-Data/Docs-TBB/ChangeLog.txt -> ${P}-ChangeLog.txt
 	${PATCH_URIS[@]}"
 
-DESCRIPTION="Private browsing without tracking, surveillance, or censorship"
-HOMEPAGE="https://www.torproject.org/ https://gitlab.torproject.org/tpo/applications/tor-browser/"
-
+S="${WORKDIR}/firefox-tor-browser-${MOZ_PV}-${TOR_TAG}"
+LICENSE="BSD CC-BY-3.0 MPL-2.0 GPL-2 LGPL-2.1"
+SLOT="0"
 KEYWORDS="~amd64"
 
-SLOT="0"
-LICENSE="BSD CC-BY-3.0 MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+clang dbus hardened"
-IUSE+=" pulseaudio"
-IUSE+=" +system-av1 +system-harfbuzz +system-icu +system-jpeg +system-libevent +system-libvpx system-png system-python-libs +system-webp"
-IUSE+=" wayland +X"
+IUSE="clang dbus hardened +jumbo-build"
+IUSE+=" pulseaudio +system-av1 +system-harfbuzz +system-icu +system-jpeg"
+IUSE+=" +system-libevent +system-libvpx system-png +system-webp wayland +X"
+
+REQUIRED_USE="|| ( X wayland )
+	wayland? ( dbus )"
 
 BDEPEND="${PYTHON_DEPS}
-	|| (
-		(
-			sys-devel/clang:18
-			sys-devel/llvm:18
-			clang? (
-				sys-devel/lld:18
-				virtual/rust:0/llvm-18
-			)
+	$(llvm_gen_dep '
+		sys-devel/clang:${LLVM_SLOT}
+		sys-devel/llvm:${LLVM_SLOT}
+		clang? (
+			sys-devel/lld:${LLVM_SLOT}
 		)
-		(
-			sys-devel/clang:17
-			sys-devel/llvm:17
-			clang? (
-				sys-devel/lld:17
-				virtual/rust:0/llvm-17
-			)
-		)
-		(
-			sys-devel/clang:16
-			sys-devel/llvm:16
-			clang? (
-				sys-devel/lld:16
-				virtual/rust:0/llvm-16
-			)
-		)
-		(
-			sys-devel/clang:15
-			sys-devel/llvm:15
-			clang? (
-				sys-devel/lld:15
-				virtual/rust:0/llvm-15
-			)
-		)
-	)
+	')
 	app-alternatives/awk
 	app-arch/unzip
 	app-arch/zip
-	>=dev-util/cbindgen-0.24.3
+	>=dev-util/cbindgen-0.26.0
 	net-libs/nodejs
 	virtual/pkgconfig
-	!clang? (
-		>=virtual/rust-1.65
-		<virtual/rust-1.78
-	)
-	>=dev-lang/nasm-2.14"
+	amd64? ( >=dev-lang/nasm-2.14 )
+	x86? ( >=dev-lang/nasm-2.14 )"
 
 COMMON_DEPEND="
 	>=app-accessibility/at-spi2-core-2.46.0:2
 	dev-libs/expat
 	dev-libs/glib:2
 	dev-libs/libffi:=
-	>=dev-libs/nss-3.90
+	>=dev-libs/nss-3.101
 	>=dev-libs/nspr-4.35
 	media-libs/alsa-lib
 	media-libs/fontconfig
@@ -116,11 +94,10 @@ COMMON_DEPEND="
 	sys-libs/zlib
 	virtual/freedesktop-icon-theme
 	x11-libs/cairo
-	x11-libs/gdk-pixbuf
+	x11-libs/gdk-pixbuf:2
 	x11-libs/pango
 	x11-libs/pixman
 	dbus? (
-		dev-libs/dbus-glib
 		sys-apps/dbus
 	)
 	pulseaudio? (
@@ -138,7 +115,7 @@ COMMON_DEPEND="
 		>=media-libs/harfbuzz-2.8.1:0=
 	)
 	system-icu? ( >=dev-libs/icu-73.1:= )
-	system-jpeg? ( >=media-libs/libjpeg-turbo-1.2.1 )
+	system-jpeg? ( >=media-libs/libjpeg-turbo-1.2.1:= )
 	system-libevent? ( >=dev-libs/libevent-2.1.12:0=[threads(+)] )
 	system-libvpx? ( >=media-libs/libvpx-1.8.2:0=[postproc] )
 	system-png? ( >=media-libs/libpng-1.6.35:0=[apng] )
@@ -146,7 +123,6 @@ COMMON_DEPEND="
 	wayland? (
 		>=media-libs/libepoxy-1.5.10-r1
 		x11-libs/gtk+:3[wayland]
-		x11-libs/libxkbcommon[wayland]
 	)
 	X? (
 		virtual/opengl
@@ -157,9 +133,7 @@ COMMON_DEPEND="
 		x11-libs/libXdamage
 		x11-libs/libXext
 		x11-libs/libXfixes
-		x11-libs/libxkbcommon[X]
 		x11-libs/libXrandr
-		x11-libs/libXtst
 		x11-libs/libxcb:=
 	)"
 RDEPEND="${COMMON_DEPEND}
@@ -172,8 +146,6 @@ DEPEND="${COMMON_DEPEND}
 		x11-libs/libSM
 	)"
 
-S="${WORKDIR}/firefox-tor-browser-${MOZ_PV}-${TOR_TAG}"
-
 llvm_check_deps() {
 	if ! has_version -b "sys-devel/clang:${LLVM_SLOT}" ; then
 		einfo "sys-devel/clang:${LLVM_SLOT} is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
@@ -183,11 +155,6 @@ llvm_check_deps() {
 	if use clang && ! tc-ld-is-mold ; then
 		if ! has_version -b "sys-devel/lld:${LLVM_SLOT}" ; then
 			einfo "sys-devel/lld:${LLVM_SLOT} is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
-			return 1
-		fi
-
-		if ! has_version -b "virtual/rust:0/llvm-${LLVM_SLOT}" ; then
-			einfo "virtual/rust:0/llvm-${LLVM_SLOT} is missing! Cannot use LLVM slot ${LLVM_SLOT} ..." >&2
 			return 1
 		fi
 	fi
@@ -206,8 +173,7 @@ moz_clear_vendor_checksums() {
 
 	sed -i \
 		-e 's/\("files":{\)[^}]*/\1/' \
-		"${S}"/third_party/rust/${1}/.cargo-checksum.json \
-		|| die
+		"${S}"/third_party/rust/${1}/.cargo-checksum.json || die
 }
 
 mozconfig_add_options_ac() {
@@ -264,40 +230,6 @@ mozconfig_use_with() {
 	mozconfig_add_options_ac "$(use ${1} && echo +${1} || echo -${1})" "${flag}"
 }
 
-# This is a straight copypaste from toolchain-funcs.eclass's 'tc-ld-is-lld', and is temporarily
-# placed here until toolchain-funcs.eclass gets an official support for mold linker.
-# Please see:
-# https://github.com/gentoo/gentoo/pull/28366 ||
-# https://github.com/gentoo/gentoo/pull/28355
-tc-ld-is-mold() {
-	local out
-
-	# Ensure ld output is in English.
-	local -x LC_ALL=C
-
-	# First check the linker directly.
-	out=$($(tc-getLD "$@") --version 2>&1)
-	if [[ ${out} == *"mold"* ]] ; then
-		return 0
-	fi
-
-	# Then see if they're selecting mold via compiler flags.
-	# Note: We're assuming they're using LDFLAGS to hold the
-	# options and not CFLAGS/CXXFLAGS.
-	local base="${T}/test-tc-linker"
-	cat <<-EOF > "${base}.c"
-	int main() { return 0; }
-	EOF
-	out=$($(tc-getCC "$@") ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,--version "${base}.c" -o "${base}" 2>&1)
-	rm -f "${base}"*
-	if [[ ${out} == *"mold"* ]] ; then
-		return 0
-	fi
-
-	# No mold here!
-	return 1
-}
-
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
 	CHECKREQS_DISK_BUILD="6600M"
@@ -311,7 +243,8 @@ pkg_setup() {
 
 	check-reqs_pkg_setup
 
-	llvm_pkg_setup
+	llvm-r1_pkg_setup
+	rust_pkg_setup
 
 	python-any-r1_pkg_setup
 
@@ -345,9 +278,9 @@ pkg_setup() {
 src_prepare() {
 	# Workaround for bgo#917599
 	if has_version ">=dev-libs/icu-74.1" && use system-icu ; then
-		eapply "${WORKDIR}"/firefox-patches/0029-bmo-1862601-system-icu-74.patch
+		eapply "${WORKDIR}"/firefox-patches/*-bmo-1862601-system-icu-74.patch
 	fi
-	rm -v "${WORKDIR}"/firefox-patches/0029-bmo-1862601-system-icu-74.patch || die
+	rm -v "${WORKDIR}"/firefox-patches/*-bmo-1862601-system-icu-74.patch || die
 
 	eapply "${WORKDIR}/firefox-patches"
 
@@ -363,38 +296,63 @@ src_prepare() {
 	export CARGO_BUILD_JOBS="$(makeopts_jobs)"
 
 	# Make LTO respect MAKEOPTS
-	sed -i \
-		-e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
-		"${S}"/build/moz.configure/lto-pgo.configure \
-		|| die "sed failed to set num_cores"
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/build/moz.configure/lto-pgo.configure || die "Failed sedding multiprocessing.cpu_count"
 
 	# Make ICU respect MAKEOPTS
-	sed -i \
-		-e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
-		"${S}"/intl/icu_sources_data.py \
-		|| die "sed failed to set num_cores"
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/intl/icu_sources_data.py || die "Failed sedding multiprocessing.cpu_count"
+
+	# Respect MAKEOPTS all around (maybe some find+sed is better)
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/python/mozbuild/mozbuild/base.py || die "Failed sedding multiprocessing.cpu_count"
+
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/third_party/libwebrtc/build/toolchain/get_cpu_count.py || die "Failed sedding multiprocessing.cpu_count"
+
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/third_party/libwebrtc/build/toolchain/get_concurrent_links.py ||
+			die "Failed sedding multiprocessing.cpu_count"
+
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/third_party/python/gyp/pylib/gyp/input.py || die "Failed sedding multiprocessing.cpu_count"
+
+	sed -i -e "s/multiprocessing.cpu_count()/$(makeopts_jobs)/" \
+		"${S}"/python/mozbuild/mozbuild/code_analysis/mach_commands.py || die "Failed sedding multiprocessing.cpu_count"
 
 	# sed-in toolchain prefix
 	sed -i \
 		-e "s/objdump/${CHOST}-objdump/" \
-		"${S}"/python/mozbuild/mozbuild/configure/check_debug_ranges.py \
-		|| die "sed failed to set toolchain prefix"
+		"${S}"/python/mozbuild/mozbuild/configure/check_debug_ranges.py || die "sed failed to set toolchain prefix"
 
 	sed -i \
 		-e 's/ccache_stats = None/return None/' \
-		"${S}"/python/mozbuild/mozbuild/controller/building.py \
-		|| die "sed failed to disable ccache stats call"
+		"${S}"/python/mozbuild/mozbuild/controller/building.py || die "sed failed to disable ccache stats call"
 
 	einfo "Removing pre-built binaries ..."
+
 	find "${S}"/third_party -type f \( -name '*.so' -o -name '*.o' \) -print -delete || die
 
-	# Clear cargo checksums from crates we have patched
-	# moz_clear_vendor_checksums crate
-	moz_clear_vendor_checksums audio_thread_priority
-	moz_clear_vendor_checksums bindgen
-	moz_clear_vendor_checksums encoding_rs
-	moz_clear_vendor_checksums any_all_workaround
-	moz_clear_vendor_checksums packed_simd
+	# Clear checksums from cargo crates we've manually patched.
+	# moz_clear_vendor_checksums xyz
+
+	# Respect choice for "jumbo-build"
+	# Changing the value for FILES_PER_UNIFIED_FILE may not work, see #905431
+	if [[ -n ${FILES_PER_UNIFIED_FILE} ]] && use jumbo-build; then
+		local my_files_per_unified_file=${FILES_PER_UNIFIED_FILE:=16}
+		elog ""
+		elog "jumbo-build defaults modified to ${my_files_per_unified_file}."
+		elog "if you get a build failure, try undefining FILES_PER_UNIFIED_FILE,"
+		elog "if that fails try -jumbo-build before opening a bug report."
+		elog ""
+
+		sed -i -e "s/\"FILES_PER_UNIFIED_FILE\", 16/\"FILES_PER_UNIFIED_FILE\", "${my_files_per_unified_file}"/" \
+			python/mozbuild/mozbuild/frontend/data.py ||
+				die "Failed to adjust FILES_PER_UNIFIED_FILE in python/mozbuild/mozbuild/frontend/data.py"
+		sed -i -e "s/FILES_PER_UNIFIED_FILE = 6/FILES_PER_UNIFIED_FILE = "${my_files_per_unified_file}"/" \
+			js/src/moz.build ||
+				die "Failed to adjust FILES_PER_UNIFIED_FILE in js/src/moz.build"
+	fi
 
 	# Create build dir
 	BUILD_DIR="${WORKDIR}/${PN}_build"
@@ -429,7 +387,6 @@ src_configure() {
 		CXX=${CHOST}-clang++-${version_clang}
 		NM=llvm-nm
 		RANLIB=llvm-ranlib
-
 	elif ! use clang && ! tc-is-gcc ; then
 		# Force gcc
 		have_switched_compiler=yes
@@ -452,7 +409,11 @@ src_configure() {
 	export HOST_CC="$(tc-getBUILD_CC)"
 	export HOST_CXX="$(tc-getBUILD_CXX)"
 	export AS="$(tc-getCC) -c"
-	tc-export CC CXX LD AR AS NM OBJDUMP RANLIB PKG_CONFIG
+
+	# Configuration tests expect llvm-readelf output, bug 913130
+	READELF="llvm-readelf"
+
+	tc-export CC CXX LD AR AS NM OBJDUMP RANLIB READELF PKG_CONFIG
 
 	# Pass the correct toolchain paths through cbindgen
 	if tc-is-cross-compiler ; then
@@ -480,14 +441,17 @@ src_configure() {
 		--allow-addon-sideload \
 		--disable-cargo-incremental \
 		--disable-crashreporter \
+		--disable-disk-remnant-avoidance \
+		--disable-geckodriver \
 		--disable-gpsd \
 		--disable-install-strip \
+		--disable-legacy-profile-creation \
 		--disable-parental-controls \
 		--disable-strip \
 		--disable-tests \
 		--disable-updater \
+		--disable-valgrind \
 		--disable-wmf \
-		--enable-legacy-profile-creation \
 		--enable-negotiateauth \
 		--enable-new-pass-manager \
 		--enable-official-branding \
@@ -511,8 +475,7 @@ src_configure() {
 		--x-includes="${ESYSROOT}/usr/include" \
 		--x-libraries="${ESYSROOT}/usr/$(get_libdir)"
 
-	mozconfig_add_options_ac '' --enable-rust-simd
-	mozconfig_add_options_ac '' --enable-sandbox
+	einfo "Building without Mozilla API key ..."
 
 	mozconfig_use_with system-av1
 	mozconfig_use_with system-harfbuzz
@@ -529,11 +492,12 @@ src_configure() {
 
 	mozconfig_add_options_ac '' --disable-eme
 
-	mozconfig_add_options_ac '' --disable-geckodriver
-
 	if use hardened ; then
 		mozconfig_add_options_ac "+hardened" --enable-hardening
 		append-ldflags "-Wl,-z,relro -Wl,-z,now"
+
+		# Increase the FORTIFY_SOURCE value, #910071.
+		sed -i -e '/-D_FORTIFY_SOURCE=/s:2:3:' "${S}"/build/moz.configure/toolchain.configure || die
 	fi
 
 	local myaudiobackends=""
@@ -544,30 +508,39 @@ src_configure() {
 
 	mozconfig_add_options_ac '' --disable-necko-wifi
 
+	! use jumbo-build && mozconfig_add_options_ac '--disable-unified-build' --disable-unified-build
+
 	if use X && use wayland ; then
 		mozconfig_add_options_ac '+x11+wayland' --enable-default-toolkit=cairo-gtk3-x11-wayland
 	elif ! use X && use wayland ; then
 		mozconfig_add_options_ac '+wayland' --enable-default-toolkit=cairo-gtk3-wayland-only
 	else
-		mozconfig_add_options_ac '+x11' --enable-default-toolkit=cairo-gtk3
+		mozconfig_add_options_ac '+x11' --enable-default-toolkit=cairo-gtk3-x11-only
 	fi
+
+	# LTO is handled via configure.
+	# -Werror=lto-type-mismatch -Werror=odr are going to fail with GCC,
+	# bmo#1516758, bgo#942288
+	filter-lto
+	filter-flags -Werror=lto-type-mismatch -Werror=odr
 
 	# see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/issues/40745
 	export MOZ_APP_BASENAME="TorBrowser"
 
-	# see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-13.5/projects/firefox/build?ref_type=heads#L166
+	# see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-14.0/projects/firefox/build?ref_type=heads#L169
 	mozconfig_add_options_ac 'torbrowser' \
 		--with-base-browser-version=${TOR_PV} \
 		--enable-update-channel=release \
 		--with-branding=browser/branding/tb-release
 
-	# see https://gitlab.torproject.org/tpo/applications/tor-browser/-/blob/tor-browser-115.12.0esr-13.5-1/browser/config/mozconfigs/tor-browser?ref_type=heads
+	# see https://gitlab.torproject.org/tpo/applications/tor-browser/-/blob/tor-browser-128.3.0esr-14.0-1/browser/config/mozconfigs/tor-browser
 	mozconfig_add_options_mk 'torbrowser' "MOZ_APP_DISPLAYNAME=\"Tor Browser\""
 	mozconfig_add_options_ac 'torbrowser' \
 		--without-relative-data-dir \
+		--with-user-appdir=.torproject \
 		--with-distribution-id=org.torproject
 
-	# see https://gitlab.torproject.org/tpo/applications/tor-browser/-/blob/tor-browser-115.12.0esr-13.5-1/browser/config/mozconfigs/base-browser?ref_type=heads
+	# see https://gitlab.torproject.org/tpo/applications/tor-browser/-/blob/tor-browser-128.3.0esr-14.0-1/browser/config/mozconfigs/base-browser?ref_type=heads
 	export MOZILLA_OFFICIAL=1
 	mozconfig_add_options_ac 'torbrowser' \
 		--enable-official-branding \
@@ -581,25 +554,31 @@ src_configure() {
 		--disable-crashreporter \
 		--disable-webrtc \
 		--disable-parental-controls \
-		--disable-eme \
 		--enable-proxy-bypass-protection \
 		--disable-system-policies \
 		--disable-backgroundtasks \
 		MOZ_TELEMETRY_REPORTING= \
-		--disable-legacy-profile-creation
+		--disable-legacy-profile-creation \
+		--enable-geckodriver
 
 	# Avoid auto-magic on linker
 	if use clang ; then
-		# This is upstream's default
-		mozconfig_add_options_ac "forcing ld=lld due to USE=clang" --enable-linker=lld
+		# lld is upstream's default
+		if tc-ld-is-mold ; then
+			mozconfig_add_options_ac "using ld=mold due to system selection" --enable-linker=mold
+		else
+			mozconfig_add_options_ac "forcing ld=lld due to USE=clang" --enable-linker=lld
+		fi
 	else
-		mozconfig_add_options_ac "linker is set to bfd" --enable-linker=bfd
+		if tc-ld-is-mold ; then
+			mozconfig_add_options_ac "using ld=mold due to system selection" --enable-linker=mold
+		else
+			mozconfig_add_options_ac "linker is set to bfd due to USE=-clang" --enable-linker=bfd
+		fi
 	fi
 
-	# LTO flag was handled via configure
-	filter-flags '-flto*'
-
 	mozconfig_add_options_ac 'Gentoo default' --disable-debug-symbols
+	mozconfig_add_options_ac 'Gentoo defaults' --disable-real-time-tracing
 
 	if is-flag '-O0' ; then
 		mozconfig_add_options_ac "from CFLAGS" --enable-optimize=-O0
@@ -621,19 +600,19 @@ src_configure() {
 	# Optimization flag was handled via configure
 	filter-flags '-O*'
 
-	# With profile 23.0 elf-hack=legacy is broken with gcc.
-	# With Firefox-115esr elf-hack=relr isn't available (only in rapid).
-	# Solution: Disable build system's elf-hack completely, and add "-z,pack-relative-relocs"
-	#  manually with gcc.
-	mozconfig_add_options_ac 'elf-hack disabled' --disable-elf-hack
+	# elf-hack
+	# Filter "-z,pack-relative-relocs" and let the build system handle it instead.
+	filter-flags "-z,pack-relative-relocs"
 
-	if use amd64 || use x86 ; then
-		! use clang && append-ldflags "-z,pack-relative-relocs"
+	if tc-ld-is-mold ; then
+		# relr-elf-hack is currently broken with mold, bgo#916259
+		mozconfig_add_options_ac 'disable elf-hack with mold linker' --disable-elf-hack
+	else
+		mozconfig_add_options_ac 'relr elf-hack' --enable-elf-hack=relr
 	fi
 
-	# Allow elfhack to work in combination with unstripped binaries
-	# when they would normally be larger than 2GiB.
-	append-ldflags "-Wl,--compress-debug-sections=zlib"
+	# System-av1 fix
+	use system-av1 && append-ldflags "-Wl,--undefined-version"
 
 	# Make revdep-rebuild.sh happy; Also required for musl
 	append-ldflags -Wl,-rpath="${MOZILLA_FIVE_HOME}",--enable-new-dtags
@@ -644,11 +623,7 @@ src_configure() {
 	# Use system's Python environment
 	export PIP_NETWORK_INSTALL_RESTRICTED_VIRTUALENVS=mach
 
-	if use system-python-libs; then
-		export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE="system"
-	else
-		export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE="none"
-	fi
+	export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE="none"
 
 	# Disable notification when build system has finished
 	export MOZ_NOSPAM=1
@@ -718,10 +693,6 @@ src_install() {
 		rm -v "${ED}${MOZILLA_FIVE_HOME}/llvm-symbolizer" || die
 	fi
 
-	# https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-13.5/projects/browser/build?ref_type=heads#L71
-	insinto ${MOZILLA_FIVE_HOME}/browser/extensions
-	newins "${DISTDIR}/noscript-${NOSCRIPT_VERSION}.xpi" {73a6fe31-595d-460b-a920-fcc0f8843232}.xpi
-
 	# Install system-wide preferences
 	local PREFS_DIR="${MOZILLA_FIVE_HOME}/browser/defaults/preferences"
 	insinto "${PREFS_DIR}"
@@ -730,7 +701,7 @@ src_install() {
 
 	# Set dictionary path to use system hunspell
 	cat >>"${GENTOO_PREFS}" <<-EOF || die "failed to set spellchecker.dictionary_path pref"
-	pref("spellchecker.dictionary_path",       "${EPREFIX}/usr/share/myspell");
+	pref("spellchecker.dictionary_path", "${EPREFIX}/usr/share/myspell");
 	EOF
 
 	# Force the graphite pref if USE=system-harfbuzz is enabled, since the pref cannot disable it
@@ -797,8 +768,14 @@ src_install() {
 	rm "${ED}"${MOZILLA_FIVE_HOME}/torbrowser-bin || die
 	dosym torbrowser ${MOZILLA_FIVE_HOME}/torbrowser-bin
 
+	# https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-13.5/projects/browser/build?ref_type=heads#L71
+	insinto ${MOZILLA_FIVE_HOME}/browser/extensions
+	newins "${DISTDIR}/noscript-${NOSCRIPT_VERSION}.xpi" {73a6fe31-595d-460b-a920-fcc0f8843232}.xpi
+
 	# https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/main/projects/browser/RelativeLink/start-browser#L340
 	# https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/tree/main/projects/fonts
+	# Todo for 14.5: https://gitlab.torproject.org/tpo/applications/tor-browser/-/issues/43140
+	# Todo for 14.5: https://gitlab.torproject.org/tpo/applications/tor-browser/-/issues/41799
 	sed -i -e 's|<dir prefix="cwd">fonts</dir>|<dir prefix="relative">fonts</dir>|' \
 		"${WORKDIR}"/tor-browser/Browser/fontconfig/fonts.conf || die
 	insinto /usr/share/torbrowser/
@@ -813,35 +790,8 @@ src_install() {
 	dodoc "${FILESDIR}/torrc.example"
 }
 
-pkg_preinst() {
-	xdg_pkg_preinst
-
-	# If the apulse libs are available in MOZILLA_FIVE_HOME then apulse
-	# does not need to be forced into the LD_LIBRARY_PATH
-	if use pulseaudio && has_version ">=media-sound/apulse-0.1.12-r4" ; then
-		einfo "APULSE found; Generating library symlinks for sound support ..."
-		local lib
-		pushd "${ED}${MOZILLA_FIVE_HOME}" &>/dev/null || die
-		for lib in ../apulse/libpulse{.so{,.0},-simple.so{,.0}} ; do
-			# A quickpkg rolled by hand will grab symlinks as part of the package,
-			# so we need to avoid creating them if they already exist.
-			if [[ ! -L ${lib##*/} ]] ; then
-				ln -s "${lib}" ${lib##*/} || die
-			fi
-		done
-		popd &>/dev/null || die
-	fi
-}
-
 pkg_postinst() {
 	xdg_pkg_postinst
-
-	if use pulseaudio && has_version ">=media-sound/apulse-0.1.12-r4" ; then
-		elog "Apulse was detected at merge time on this system and so it will always be"
-		elog "used for sound.  If you wish to use pulseaudio instead please unmerge"
-		elog "media-sound/apulse."
-		elog
-	fi
 
 	if [[ -z "${REPLACING_VERSIONS}" ]] ; then
 		ewarn "This Tor Browser build is _NOT_ recommended by Tor upstream but uses"

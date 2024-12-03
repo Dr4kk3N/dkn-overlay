@@ -21,4 +21,4 @@ index e5cac8fe9..2a5c14ec4 100644
 +    find_package(httplib)
  endif()
 
- if (SUDACHI_TESTS)
+ if (YUZU_TESTS)

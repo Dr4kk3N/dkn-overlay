@@ -5,33 +5,32 @@ EAPI=8
 inherit cmake flag-o-matic xdg
 
 DESCRIPTION="Nintendo Switch emulator."
-HOMEPAGE="https://github.com/sudachi-emu/sudachi"
-SHA="128b258427ec9a836343a0738fb09e335377174d"
-CPP_HTTPLIB_SHA="6791a8364d1644b44e0fb13fca472c398f78eb67"
-CPP_JWT_SHA="4a970bc302d671476122cbc6b43cc89fbf4a96ec"
-_DYNARMIC_SHA="efa2ebefe1f502fc886cbbcebabed2506121eb24"
-FFMPEG_SHA="cc6fb1643d7e14c6f76a48e0cffad96394cb197c"
+HOMEPAGE="https://web.archive.org/web/20240304190805/https://yuzu-emu.org/ https://github.com/yuzu-mirror/yuzu-mainline"
+MY_PV="mainline-${PV/./-}"
+CPP_HTTPLIB_SHA="6d963fbe8d415399d65e94db7910bbd22fe3741c"
+CPP_JWT_SHA="10ef5735d842b31025f1257ae78899f50a40fb14"
+_DYNARMIC_SHA="7da378033a7764f955516f75194856d87bbcd7a5"
 NX_TZDB_VERSION="221202"
-MBEDTLS_SHA="86ed7bfaa80079a97c763a651d0b2cd8d9d59100"
-SDL_SHA="e1e36d213bea3a0b56d91b454c53a2c94312a5be"
-SIMPLEINI_SHA="f7862c3dd7ad35becc2741f268e3402e89a37666"
-SIRIT_SHA="795ef4d8318c7d344da99c076dd60e5580d3d5ac"
-XBYAK_SHA="aabb091ae37068498751fd58202a9854408ecb0e"
-SRC_URI="https://github.com/sudachi-emu/sudachi/archive/${SHA}.tar.gz -> ${PN}-${SHA:0:7}.tar.gz
-	https://github.com/sudachi-emu/mbedtls/archive/${MBEDTLS_SHA}.tar.gz -> ${PN}-mbedtls-${MBEDTLS_SHA:0:7}.tar.gz
-	https://github.com/sudachi-emu/dynarmic/archive/${_DYNARMIC_SHA}.tar.gz -> ${PN}-dynarmic-${_DYNARMIC_SHA:0:7}.tar.gz
-	https://github.com/sudachi-emu/sirit/archive/${SIRIT_SHA}.tar.gz -> ${PN}-sirit-${SIRIT_SHA:0:7}.tar.gz
+MBEDTLS_SHA="8c88150ca139e06aa2aae8349df8292a88148ea1"
+SDL_SHA="cc016b0046d563287f0aa9f09b958b5e70d43696"
+SIMPLEINI_SHA="382ddbb4b92c0b26aa1b32cefba2002119a5b1f2"
+SIRIT_SHA="ab75463999f4f3291976b079d42d52ee91eebf3f"
+XBYAK_SHA="a1ac3750f9a639b5a6c6d6c7da4259b8d6790989"
+SRC_URI="https://web.archive.org/web/20240304181657if_/https://codeload.github.com/yuzu-emu/yuzu-mainline/tar.gz/refs/tags/${MY_PV} -> ${P}.tar.gz
+	https://github.com/yuzu-mirror/mbedtls/archive/${MBEDTLS_SHA}.tar.gz -> ${PN}-mbedtls-${MBEDTLS_SHA:0:7}.tar.gz
+	https://github.com/yuzu-mirror/dynarmic/archive/${_DYNARMIC_SHA}.tar.gz -> ${PN}-dynarmic-${_DYNARMIC_SHA:0:7}.tar.gz
+	https://github.com/yuzu-mirror/sirit/archive/${SIRIT_SHA}.tar.gz -> ${PN}-sirit-${SIRIT_SHA:0:7}.tar.gz
 	https://github.com/lat9nq/tzdb_to_nx/releases/download/${NX_TZDB_VERSION}/${NX_TZDB_VERSION}.zip -> ${PN}-nx_tzdb-${NX_TZDB_VERSION}.zip
 	https://github.com/yhirose/cpp-httplib/archive/${CPP_HTTPLIB_SHA}.tar.gz -> ${PN}-cpp-httplib-${CPP_HTTPLIB_SHA:0:7}.tar.gz
 	https://github.com/libsdl-org/SDL/archive/${SDL_SHA}.tar.gz -> ${PN}-sdl-${SDL_SHA:0:7}.tar.gz
 	https://github.com/brofield/simpleini/archive/${SIMPLEINI_SHA}.tar.gz -> ${PN}-simpleini-${SIMPLEINI_SHA:0:7}.tar.gz
-	https://github.com/herumi/xbyak/archive/${XBYAK_SHA}.tar.gz -> ${PN}-xbyak-${XBYAK_SHA:0:7}.tar.gz
-	https://github.com/FFmpeg/FFmpeg/archive/${FFMPEG_SHA}.tar.gz -> ${PN}-ffmpeg-${FFMPEG_SHA:0:7}.tar.gz"
+	https://github.com/herumi/xbyak/archive/${XBYAK_SHA}.tar.gz -> ${PN}-xbyak-${XBYAK_SHA:0:7}.tar.gz"
 
 LICENSE="BSD GPL-2 GPL-2+ LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+cubeb llvm-libunwind +web-service +webengine"
+IUSE="+compatibility-reporting +cubeb llvm-libunwind qt5 +qt6 +web-service +webengine"
+REQUIRED_USE="compatibility-reporting? ( web-service )"
 
 DEPEND=">=app-arch/zstd-1.5.0:=
 	>=dev-libs/xbyak-6.03:=
@@ -47,18 +46,26 @@ DEPEND=">=app-arch/zstd-1.5.0:=
 	dev-libs/vulkan-memory-allocator:=
 	dev-util/vulkan-utility-libraries
 	dev-util/glslang
-	dev-qt/qtbase:6
-	dev-qt/qtmultimedia:6
+	qt5? (
+		dev-qt/qtcore
+		dev-qt/qtdbus
+		dev-qt/qtmultimedia:5
+		dev-qt/qtwidgets
+	)
+	qt6? (
+		dev-qt/qtbase
+		dev-qt/qtmultimedia:6
+	)
 	media-libs/libsdl2
 	media-libs/libva
 	media-libs/opus
 	net-libs/enet:=
 	sys-libs/zlib
 	virtual/libusb:=
-	x11-libs/libX11
-	x11-libs/libdrm
-	x11-libs/libvdpau
-	webengine? ( dev-qt/qtwebengine:6 )
+	webengine? (
+		qt5? ( dev-qt/qtwebengine:5 )
+		qt6? ( dev-qt/qtwebengine:6 )
+	)
 	llvm-libunwind? ( sys-libs/llvm-libunwind )
 	!llvm-libunwind? ( sys-libs/libunwind:= )"
 RDEPEND="${DEPEND}
@@ -69,22 +76,26 @@ BDEPEND="app-arch/unzip
 	dev-cpp/robin-map
 	>=dev-util/vulkan-headers-1.3.275
 	dev-util/spirv-headers"
+REQUIRED_USE="|| ( qt5 qt6 )
+	qt5? ( !qt6 )
+	qt6? ( !qt5 )"
 
-S="${WORKDIR}/${PN}-${SHA}"
+S="${WORKDIR}/${PN}-mainline-${MY_PV}"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0001-system-libs.patch"
+	"${FILESDIR}/${PN}-0002-boost-fix.patch"
+	"${FILESDIR}/${PN}-0003-fmt-10-fixes.patch"
+	"${FILESDIR}/${PN}-0004-header-fixes.patch"
 )
 
 src_prepare() {
 	rm .gitmodules || die
 	rmdir "${S}/externals/"{dynarmic,mbedtls,simpleini,sirit,SDL,xbyak} || die
-	rmdir "${S}/externals/ffmpeg/ffmpeg" || die
 	mv "${WORKDIR}/dynarmic-${_DYNARMIC_SHA}" "${S}/externals/dynarmic" || die
 	mv "${WORKDIR}/sirit-${SIRIT_SHA}" "${S}/externals/sirit" || die
 	mv "${WORKDIR}/SDL-${SDL_SHA}" "${S}/externals/SDL" || die
 	mv "${WORKDIR}/mbedtls-${MBEDTLS_SHA}" "${S}/externals/mbedtls" || die
-	mv "${WORKDIR}/FFmpeg-${FFMPEG_SHA}" "${S}/externals/ffmpeg/ffmpeg" || die
 	mv "${WORKDIR}/simpleini-${SIMPLEINI_SHA}" "${S}/externals/simpleini" || die
 	mv "${WORKDIR}/xbyak-${XBYAK_SHA}" "${S}/externals/xbyak" || die
 	mkdir -p "${S}_build/externals/nx_tzdb/nx_tzdb" || die
@@ -101,8 +112,6 @@ src_prepare() {
 		-e 's/VulkanMemoryAllocator/VulkanMemoryAllocator REQUIRED/' -i CMakeLists.txt || die
 	sed -re 's/set\(CAN_BUILD_NX_TZDB.*/set(CAN_BUILD_NX_TZDB false)/' \
 		-i externals/nx_tzdb/CMakeLists.txt || die
-	sed -re '/add_subdirectory\(externals\)/d' -i CMakeLists.txt || die
-	sed -re '707s/.*/add_subdirectory(externals)/' -i CMakeLists.txt || die
 	cmake_src_prepare
 	mkdir -p "${BUILD_DIR}/dist/compatibility_list" || die
 	einfo 'Using fallback compatibility list'
@@ -117,25 +126,27 @@ src_configure() {
 	# coming after.
 	append-cxxflags -Wno-switch
 	local mycmakeargs=(
+		-DBUILD_FULLNAME="${MY_PV}"
 		-DBUILD_SHARED_LIBS=OFF
 		-DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF  # FIXME
 		-DENABLE_COMPATIBILITY_LIST_DOWNLOAD=OFF
-		-DENABLE_QT6=ON
 		"-DENABLE_CUBEB=$(usex cubeb)"
+		"-DENABLE_QT6=$(usex qt6)"
 		"-DENABLE_WEB_SERVICE=$(usex web-service)"
+		-DGIT_BRANCH="${PN}"
+		-DGIT_DESC="${PV}"
+		-DGIT_REV="${PV}"
 		-DSIRIT_USE_SYSTEM_SPIRV_HEADERS=ON
 		-DUSE_DISCORD_PRESENCE=OFF
-		-DSUDACHI_DOWNLOAD_TIME_ZONE_DATA=OFF
-		-DSUDACHI_ENABLE_PORTABLE=OFF
-		-DSUDACHI_TESTS=OFF
-		-DSUDACHI_USE_BUNDLED_FFMPEG=ON
-		-DSUDACHI_USE_EXTERNAL_SDL2=ON
-		-DSUDACHI_USE_EXTERNAL_VULKAN_HEADERS=OFF
-		-DSUDACHI_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES=OFF
-		-DSUDACHI_USE_PRECOMPILED_HEADERS=OFF
-		-DSUDACHI_USE_QT_MULTIMEDIA=ON
-		"-DSUDACHI_USE_QT_WEB_ENGINE=$(usex webengine)"
-		-DSUDACHI_USE_FASTER_LD=OFF
+		-DYUZU_DOWNLOAD_TIME_ZONE_DATA=OFF
+		"-DYUZU_ENABLE_COMPATIBILITY_REPORTING=$(usex compatibility-reporting)"
+		-DYUZU_TESTS=OFF
+		-DYUZU_USE_EXTERNAL_SDL2=ON
+		-DYUZU_USE_EXTERNAL_VULKAN_HEADERS=OFF
+		-DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES=OFF
+		-DYUZU_USE_QT_MULTIMEDIA=ON
+		"-DYUZU_USE_QT_WEB_ENGINE=$(usex webengine)"
+		-DYUZU_USE_FASTER_LD=OFF
 		-Wno-dev
 	)
 	cmake_src_configure
