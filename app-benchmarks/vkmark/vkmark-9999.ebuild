@@ -47,7 +47,7 @@ multilib_src_configure() {
 	emesonargs+=(
 		--buildtype $(usex debug debug plain)
 		-Db_ndebug=$(usex debug false true)
-		-Dwayland=$(usex wayland true false)
+		-Dwayland=$(usex wayland false true)
 	)
 	meson_src_configure
 }
