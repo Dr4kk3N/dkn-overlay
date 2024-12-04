@@ -51,7 +51,7 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}"/${PV}-Disable-things-we-don-t-want.patch
+	"${FILESDIR}"/${PV}-Disable-things-we-don-t-want_2.patch
 )
 
 pkg_setup() {
