@@ -17,7 +17,7 @@ EGIT_REPO_URI="https://github.com/vkmark/vkmark.git"
 LICENSE="LGPL 2.1"
 SLOT="0"
 
-IUSE="xcb vulkan wayland debug"
+IUSE="X vulkan wayland debug"
 
 REQUIRED_USE="vulkan"
 
@@ -30,7 +30,7 @@ RDEPEND="
 		   >=dev-libs/wayland-protocols-1.30
 		   dev-util/wayland-scanner
 	)
-	xcb? (
+	X? (
 		>=x11-libs/libX11-1.6.2
 		>=x11-libs/libxshmfence-1.1
 		>=x11-libs/libXext-1.3.2
@@ -47,8 +47,7 @@ multilib_src_configure() {
 	emesonargs+=(
 		--buildtype $(usex debug debug plain)
 		-Db_ndebug=$(usex debug false true)
-		-D wayland=$(usex false true)
-		-D xcb=$(usex false true)
+		-Dwayland=$(usex wayland true false)
 	)
 	meson_src_configure
 }
