@@ -36,6 +36,7 @@ RDEPEND="
 		>=x11-libs/libXext-1.3.2
 		>=x11-libs/libXxf86vm-1.1.3
 		>=x11-libs/libxcb-1.13
+		>=x11-libs/xcb-util-wm-0.4.2
 	)
 	vulkan? (
 		dev-util/glslang
@@ -47,7 +48,7 @@ multilib_src_configure() {
 	emesonargs+=(
 		--buildtype $(usex debug debug plain)
 		-Db_ndebug=$(usex debug false true)
-		-Dwayland=$(usex wayland false true)
+		-Dwayland=$(usex wayland auto true false)
 	)
 	meson_src_configure
 }
