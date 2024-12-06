@@ -11,6 +11,7 @@ inherit cmake llvm-r1 pax-utils xdg-utils
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/dolphin-emu/dolphin"
+	EGIT_BRANCH="release-prep-2412"
 	EGIT_SUBMODULES=(
 		Externals/mGBA/mgba
 		Externals/implot/implot
@@ -19,8 +20,11 @@ if [[ ${PV} == *9999 ]]; then
 		Externals/VulkanMemoryAllocator
 		Externals/zlib-ng/zlib-ng
 		Externals/minizip-ng/minizip-ng
+		Externals/rcheevos/rcheevos
+		#Externals/xxhash/xxHash
 	)
 else
+	EGIT_COMMIT=992b4ea9309899ebc7ca576ebea711a70523098a
 	MGBA_COMMIT=8739b22fbc90fdf0b4f6612ef9c0520f0ba44a51
 	IMPLOT_COMMIT=cc5e1daa5c7f2335a9460ae79c829011dc5cef2d
 	TINYGLTF_COMMIT=c5641f2c22d117da7971504591a8f6a41ece488b
@@ -28,8 +32,10 @@ else
 	VULKANMEMORYALLOCATOR_COMMIT=009ecd192c1289c7529bff248a16cfe896254816
 	ZLIB_NG_COMMIT=ce01b1e41da298334f8214389cc9369540a7560f
 	MINIZIP_NG_COMMIT=3eed562ef0ea3516db30d1c8ecb0e1b486d8cb70
+	RCHEEVOS_COMMIT=d54cf8f1059cebc90a6f5ecdf03df69259f2205
+	#XXHASH_COMMIT=bbb27a5efb85b92a0486cf361a8635715a53f6ba
 	SRC_URI="
-		https://github.com/dolphin-emu/dolphin/archive/${PV}.tar.gz
+		https://github.com/dolphin-emu/dolphin/archive/${EGIT_COMMIT}.tar.gz
 			-> ${P}.tar.gz
 		https://github.com/epezent/implot/archive/${IMPLOT_COMMIT}.tar.gz
 			-> implot-${IMPLOT_COMMIT}.tar.gz
@@ -37,12 +43,16 @@ else
 			-> tinygltf-${TINYGLTF_COMMIT}.tar.gz
 		https://github.com/KhronosGroup/Vulkan-Headers/archive/${VULKAN_HEADERS_COMMIT}.tar.gz
 			-> Vulkan-Headers-${VULKAN_HEADERS_COMMIT}.tar.gz
+		https://github.com/RetroAchievements/rcheevos/archive/${RCHEEVOS_COMMIT}.tar.gz
+                        -> rcheevos-${RCHEEVOS_COMMIT}.tar.gz
 		https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/${VULKANMEMORYALLOCATOR_COMMIT}.tar.gz
 			-> VulkanMemoryAllocator-${VULKANMEMORYALLOCATOR_COMMIT}.tar.gz
 		https://github.com/zlib-ng/zlib-ng/archive/${ZLIB_NG_COMMIT}.tar.gz
 			-> zlib-ng-${ZLIB_NG_COMMIT}.tar.gz
 		https://github.com/zlib-ng/minizip-ng/archive/${MINIZIP_NG_COMMIT}.tar.gz
 			-> minizip-ng-${MINIZIP_NG_COMMIT}.tar.gz
+		#https://github.com/Cyan4973/xxHash/archive/${XXHASH_COMMIT}.tar.gz
+                #        -> xxhash-${XXHASH_COMMIT}.tar.gz
 		mgba? (
 			https://github.com/mgba-emu/mgba/archive/${MGBA_COMMIT}.tar.gz
 				-> mgba-${MGBA_COMMIT}.tar.gz
@@ -151,9 +161,12 @@ declare -A KEEP_BUNDLED=(
 	[FatFs]=FatFs
 	[Vulkan-Headers]="|| ( Apache-2.0 MIT )"
 	[VulkanMemoryAllocator]=MIT
+	[rcheevos]=MIT
+	# [xxhash]=BSD-2
 )
 
 PATCHES=(
+#	"${FILESDIR}"/dolphin-2407-libfmt-11-fix.patch
 	"${FILESDIR}"/dolphin-2407-minizip.patch
 )
 
@@ -176,6 +189,7 @@ src_prepare() {
 		mv -T "${WORKDIR}/VulkanMemoryAllocator-${VULKANMEMORYALLOCATOR_COMMIT}" Externals/VulkanMemoryAllocator || die
 		mv -T "${WORKDIR}/zlib-ng-${ZLIB_NG_COMMIT}" Externals/zlib-ng/zlib-ng || die
 		mv -T "${WORKDIR}/minizip-ng-${MINIZIP_NG_COMMIT}" Externals/minizip-ng/minizip-ng || die
+		mv -T "${WORKDIR}/rcheevos-${RCHEEVOS_COMMIT}" Externals/rcheevos/rcheevos || die
 		if use mgba; then
 			mv -T "${WORKDIR}/mgba-${MGBA_COMMIT}" Externals/mGBA/mgba || die
 		fi
@@ -227,7 +241,7 @@ src_configure() {
 		-DSTEAM=OFF
 		-DUSE_DISCORD_PRESENCE=$(usex discord-presence)
 		-DUSE_MGBA=$(usex mgba)
-		-DUSE_RETRO_ACHIEVEMENTS=OFF
+		-DUSE_RETRO_ACHIEVEMENTS=ON
 		-DUSE_UPNP=$(usex upnp)
 
 		-DCMAKE_DISABLE_FIND_PACKAGE_SYSTEMD=$(usex !systemd)
