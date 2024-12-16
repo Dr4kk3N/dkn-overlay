@@ -21,6 +21,7 @@ SLOT="0"
 IUSE="+nls +svg +X"
 
 RDEPEND="
+	dev-libs/libsfdo
 	dev-libs/glib:2
 	>=dev-libs/libinput-1.14
 	dev-libs/libxml2:2
