@@ -18,6 +18,7 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
+RESTRICT="network-sandbox"
 IUSE="+nls +svg +X"
 
 RDEPEND="
