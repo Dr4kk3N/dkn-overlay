@@ -106,7 +106,7 @@ DEPEND="
 "
 BDEPEND="
 	dev-qt/qttools:6[linguist]
-	sys-devel/clang:*
+	llvm-core/clang:*
 	wayland? (
 		dev-util/wayland-scanner
 		kde-frameworks/extra-cmake-modules
