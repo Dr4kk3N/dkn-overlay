@@ -1,9 +1,9 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit cmake xdg-utils
+inherit cmake xdg
 
 DESCRIPTION="a multi-system chiptune tracker compatible with DefleMask modules"
 HOMEPAGE="https://github.com/tildearrow/furnace"
@@ -14,7 +14,7 @@ SRC_URI="
 	https://github.com/tildearrow/furnace/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	https://github.com/superctr/adpcm/archive/ef7a217154badc3b99978ac481b268c8aab67bd8.tar.gz -> ${P}-adpcm-ef7a217.tar.gz
 "
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64"
 IUSE="jack"
@@ -22,6 +22,7 @@ IUSE="jack"
 RDEPEND="
 	dev-libs/libfmt
 	media-libs/alsa-lib
+	media-libs/freetype
 	media-libs/libglvnd
 	media-libs/libsdl2
 	media-libs/libsndfile
@@ -46,22 +47,19 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_GUI=ON
+		-DSHOW_OPEN_ASSETS_MENU_ENTRY=ON
 		-DSYSTEM_FFTW=ON
 		-DSYSTEM_FMT=ON
 		-DSYSTEM_LIBSNDFILE=ON
 		-DSYSTEM_PORTAUDIO=ON
 		-DSYSTEM_RTMIDI=ON
-		-DSYSTEM_ZLIB=ON
 		-DSYSTEM_SDL2=ON
+		-DSYSTEM_ZLIB=ON
+		-DWITH_DEMOS=ON
+		-DWITH_INSTRUMENTS=ON
+		-DWITH_WAVETABLES=ON
 		-DWITH_JACK="$(usex jack ON OFF)"
 	)
+
 	cmake_src_configure
-}
-
-pkg_postinst() {
-	xdg_icon_cache_update
-}
-
-pkg_postrm() {
-	xdg_icon_cache_update
 }
