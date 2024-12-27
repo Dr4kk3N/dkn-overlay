@@ -27,7 +27,7 @@ DEPEND="
 	media-libs/libjpeg-turbo
 	x11-libs/cairo
 	x11-libs/pango
-	gui-apps/hyprgraphics
+	dev-libs/hyprgraphics
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
