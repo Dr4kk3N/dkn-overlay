@@ -66,7 +66,7 @@ DEPEND=">=app-arch/zstd-1.5.0:=
 		qt5? ( dev-qt/qtwebengine:5 )
 		qt6? ( dev-qt/qtwebengine:6 )
 	)
-	llvm-libunwind? ( sys-libs/llvm-libunwind )
+	llvm-libunwind? ( llvm-runtimes/libunwind )
 	!llvm-libunwind? ( sys-libs/libunwind:= )"
 RDEPEND="${DEPEND}
 	media-libs/vulkan-loader"
@@ -87,6 +87,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-0002-boost-fix.patch"
 	"${FILESDIR}/${PN}-0003-fmt-10-fixes.patch"
 	"${FILESDIR}/${PN}-0004-header-fixes.patch"
+	"${FILESDIR}/${PN}-0005-boost-1.87.patch"
 )
 
 src_prepare() {

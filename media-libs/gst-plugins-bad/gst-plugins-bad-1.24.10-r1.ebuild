@@ -9,9 +9,9 @@ DESCRIPTION="Less plugins for GStreamer"
 HOMEPAGE="https://gstreamer.freedesktop.org/"
 
 LICENSE="LGPL-2"
-KEYWORDS="~alpha ~amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~loong ~mips ppc ppc64 ~riscv ~sparc x86"
 
-IUSE="X bzip2 +introspection +orc udev vaapi vnc wayland webrtc"
+IUSE="X bzip2 +introspection +orc udev vaapi vnc wayland"
 
 # X11 is automagic for now, upstream #709530 - only used by librfb USE=vnc plugin
 # Baseline requirement for libva is 1.6, but 1.10 gets more features
@@ -41,8 +41,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="dev-util/glib-utils"
 
-DOCS=( AUTHORS ChangeLog NEWS README.md RELEASE )
-
 src_prepare() {
 	default
 	addpredict /dev # Prevent sandbox violations bug #570624
@@ -61,8 +59,6 @@ multilib_src_configure() {
 		$(meson_feature vnc librfb)
 		-Dx11=$(usex X $(usex vnc enabled disabled) disabled)
 		$(meson_feature wayland)
-		$(meson_feature webrtc)
-		$(meson_feature webrtc webrtcdsp)
 	)
 
 	gstreamer_multilib_src_configure
@@ -72,3 +68,4 @@ multilib_src_test() {
 	# Tests are slower than upstream expects
 	CK_DEFAULT_TIMEOUT=300 gstreamer_multilib_src_test
 }
+

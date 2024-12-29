@@ -15,14 +15,14 @@ EGIT_SUBMODULES=( '-*' 'dynarmic' 'simpleini' 'sirit' 'tzdb_to_nx' 'externals/nx
 LICENSE="|| ( Apache-2.0 GPL-2+ ) 0BSD BSD GPL-2+ ISC MIT
 	!system-vulkan? ( Apache-2.0 )"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 IUSE="+compatibility-list +cubeb discord +qt5 qt6 sdl +system-vulkan test webengine +webservice"
 
 RDEPEND="
 	<net-libs/mbedtls-3.1[cmac]
 	>=app-arch/zstd-1.5
 	>=dev-libs/inih-52
-	>=dev-libs/libfmt-9:=
+	>=dev-libs/libfmt-11:=
 	>=dev-libs/openssl-1.1:=
 	>=media-video/ffmpeg-4.3:=
 	>=net-libs/enet-1.3
@@ -50,6 +50,7 @@ DEPEND="${RDEPEND}
 	dev-cpp/cpp-httplib
 	dev-cpp/cpp-jwt
 	system-vulkan? (
+		>=dev-util/spirv-tools-1.3.236
 		>=dev-util/vulkan-headers-1.3.236
 		>=dev-util/vulkan-utility-libraries-1.3.236
 	)
@@ -150,13 +151,15 @@ src_configure() {
 		-DENABLE_QT6=$(usex qt6)
 		-DENABLE_SDL2=$(usex sdl)
 		-DENABLE_WEB_SERVICE=$(usex webservice)
-		-DSIRIT_USE_SYSTEM_SPIRV_HEADERS=yes
 		-DUSE_DISCORD_PRESENCE=$(usex discord)
 		-DYUZU_TESTS=$(usex test)
 		-DYUZU_USE_EXTERNAL_VULKAN_HEADERS=$(usex system-vulkan no yes)
 		-DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES=$(usex system-vulkan no yes)
+		-DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS=$(usex system-vulkan no yes)
 		-DYUZU_USE_EXTERNAL_SDL2=OFF
 		-DYUZU_USE_QT_WEB_ENGINE=$(usex webengine)
+		-DYUZU_CMD=OFF
+		-DYUZU_ROOM=OFF
 	)
 
 	cmake_src_configure
