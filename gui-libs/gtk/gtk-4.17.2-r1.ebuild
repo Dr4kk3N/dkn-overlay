@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{10..12} )
 inherit gnome.org gnome2-utils meson optfeature python-any-r1 toolchain-funcs virtualx xdg
 
 DESCRIPTION="GTK is a multi-platform toolkit for creating graphical user interfaces"
@@ -16,7 +16,7 @@ REQUIRED_USE="
 	test? ( introspection )
 "
 
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~loong ppc ppc64 ~riscv sparc x86"
 
 # TODO: Optional gst build dep on >=gst-plugins-base-1.23.1, so depend on it once we can
 COMMON_DEPEND="
@@ -39,11 +39,11 @@ COMMON_DEPEND="
 	cups? ( >=net-print/cups-2.0 )
 	examples? ( gnome-base/librsvg:2 )
 	gstreamer? (
-		>=media-libs/gstreamer-1.12.3:1.0
-		>=media-libs/gst-plugins-bad-1.12.3:1.0
+		>=media-libs/gstreamer-1.24.0:1.0
+		>=media-libs/gst-plugins-bad-1.24.0:1.0
 		|| (
-			>=media-libs/gst-plugins-base-1.12.3:1.0[gles2]
-			>=media-libs/gst-plugins-base-1.12.3:1.0[opengl]
+			>=media-libs/gst-plugins-base-1.24.0:1.0[gles2]
+			>=media-libs/gst-plugins-base-1.24.0:1.0[opengl]
 		)
 	)
 	introspection? ( >=dev-libs/gobject-introspection-1.76:= )
@@ -106,6 +106,7 @@ BDEPEND="
 		media-fonts/cantarell
 		wayland? ( dev-libs/weston[headless] )
 	)
+	dev-lang/sassc
 "
 
 PATCHES=(
@@ -227,10 +228,6 @@ src_test() {
 
 src_install() {
 	meson_src_install
-
-	insinto /usr/share/gtk-doc/html
-	# This will install API docs specific to X11 and wayland regardless of USE flags, but this is intentional
-	doins -r "${S}"/docs/reference/{gtk/gtk4,gsk/gsk4,gdk/gdk4{,-wayland,-x11}}
 }
 
 pkg_preinst() {
