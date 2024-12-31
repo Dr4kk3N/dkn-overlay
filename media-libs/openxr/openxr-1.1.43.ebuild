@@ -31,7 +31,6 @@ BDEPEND=">=dev-build/cmake-3.10.2"
 DEPEND="
 	media-libs/vulkan-loader
 	media-libs/mesa
-	dev-libs/jsoncpp:=
 	wayland? (
 		dev-libs/wayland
 		dev-libs/wayland-protocols
@@ -47,7 +46,7 @@ DEPEND="
 
 src_configure() {
 	local mycmakeargs=(
-		-DBUILD_WITH_SYSTEM_JSONCPP=ON
+		-DBUILD_WITH_SYSTEM_JSONCPP=OFF
 		-DBUILD_WITH_XLIB_HEADERS=$(usex X)
 		-DBUILD_WITH_XCB_HEADERS=$(usex X)
 		-DBUILD_WITH_WAYLAND_HEADERS=$(usex wayland)
