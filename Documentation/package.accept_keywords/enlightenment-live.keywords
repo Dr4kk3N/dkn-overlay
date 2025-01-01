@@ -1,0 +1,19 @@
+x11-wm/enlightenment **
+x11-terms/terminology **
+dev-libs/efl **
+# Needed for the apps
+#dev-python/python-efl **
+
+# Various apps
+dev-util/espionage **
+net-irc/express **
+dev-util/enventor **
+app-editors/ecrire **
+media-gfx/ephoto **
+app-misc/equate **
+dev-vcs/egitu **
+media-gfx/eluminance **
+net-misc/econnman **
+media-libs/rlottie **
+dev-util/eflete **
+
