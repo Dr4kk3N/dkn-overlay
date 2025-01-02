@@ -2,7 +2,8 @@ x11-wm/enlightenment **
 x11-terms/terminology **
 dev-libs/efl **
 # Needed for the apps
-dev-python/python-efl **
+=dev-python/python-efl-1.26.1 ~amd64
+
 x11-misc/enlightenment-extra **
 
 # Various apps
