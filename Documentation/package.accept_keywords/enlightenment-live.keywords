@@ -3,6 +3,7 @@ x11-terms/terminology **
 dev-libs/efl **
 # Needed for the apps
 #dev-python/python-efl **
+x11-misc/enlightenment-extra **
 
 # Various apps
 sys-process/evisum **
