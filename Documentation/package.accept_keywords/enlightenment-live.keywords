@@ -5,6 +5,7 @@ dev-libs/efl **
 #dev-python/python-efl **
 
 # Various apps
+media-gfx/entice **
 dev-util/espionage **
 net-irc/express **
 dev-util/enventor **
