@@ -22,7 +22,7 @@ RDEPEND="|| ( dev-libs/efl[X] dev-libs/efl[wayland] )
 		dev-util/bear
 		sys-devel/clang:=
 	)
-	>=sys-devel/llvm-11:=
+	>=llvm-core/llvm-11:=
 "
 DEPEND="${RDEPEND}
 	dev-libs/check"
@@ -31,7 +31,7 @@ BDEPEND="virtual/libintl
 	virtual/pkgconfig"
 
 llvm_check_deps() {
-	has_version "sys-devel/clang:${LLVM_SLOT}"
+	has_version "llvm-core/clang:${LLVM_SLOT}"
 }
 
 pkg_setup() {
