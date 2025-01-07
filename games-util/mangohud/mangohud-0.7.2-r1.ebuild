@@ -3,9 +3,9 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{10..13} )
 
-inherit python-single-r1 meson-multilib
+inherit flag-o-matic python-single-r1 meson-multilib
 
 MY_PV=$(ver_cut 1-3)
 [[ -n "$(ver_cut 4)" ]] && MY_PV_REV="-$(ver_cut 4)"
@@ -48,23 +48,19 @@ REQUIRED_USE="
 
 BDEPEND="
 	app-arch/unzip
-	>=dev-util/vulkan-headers-1.2.158
+	dev-util/glslang
 	test? ( dev-util/cmocka )
 	$(python_gen_cond_dep 'dev-python/mako[${PYTHON_USEDEP}]')
 "
 
-RDEPEND="
+DEPEND="
 	${PYTHON_DEPS}
-	=media-libs/imgui-1.89.9*[opengl,vulkan,${MULTILIB_USEDEP}]
-	=media-libs/implot-0.16*[${MULTILIB_USEDEP}]
-	=dev-libs/spdlog-1.13.0*[${MULTILIB_USEDEP}]
-	dev-libs/libfmt[${MULTILIB_USEDEP}]
+	=media-libs/imgui-1.89.9*:=[opengl,vulkan,${MULTILIB_USEDEP}]
+	=media-libs/implot-0.16*:=[${MULTILIB_USEDEP}]
+	dev-libs/spdlog:=[${MULTILIB_USEDEP}]
+	dev-libs/libfmt:=[${MULTILIB_USEDEP}]
 	dev-cpp/nlohmann_json
-	dev-util/glslang
-	media-fonts/lato
-	media-libs/vulkan-loader[${MULTILIB_USEDEP}]
-	media-libs/libglvnd[${MULTILIB_USEDEP}]
-	x11-libs/libdrm[${MULTILIB_USEDEP}]
+	x11-libs/libxkbcommon
 	dbus? ( sys-apps/dbus[${MULTILIB_USEDEP}] )
 	X? ( x11-libs/libX11[${MULTILIB_USEDEP}] )
 	video_cards_nvidia? (
@@ -73,21 +69,30 @@ RDEPEND="
 	)
 	wayland? ( dev-libs/wayland[${MULTILIB_USEDEP}] )
 	mangoapp? (
-		>=media-libs/imgui-1.81[glfw]
-		media-libs/glfw[X]
+		=media-libs/imgui-1.89.9*[glfw]
+		media-libs/glfw[X(+)?,wayland(+)?]
 		media-libs/glew
 	)
-	mangoplot? ( $(python_gen_cond_dep '
-		|| (
-			dev-python/matplotlib[gtk3,${PYTHON_USEDEP}]
-			dev-python/matplotlib[qt5,${PYTHON_USEDEP}]
-			dev-python/matplotlib[wxwidgets,${PYTHON_USEDEP}]
-		)
-	') )
+"
+
+RDEPEND="
+	${DEPEND}
+	media-libs/libglvnd[${MULTILIB_USEDEP}]
+	media-libs/vulkan-loader[${MULTILIB_USEDEP}]
+	mangoplot? (
+		media-fonts/lato
+		$(python_gen_cond_dep '
+			|| (
+				dev-python/matplotlib[gtk3,${PYTHON_USEDEP}]
+				dev-python/matplotlib[qt5(-),${PYTHON_USEDEP}]
+				dev-python/matplotlib[qt6(-),${PYTHON_USEDEP}]
+				dev-python/matplotlib[wxwidgets,${PYTHON_USEDEP}]
+			)
+		')
+	)
 "
 
 src_unpack() {
-
 	default
 
 	[[ -n "${MY_PV_REV}" ]] && ( mv "${WORKDIR}/MangoHud-${MY_PV}${MY_PV_REV}" "${WORKDIR}/MangoHud-${PV}" || die )
@@ -113,6 +118,10 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	# workaround for lld
+	# https://github.com/flightlessmango/MangoHud/issues/1240
+	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
+
 	local emesonargs=(
 		-Dappend_libdir_mangohud=false
 		-Dinclude_doc=false
