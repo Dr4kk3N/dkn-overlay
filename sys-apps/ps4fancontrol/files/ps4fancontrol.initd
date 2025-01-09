@@ -1,0 +1,45 @@
+#!/sbin/openrc-run
+# Copyright 1999-2024
+# Distributed under the terms of the GNU General Public License v2
+
+description="Adjust threshold temperature"
+
+depend()
+{
+	keyword -docker
+}
+
+_ps4fancontrol()
+{
+	[ -z "$1" ] && return 1
+		ps4fancontrol --no-gui
+	return $retval
+}
+
+start()
+{
+	ebegin "Enabling ps4fancontrol"
+	_ps4fancontrol +
+	eend $? "Failed to enable ps4fancontrol"
+}
+
+stop()
+{
+	yesno $RC_GOINGDOWN && return 0
+
+	ebegin "Disabling ps4fancontrol"
+	_ps4fancontrol -
+	eend $? "Failed to disable ps4fancontrol"
+}
+
+depend() {
+	need net
+	use avahi-daemon ypbind
+}
+
+#command="${DISTCCD_EXEC:-usr/bin/distccd}"
+#command_args="--user distcc --daemon --no-detach ${DISTCCD_OPTS}"
+#command_background="true"
+#pidfile="/run/${RC_SVCNAME}.pid"
+#
+#export TMPDIR="${TMPDIR:-/tmp}"

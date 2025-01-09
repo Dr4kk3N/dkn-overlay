@@ -1,0 +1,9 @@
+[Unit]
+Description=Reset threshold temperature to default
+
+[Service]
+RemainAfterExit=true
+ExecStop=/sbin/ps4fancontrol --no-gui --reset
+
+[Install]
+WantedBy=multi-user.target
