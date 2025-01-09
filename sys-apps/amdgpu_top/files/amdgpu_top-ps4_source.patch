@@ -1,0 +1,23 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index fde45fc..7eb4af6 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -2084,7 +2084,7 @@ checksum = "5aaeb2981e0606ca11d79718f8bb01164f1d6ed75080182d3abf017e6d244b6d"
+ [[package]]
+ name = "libdrm_amdgpu_sys"
+ version = "0.7.7"
+-source = "git+https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs#b5e3441c39ea680871a255c702addbf24c90118a"
++source = "git+https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs#b7e28f61a249a52e9d7d3644d59fe0635127483e"
+ dependencies = [
+  "libc",
+ ]
+diff --git a/crates/libamdgpu_top/Cargo.toml b/crates/libamdgpu_top/Cargo.toml
+index 74bd9a7..22a87e1 100644
+--- a/crates/libamdgpu_top/Cargo.toml
++++ b/crates/libamdgpu_top/Cargo.toml
+@@ -11,4 +11,4 @@ authors.workspace = true
+ 
+ [dependencies]
+ anyhow = { version = "1.0" }
+-libdrm_amdgpu_sys = { version = "0.7.7", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs" }
++libdrm_amdgpu_sys = { version = "0.7.7", git = "https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs" }
