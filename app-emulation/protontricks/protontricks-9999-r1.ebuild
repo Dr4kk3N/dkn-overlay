@@ -3,11 +3,11 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{10..13} pypy3 )
 DISTUTILS_SINGLE_IMPL=1
 DISTUTILS_USE_PEP517=setuptools
 
-inherit distutils-r1 xdg-utils #pypi
+inherit distutils-r1 pypi xdg-utils
 
 
 DESCRIPTION="app-emulation/winetricks wrapper for Proton (Steam Play) games"
@@ -27,11 +27,12 @@ LICENSE="GPL-3"
 SLOT="0"
 IUSE="+gui"
 
-RDEPEND="app-emulation/winetricks
+RDEPEND="
+	app-emulation/winetricks[gui?]
 	$(python_gen_cond_dep '
 		dev-python/pillow[${PYTHON_USEDEP}]
 		dev-python/setuptools[${PYTHON_USEDEP}]
-		dev-python/vdf[${PYTHON_USEDEP}]
+		>=dev-python/vdf-3.4_p20240630[${PYTHON_USEDEP}]
 	')
 	gui? ( gnome-extra/zenity )"
 BDEPEND="$(python_gen_cond_dep '
@@ -45,6 +46,13 @@ RESTRICT="test"
 DOCS=(CHANGELOG.md README.md)
 
 #distutils_enable_tests pytest
+
+
+src_prepare() {
+	default
+	sed -i "/^from /s/\._vdf/vdf/g" src/protontricks/steam.py || die
+	rm -r src/protontricks/_vdf || die
+}
 
 pkg_postinst() {
 	xdg_desktop_database_update
