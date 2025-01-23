@@ -1,9 +1,9 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-FIREFOX_PATCHSET="firefox-128esr-patches-04.tar.xz"
+FIREFOX_PATCHSET="firefox-128esr-patches-08.tar.xz"
 
 LLVM_COMPAT=( 17 18 19 )
 
@@ -23,11 +23,11 @@ MOZ_PV="${PV/_p*}esr"
 # see https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-14.0/projects/firefox/config?ref_type=heads#L17
 # and https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/blob/maint-14.0/projects/browser/config?ref_type=heads#L111
 # and https://gitlab.torproject.org/tpo/applications/tor-browser-build/-/tags
-TOR_PV="14.0.3"
-TOR_TAG="${TOR_PV%.*}-1-build2"
-NOSCRIPT_VERSION="11.5.2"
-NOSCRIPT_ID="4379558"
-CHANGELOG_TAG="${TOR_PV}-build2"
+TOR_PV="14.0.4"
+TOR_TAG="${TOR_PV%.*}-1-build1"
+NOSCRIPT_VERSION="12.1.1"
+NOSCRIPT_ID="4411102"
+CHANGELOG_TAG="${TOR_PV}-build1"
 
 inherit autotools check-reqs desktop flag-o-matic linux-info llvm-r1 multiprocessing \
 	pax-utils python-any-r1 rust toolchain-funcs xdg
@@ -55,19 +55,20 @@ LICENSE="BSD CC-BY-3.0 MPL-2.0 GPL-2 LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64"
 
-IUSE="clang dbus hardened +jumbo-build"
-IUSE+=" pulseaudio +system-av1 +system-harfbuzz +system-icu +system-jpeg"
-IUSE+=" +system-libevent +system-libvpx system-png +system-webp wayland +X"
+IUSE="+clang dbus hardened pulseaudio"
+IUSE+=" +system-av1 +system-harfbuzz +system-icu +system-jpeg +system-libevent +system-libvpx"
+IUSE+=" system-png +system-webp wayland +X"
+IUSE+=" +jumbo-build"
 
 REQUIRED_USE="|| ( X wayland )
 	wayland? ( dbus )"
 
 BDEPEND="${PYTHON_DEPS}
 	$(llvm_gen_dep '
-		sys-devel/clang:${LLVM_SLOT}
-		sys-devel/llvm:${LLVM_SLOT}
+		llvm-core/clang:${LLVM_SLOT}
+		llvm-core/llvm:${LLVM_SLOT}
 		clang? (
-			sys-devel/lld:${LLVM_SLOT}
+			llvm-core/lld:${LLVM_SLOT}
 		)
 	')
 	app-alternatives/awk
@@ -242,10 +243,8 @@ pkg_setup() {
 	CHECKREQS_DISK_BUILD="6400M"
 
 	check-reqs_pkg_setup
-
 	llvm-r1_pkg_setup
 	rust_pkg_setup
-
 	python-any-r1_pkg_setup
 
 	# These should *always* be cleaned up anyway
