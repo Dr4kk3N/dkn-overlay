@@ -57,7 +57,7 @@ distutils_enable_tests unittest
 
 python_prepare_all() {
 	# don't install manpage
-	sed -i '47,49d' setup.py || die
+	sed -i '51,53d' setup.py || die
 
 	distutils-r1_python_prepare_all
 }
