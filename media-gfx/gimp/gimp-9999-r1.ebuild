@@ -196,7 +196,7 @@ src_configure() {
 		$(meson_feature wmf)
 		$(meson_feature X xcursor)
 		$(meson_feature xpm)
-		$(meson_use doc g-ir-doc)
+		# $(meson_use doc g-ir-doc)
 		$(meson_use lua)
 		$(meson_use unwind libunwind)
 		$(meson_use vector-icons)
