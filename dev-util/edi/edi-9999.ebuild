@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-LLVM_COMPAT=( {16..19} )
-inherit git-r3 meson llvm-r1 xdg
+LLVM_COMPAT=( 18 19 )
+inherit git-r3 meson llvm-r2 xdg
 
 DESCRIPTION="An IDE using EFL"
 HOMEPAGE="https://git.enlightenment.org/enlightenment/edi.git"
@@ -20,13 +20,10 @@ RDEPEND="|| ( dev-libs/efl[X] dev-libs/efl[wayland] )
 	>=dev-libs/efl-1.22.0[eet]
 	clang? (
 		dev-util/bear
-		llvm-core/clang:=
-	)
-	>=llvm-core/llvm-11:=
-"
+		$(llvm_gen_dep 'llvm-core/clang:${LLVM_SLOT}=')
+	)"
 DEPEND="${RDEPEND}
 	dev-libs/check"
-
 BDEPEND="virtual/libintl
 	virtual/pkgconfig"
 
@@ -35,7 +32,7 @@ llvm_check_deps() {
 }
 
 pkg_setup() {
-	use clang && llvm_pkg_setup
+	use clang && llvm-r2_pkg_setup
 }
 
 src_prepare() {
