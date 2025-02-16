@@ -35,7 +35,7 @@ RDEPEND="
 		gui-apps/slurp
 		gui-apps/swappy
 		gui-apps/swaylock-effects[gdk-pixbuf]
-		gui-apps/waybar[network,popups,pulseaudio,tray,wifi]
+		gui-apps/waybar[network,pulseaudio,tray,wifi]
 		gui-apps/wayland-logout
 		gui-apps/wcm
 		gui-apps/wf-shell
