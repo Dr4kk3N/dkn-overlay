@@ -21,11 +21,8 @@ SLOT="0"
 
 RDEPEND="
 	x11-themes/adwaita-icon-theme
-	x11-themes/beautyline-icon-theme[no-inherit]
 	x11-themes/candy-icon-theme[no-inherit]
-	x11-themes/hey-icon-theme[no-inherit]
 	x11-themes/hicolor-icon-theme
-	x11-themes/oie-icon-theme[no-inherit]
 "
 
 src_install() {
