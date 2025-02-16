@@ -20,7 +20,7 @@ RDEPEND="|| ( dev-libs/efl[X] dev-libs/efl[wayland] )
 	>=dev-libs/efl-1.22.0[eet]
 	clang? (
 		dev-util/bear
-		sys-devel/clang:=
+		llvm-core/clang:=
 	)
 	>=llvm-core/llvm-11:=
 "
