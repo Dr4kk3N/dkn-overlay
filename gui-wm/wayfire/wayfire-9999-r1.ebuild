@@ -33,7 +33,7 @@ CDEPEND="
 	dev-libs/wayland
 	>=dev-libs/wayland-protocols-1.12
 	gui-libs/wf-config:${SLOT}
-	gui-libs/wlroots:0/18[drm(+),libinput(+),x11-backend,X?]
+	gui-libs/wlroots:0.18[drm(+),libinput(+),x11-backend,X?]
 	media-libs/glm
 	media-libs/libglvnd
 	media-libs/libjpeg-turbo:=
