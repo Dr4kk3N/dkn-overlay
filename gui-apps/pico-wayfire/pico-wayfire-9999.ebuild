@@ -24,7 +24,7 @@ RDEPEND="
 	media-fonts/joypixels
 	media-fonts/noto[cjk]
 	media-fonts/powerline-symbols
-	x11-themes/bibata-cursor-theme[modern]
+	x11-themes/bibata-cursor[modern-style]
 	x11-themes/pico-wayfire-icon-theme
 	x11-themes/sweet-dark-gtk-theme
 	recommended? (
