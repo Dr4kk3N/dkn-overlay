@@ -55,7 +55,7 @@ DEPEND=">=app-arch/zstd-1.5.0:=
 	x11-libs/libdrm
 	x11-libs/libvdpau
 	webengine? ( dev-qt/qtwebengine:6 )
-	llvm-libunwind? ( sys-libs/llvm-libunwind )
+	llvm-libunwind? ( llvm-runtimes/libunwind )
 	!llvm-libunwind? ( sys-libs/libunwind:= )"
 RDEPEND="${DEPEND}
 	media-libs/vulkan-loader"
@@ -73,6 +73,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-0003-boost-fix.patch"
 	"${FILESDIR}/${PN}-0004-fmt-10-fixes.patch"
 	"${FILESDIR}/${PN}-0006-header-fixes.patch"
+	"${FILESDIR}/${PN}-0007-boost-1.87-changes.patch"
 )
 
 src_unpack() {
@@ -80,8 +81,8 @@ src_unpack() {
 	rm .gitmodules || die
 	dos2unix dist/*.desktop || die
 	mkdir "${P}" || die
-	mv "${WORKDIR}"/{dist,externals,CMakeLists.txt,patches,src,tools,CMakeModules,vcpkg.json} "${S}" || die
-	mv "${WORKDIR}"/{LICENSES,LICENSE.md,hooks,Doxyfile,README.md} "${S}" || die
+	mv "${WORKDIR}"/{dist,externals,CMakeLists.txt,src,CMakeModules,vcpkg.json} "${S}" || die
+	mv "${WORKDIR}"/{LICENSES,LICENSE.md,hooks,README.md} "${S}" || die
 }
 
 src_prepare() {
@@ -109,7 +110,7 @@ src_prepare() {
 	sed -re 's/set\(CAN_BUILD_NX_TZDB.*/set(CAN_BUILD_NX_TZDB false)/' \
 		-i externals/nx_tzdb/CMakeLists.txt || die
 	sed -re '/add_subdirectory\(externals\)/d' -i CMakeLists.txt || die
-	sed -re '704s/.*/add_subdirectory(externals)/' -i CMakeLists.txt || die
+	sed -re '705s/.*/add_subdirectory(externals)/' -i CMakeLists.txt || die
 	sed -re '/-Werror=.*/d' -i src/CMakeLists.txt || die
 	sed -re 's/@GIT_BRANCH@/sudachi/' -e "s/@GIT_DESC@/${PV}/" -i src/common/scm_rev.cpp.in || die
 	cmake_src_prepare
