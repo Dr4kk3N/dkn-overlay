@@ -8,7 +8,7 @@ LLVM_OPTIONAL=1
 
 inherit cmake llvm-r1 desktop xdg
 
-MY_PN="cemu"
+MY_PN="Cemu"
 
 if [[ ${PV} == *9999 ]]; then
         inherit git-r3
@@ -66,7 +66,7 @@ DEPEND="app-arch/zarchive
 RDEPEND="${DEPEND}"
 BDEPEND="media-libs/glm"
 
-S="${WORKDIR}/${MY_PN}-${PV}"
+S="${WORKDIR}/cemu-${PV}"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0002-remove-default-from-system-g.patch"
