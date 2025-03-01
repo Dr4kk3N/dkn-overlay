@@ -18,7 +18,7 @@ fi
 
 LICENSE="GPL-3+"
 SLOT="0"
-IUSE="alsa +cdrom cg cpu_flags_x86_sse2 dbus drm egl ffmpeg flac gles2 gles3 gles3_1 gles3_2 jack kms libass libcaca +network openal +opengl +opengl_core osmesa parport pulseaudio qt5 sdl sdl2 sixel ssl systemd tinyalsa +truetype +udev usb v4l vulkan wayland X xrandr xinerama xv +zlib"
+IUSE="alsa +cdrom cg cpu_flags_x86_sse2 dbus drm egl ffmpeg flac gles2 gles3 gles3_1 gles3_2 jack kms libass libusb libcaca +network openal +opengl +opengl_core osmesa parport pulseaudio qt5 sdl sdl2 sixel ssl systemd tinyalsa +truetype +udev usb hid v4l vulkan wayland X xrandr xinerama xv +zlib"
 
 REQUIRED_USE="
 	|| ( alsa jack pulseaudio )
@@ -34,6 +34,7 @@ REQUIRED_USE="
 	gles3_2? ( gles3_1 )
 	kms? ( drm egl )
 	libass? ( ffmpeg )
+	libusb? ( hid )
 	opengl_core? ( opengl )
 	osmesa? ( opengl )
 	ssl? ( network )
@@ -119,6 +120,7 @@ src_configure() {
 		"$(use_enable flac)" \
 		"$(use_enable gles2 opengles)" \
 		"$(use_enable gles3 opengles3)" \
+		"$(use_enable hid)" \
 		"$(use_enable gles3_1 opengles3_1)" \
 		"$(use_enable gles3_2 opengles3_2)" \
 		"$(use_enable jack)" \
