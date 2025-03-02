@@ -7,7 +7,7 @@ DISTUTILS_USE_PEP517=setuptools
 PYTHON_COMPAT=( python3_{11..13} )
 
 inherit distutils-r1
-distutils_enable_tests pytest
+#distutils_enable_tests pytest
 
 if [[ ${PV} == 9999 ]]; then
         inherit git-r3
@@ -25,7 +25,9 @@ HOMEPAGE="http://github.com/ronaldoussoren/macholib"
 
 LICENSE="MIT"
 SLOT="0"
-RESTRICT=test
+IUSE="test"
+
+RESTRICT="!test? ( test )"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-python/altgraph[${PYTHON_USEDEP}]"
