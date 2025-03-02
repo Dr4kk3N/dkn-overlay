@@ -1,0 +1,32 @@
+# Copyright 1999-2023 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=8
+
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{11..13} )
+
+inherit distutils-r1
+distutils_enable_tests pytest
+
+if [[ ${PV} == 9999 ]]; then
+        inherit git-r3
+        EGIT_REPO_URI="https://github.com/ronaldoussoren/macholib.git"
+else
+        SRC_URI="
+                https://github.com/ronaldoussoren/macholib/archive/refs/tags/v${PV}.tar.gz
+                        -> ${P}.tar.gz
+        "
+        KEYWORDS="amd64 ~arm64 x86"
+fi
+
+DESCRIPTION="A package is a collection of utilities for dealing with IP addresses"
+HOMEPAGE="http://github.com/ronaldoussoren/macholib"
+
+LICENSE="MIT"
+SLOT="0"
+RESTRICT=test
+
+RDEPEND="${PYTHON_DEPS}
+	dev-python/altgraph[${PYTHON_USEDEP}]"
+DEPEND="${RDEPEND}"
