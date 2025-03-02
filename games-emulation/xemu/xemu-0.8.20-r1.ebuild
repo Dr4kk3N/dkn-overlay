@@ -54,6 +54,7 @@ DEPEND="dev-libs/glib
 	net-libs/libslirp
 	sys-apps/dtc
 	sys-libs/zlib
+	sys-power/iasl
 	x11-libs/gtk+:3
 	x11-libs/pixman
 	aio? ( dev-libs/libaio )
