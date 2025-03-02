@@ -37,4 +37,6 @@ RDEPEND=">=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/numpy-2.2.3[${PYTHON_USEDEP}]
 	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]"
 
+S="${WORKDIR}/turing-smart-screen-python-${PV}"
+
 distutils_enable_tests pytest

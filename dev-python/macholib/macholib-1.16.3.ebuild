@@ -7,7 +7,6 @@ DISTUTILS_USE_PEP517=setuptools
 PYTHON_COMPAT=( python3_{11..13} )
 
 inherit distutils-r1
-#distutils_enable_tests pytest
 
 if [[ ${PV} == 9999 ]]; then
         inherit git-r3
@@ -32,3 +31,6 @@ RESTRICT="!test? ( test )"
 RDEPEND="${PYTHON_DEPS}
 	dev-python/altgraph[${PYTHON_USEDEP}]"
 DEPEND="${RDEPEND}"
+
+distutils_enable_tests pytest
+
