@@ -93,10 +93,14 @@ index b4fe614f..d2c42dc2 100644
 -  files_libutil += files('shaderutil.c')
 -  _deps += dep_glut
 -endif
-+_deps = [dep_m]
++_deps = [dep_m] + [dep_png],
  
  _libutil = static_library(
    'util',
+@@ -44,14 +38,3 @@ idep_util = declare_dependency(
+   link_with: _libutil,
+   include_directories: inc_util,
+ )
 diff --git a/src/xdemos/meson.build b/src/xdemos/meson.build
 index a569fde5..40007616 100644
 --- a/src/xdemos/meson.build
