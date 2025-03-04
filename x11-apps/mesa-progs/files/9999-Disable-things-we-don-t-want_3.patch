@@ -79,11 +79,10 @@ diff --git a/src/util/meson.build b/src/util/meson.build
 index b4fe614f..d2c42dc2 100644
 --- a/src/util/meson.build
 +++ b/src/util/meson.build
-@@ -22,17 +22,10 @@ inc_util = include_directories('.')
+@@ -22,16 +22,10 @@ inc_util = include_directories('.')
  
  files_libutil = files(
    'glinfo_common.c',
--  'readtex.c',
 -  'showbuffer.c',
 -  'trackball.c',
    'matrix.c',
