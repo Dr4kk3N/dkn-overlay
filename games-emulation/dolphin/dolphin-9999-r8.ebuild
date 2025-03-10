@@ -11,7 +11,7 @@ inherit cmake llvm-r1 pax-utils xdg-utils
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/dolphin-emu/dolphin"
-	EGIT_BRANCH="release-prep-2412"
+	EGIT_BRANCH="release-prep-2503"
 	EGIT_SUBMODULES=(
 		Externals/mGBA/mgba
 		Externals/implot/implot
