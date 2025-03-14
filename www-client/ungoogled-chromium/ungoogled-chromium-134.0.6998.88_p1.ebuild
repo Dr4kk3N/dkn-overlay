@@ -35,7 +35,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless hevc kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,17 +57,21 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="f534f8cfa2aa062195fdb99f8e18b203e3fd7970"
+#UGC_COMMIT_ID="2d603520e2c1aaf8786eea60fde60311587235ca"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="072ad730393e7a3b252645c139bc66e020ec8f87"
+CROMITE_COMMIT_ID="f13b33b73e22ecaa1ae9a567a8e0c74caf446678"
 
 declare -A CHROMIUM_COMMITS=(
 	["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
-	["63c33ef8035608d31b3f44841df70b30925e3073"]="."
+	["-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e"]="."
+	["63c33ef8035608d31b3f44841df70b30925e3073"]="." # 135+
+	["1e7508ce083f6c7e43011f899faf10537a6379e2"]="." # 135+
+	["5edd4972ff364d7bad465925249a7184e36c3226"]="." # 135+
+	["4ca8cffec2e6dea43de24a6a9d88095b73ab10f4"]="." # 135+
 )
 
 UGC_PV="${PV/_p/-}"
@@ -228,7 +232,6 @@ COMMON_DEPEND="
 	media-libs/flac:=
 	sys-libs/zlib:=[minizip]
 	!headless? (
-		X? ( ${COMMON_X_DEPEND} )
 		>=app-accessibility/at-spi2-core-2.46.0:2
 		media-libs/mesa:=[X?,wayland?]
 		cups? ( >=net-print/cups-1.3.11:= )
@@ -241,6 +244,7 @@ COMMON_DEPEND="
 			dev-qt/qtwidgets:5
 		)
 		qt6? ( dev-qt/qtbase:6[gui,widgets] )
+		X? ( ${COMMON_X_DEPEND} )
 	)
 "
 
@@ -459,21 +463,22 @@ src_prepare() {
 		"${FILESDIR}/chromium-109-system-zlib.patch"
 		"${FILESDIR}/chromium-111-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
-		"${FILESDIR}/chromium-131-oauth2-client-switches.patch"
+		"${FILESDIR}/chromium-134-map_droppable-glibc.patch"
+		"${FILESDIR}/chromium-134-oauth2-client-switches.patch"
+		"${FILESDIR}/chromium-135-fix-non-wayland-build.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
 		"${FILESDIR}/chromium-127-cargo_crate.patch"
-		"${FILESDIR}/chromium-132-crabby.patch"
 		"${FILESDIR}/chromium-128-gtk-fix-prefers-color-scheme-query.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
 		"${FILESDIR}/chromium-132-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
-		"${FILESDIR}/chromium-127-separate-qt56.patch"
 		"${FILESDIR}/chromium-132-no-rust.patch"
 		"${FILESDIR}/chromium-132-optional-lens.patch"
-		"${FILESDIR}/chromium-133-fontations.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
+		"${FILESDIR}/chromium-134-fontations.patch"
+		"${FILESDIR}/chromium-134-crabby.patch"
 	)
 
 	shopt -s globstar nullglob
@@ -522,7 +527,8 @@ src_prepare() {
 
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-133-libstdc++.patch"
+			"${FILESDIR}/chromium-134-libstdc++.patch"
+			"${FILESDIR}/chromium-134-stdatomic.patch"
 			"${FILESDIR}/font-gc-r4.patch"
 		)
 	fi
@@ -911,7 +917,6 @@ src_prepare() {
 		third_party/fp16
 		third_party/freetype
 		third_party/fusejs
-		third_party/fuzztest
 		third_party/fxdiv
 		third_party/gemmlowp
 		third_party/google_input_tools
@@ -944,7 +949,6 @@ src_prepare() {
 		third_party/lens_server_proto
 		third_party/leveldatabase
 		third_party/libaddressinput
-		third_party/libavif
 		third_party/libdrm
 		third_party/libgav1
 		third_party/libjingle
@@ -1023,6 +1027,7 @@ src_prepare() {
 		third_party/rnnoise
 		third_party/ruy
 		third_party/s2cellid
+		third_party/search_engines_data
 		third_party/securemessage
 		third_party/selenium-atoms
 		third_party/sentencepiece
@@ -1088,10 +1093,11 @@ src_prepare() {
 		third_party/zlib/google
 		third_party/zxcvbn-cpp
 		url/third_party/mozilla
-		v8/third_party/glibc
-		v8/third_party/inspector_protocol
 		v8/third_party/siphash
 		v8/third_party/utf8-decoder
+		v8/third_party/glibc
+		v8/third_party/inspector_protocol
+		v8/third_party/rapidhash-v8
 		v8/third_party/v8
 		v8/third_party/valgrind
 
@@ -1189,9 +1195,9 @@ src_prepare() {
 	done
 
 	if [[ ${#not_found_libs[@]} -gt 0 ]]; then
-		eerror "The following \`keeplibs\` directories were not found in the source tree:"
+		ewarn "The following \`keeplibs\` directories were not found in the source tree:"
 		for lib in "${not_found_libs[@]}"; do
-			eerror "  ${lib}"
+			ewarn "  ${lib}"
 		done
 	fi
 
