@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <name>Kostas Ereksonas</name>
+    <email>k.ereksonas@gmail.com</email>
+    <description>Primary maintainer</description>
+  </maintainer>
+  <use>
+    <flag name="openal">support for sound interface</flag>
+    <flag name="ffmpeg">support for for game recording</flag>
+  </use>
+</pkgmetadata>

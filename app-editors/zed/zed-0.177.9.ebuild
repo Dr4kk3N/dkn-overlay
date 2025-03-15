@@ -67,8 +67,8 @@ declare -A GIT_CRATES=(
 	[xkbcommon]='https://github.com/ConradIrwin/xkbcommon-rs;fcbb4612185cc129ceeff51d22f7fb51810a03b2;xkbcommon-rs-%commit%'
 )
 
-LLVM_COMPAT=( {18..19} )
-RUST_MIN_VER="1.81.0"
+LLVM_COMPAT=( {19..20} )
+RUST_MIN_VER="1.85.0"
 RUST_NEEDS_LLVM=1
 WEBRTC_COMMIT="dac8015-6"
 
@@ -89,6 +89,7 @@ SRC_URI="
 	)
 	${CARGO_CRATE_URIS}"
 
+S="${WORKDIR}/${PN}-${PV/_/-}"
 LICENSE="GPL-3+"
 # Dependent crate licenses
 LICENSE+="
@@ -143,8 +144,6 @@ BDEPEND="
 
 QA_FLAGS_IGNORED="usr/bin/zedit"
 
-S="${WORKDIR}/${PN}-${PV/_/-}"
-
 pkg_setup() {
 	if tc-is-gcc; then
 		export CARGO_PROFILE_RELEASE_LTO="true"
@@ -154,8 +153,6 @@ pkg_setup() {
 	strip-unsupported-flags
 	# flags from upstream
 	export RUSTFLAGS="${RUSTFLAGS} -C symbol-mangling-version=v0 --cfg tokio_unstable -C link-arg=-fuse-ld=mold -C link-args=-Wl,--disable-new-dtags,-rpath,\$ORIGIN/../lib"
-	# linking error with llvm-18
-	export RUSTFLAGS="${RUSTFLAGS} -C link-args=-Wl,-z,nostart-stop-gc"
 	# fix error in livekit-rust-sdks
 	export RUSTFLAGS="${RUSTFLAGS} -A unexpected_cfgs"
 	if use gles; then
