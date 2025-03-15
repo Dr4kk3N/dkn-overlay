@@ -5,7 +5,7 @@ EAPI=8
 RUST_MIN_VER="1.81.0"
 RUST_MAX_VER="1.81.0"
 RUST_NEEDS_LLVM=1
-LLVM_COMPAT=( 18 )
+LLVM_COMPAT=( {18..19} )
 
 inherit llvm-r1 systemd cargo linux-info udev xdg desktop
 
