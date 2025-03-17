@@ -5,7 +5,7 @@ EAPI=7
 
 LIBRETRO_REPO_NAME="libretro/Play-"
 
-inherit libretro-core cmake
+inherit libretro-core cmake ninja-utils
 
 DESCRIPTION="Sony Playstation 2 libretro core"
 HOMEPAGE="https://github.com/libretro/Play-"
@@ -20,6 +20,11 @@ RDEPEND="${DEPEND}
 
 S=${S}/Source/ui_libretro
 
+src_prepare() {
+	sed -i -e '/include(Header)/d' CMakeLists.txt || die
+	cmake_src_prepare
+}
+
 src_configure(){
 	local mycmakeargs=(
 	-BUILD_LIBRETRO_CORE=ON
@@ -27,7 +32,14 @@ src_configure(){
 	-DBUILD_TESTS=no
 	-DENABLE_AMAZON_S3=no
 	-DCMAKE_BUILD_TYPE="Release"
-)
+	)
+	#cmake_src_configure
+	#eninja
 	# cmake_src_compile
+#	libretro-core_src_compile
+}
+
+src_compile() {
+#	#cmake_src_compile
 	libretro-core_src_compile
 }

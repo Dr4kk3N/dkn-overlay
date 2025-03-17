@@ -1,0 +1,67 @@
+diff --git a/libretro.cpp b/libretro.cpp
+index b68f62f69..0c1dc19fe 100644
+--- a/libretro.cpp
++++ b/libretro.cpp
+@@ -937,7 +937,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 			g_find_list_path.push_back(located_archive());
+ 			located_archive* located = &g_find_list_path.back();
+ 			located->path = path;
+-			located->ignoreCrc = false;
++			located->ignoreCrc = true;
+ 			ZipClose();
+ 			HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 		}
+@@ -956,7 +956,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 				g_find_list_path.push_back(located_archive());
+ 				located_archive* located = &g_find_list_path.back();
+ 				located->path = path;
+-				located->ignoreCrc = false;
++				located->ignoreCrc = true;
+ 				ZipClose();
+ 				HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 			}
+@@ -973,7 +973,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 			g_find_list_path.push_back(located_archive());
+ 			located_archive* located = &g_find_list_path.back();
+ 			located->path = path;
+-			located->ignoreCrc = false;
++			located->ignoreCrc = true;
+ 			ZipClose();
+ 			HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 		}
+@@ -992,7 +992,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 				g_find_list_path.push_back(located_archive());
+ 				located_archive* located = &g_find_list_path.back();
+ 				located->path = path;
+-				located->ignoreCrc = false;
++				located->ignoreCrc = true;
+ 				ZipClose();
+ 				HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 			}
+@@ -1009,7 +1009,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 			g_find_list_path.push_back(located_archive());
+ 			located_archive* located = &g_find_list_path.back();
+ 			located->path = path;
+-			located->ignoreCrc = false;
++			located->ignoreCrc = true;
+ 			ZipClose();
+ 			HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 		}
+@@ -1033,7 +1033,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 				g_find_list_path.push_back(located_archive());
+ 				located_archive* located = &g_find_list_path.back();
+ 				located->path = path;
+-				located->ignoreCrc = false;
++				located->ignoreCrc = true;
+ 				ZipClose();
+ 				HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 			}
+@@ -1052,7 +1052,7 @@ static void locate_archive(std::vector<located_archive>& pathList, const char* c
+ 					g_find_list_path.push_back(located_archive());
+ 					located_archive* located = &g_find_list_path.back();
+ 					located->path = path;
+-					located->ignoreCrc = false;
++					located->ignoreCrc = true;
+ 					ZipClose();
+ 					HandleMessage(RETRO_LOG_INFO, "[FBNeo] Romset found at %s\n", path);
+ 				}

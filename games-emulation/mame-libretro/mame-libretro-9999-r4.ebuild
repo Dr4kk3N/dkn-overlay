@@ -29,10 +29,14 @@ pkg_setup() {
 		check-reqs_pkg_setup
 }
 
+src_configure() {
+	myemakeargs=(
+	PTR64=1
+	)
+}
+
 src_compile() {
-		myemakeargs=(
-			PTR64=1
-		)
-		libretro-core_src_compile
+	emake -f Makefile.libretro
+#        #libretro-core_src_compile
 }
 
