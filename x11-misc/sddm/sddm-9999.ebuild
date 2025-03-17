@@ -39,10 +39,9 @@ COMMON_DEPEND="
 		sys-power/upower
 	)
 	systemd? ( sys-apps/systemd:=[pam] )
-	!systemd? ( sys-power/upower )
 "
 DEPEND="${COMMON_DEPEND}
-	test? ( >=dev-qt/qtbase-${QTMIN}:6[network,test] )
+	test? ( >=dev-qt/qtbase-${QTMIN}:6 )
 "
 RDEPEND="${COMMON_DEPEND}
 	X? ( x11-base/xorg-server )
@@ -59,7 +58,7 @@ BDEPEND="
 PATCHES=(
 	# Downstream patches
 	"${FILESDIR}/${PN}-0.20.0-respect-user-flags.patch"
-	"${FILESDIR}/${PN}-0.21.0-Xsession.patch" # bug 611210
+#	"${FILESDIR}/${PN}-0.21.0-Xsession.patch" # bug 611210
 )
 
 pkg_setup() {
