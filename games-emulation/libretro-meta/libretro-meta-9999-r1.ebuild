@@ -10,11 +10,11 @@ SLOT="0"
 IUSE="2048 3dengine 81 atari800 bk blastem bluemsx bnes boom3 bsnes bsnes-mercury cannonball cap32 chailove citra \
 	craft crocods desmume dinothawr dolphin dosbox dosbox-svn swanstation ecwolf fbalpha fbalpha2012 fbneo fceumm \
 	fceu-next ffmpeg flycast fmsx freechaf freeintv frodo fuse gambatte gearboy gearsystem genesis_plus_gx \
-	genesis_plus_gx_wide gme gong gpsp gw handy hatari lowresnx lutro mame hbmame mame2000 mame2003 mame2003_plus-libretro \
+	genesis_plus_gx_wide geolith gme gong gpsp gw handy hatari lowresnx lutro mame hbmame mame2000 mame2003 mame2003_plus-libretro \
 	mame2010 mame2015 mess2015 mednafen-bsnes mednafen-gba mednafen-lynx mednafen-ngp mednafen-pce \
 	mednafen-pce-fast mednafen-pcfx mednafen-psx mednafen-psx-hw mednafen-saturn mednafen-supafaust \
 	mednafen-supergrafx mednafen-vb mednafen-wswan melonds meowpc98 mesen mesens meteor mgba mrboom mu mupen64 \
-	np2kai neocd nestopia nxengine o2em oberon opera openlara parallel_n64 pcsx-rearmed picodrive pocketcdg \
+	np2kai neocd nestopia nxengine o2em oberon opera openlara parallel_n64 pcsx-rearmed picodrive play pocketcdg \
 	pokemini potator ppsspp prboom prosystem puae puae2021 px68k quicknes quasi88 race retro8 reminiscence \
 	sameboy scummvm smsplus snes9x snes9x2002 snes9x2005 snes9x2010 squirreljme stella2014 tgbdual tic80 theodore \
 	thepowdertoy tyrquake uzem vba-next vbam vecx vemulator vice-x128 vice-x64 vice-x64sc vice-xcbm2 vice-xcbm5x0 \
@@ -63,6 +63,7 @@ RDEPEND="2048? ( games-emulation/libretro-twentyfortyeight )
 	gearsystem? ( games-emulation/gearsystem-libretro )
 	genesis_plus_gx? ( games-emulation/genesis_plus_gx-libretro )
 	genesis_plus_gx_wide? ( games-emulation/genesis_plus_gx_wide-libretro )
+	geolith? ( games-emulation/geolith-libretro )
 	gme? ( games-emulation/gme-libretro )
 	gong? ( games-emulation/gong-libretro )
 	gpsp? ( games-emulation/gpsp-libretro )
@@ -113,6 +114,7 @@ RDEPEND="2048? ( games-emulation/libretro-twentyfortyeight )
 	parallel_n64? ( games-emulation/parallel_n64-libretro )
 	pcsx-rearmed? ( games-emulation/pcsx-rearmed-libretro )
 	picodrive? ( games-emulation/picodrive-libretro )
+	play? ( games-emulation/play-libretro )
 	pocketcdg? ( games-emulation/pocketcdg-libretro )
 	pokemini? ( games-emulation/pokemini-libretro )
 	potator? ( games-emulation/potator-libretro )
