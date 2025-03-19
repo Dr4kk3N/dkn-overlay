@@ -39,4 +39,12 @@ RDEPEND=">=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 
 S="${WORKDIR}/turing-smart-screen-python-${PV}"
 
+src_install() {
+        insinto /opt/turing-smart-screen-python/
+        doins -r "${BUILD_DIR}"/.
+#        insopts -m0755
+
+#        use !test || rm "${ED}"/opt/${PN}/*_test || die
+}
+
 distutils_enable_tests pytest

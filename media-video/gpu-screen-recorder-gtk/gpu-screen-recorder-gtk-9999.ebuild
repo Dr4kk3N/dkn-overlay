@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit meson git-r3
+inherit git-r3 meson
 
 EGIT_REPO_URI="https://repo.dec05eba.com/gpu-screen-recorder-gtk"
 
@@ -13,9 +13,9 @@ LICENSE="GPL-3"
 SLOT="0"
 
 DEPEND="
-    x11-libs/gtk+:3
-    dev-libs/libayatana-appindicator
-    media-video/gpu-screen-recorder
+	x11-libs/gtk+:3
+	dev-libs/libayatana-appindicator
+	media-video/gpu-screen-recorder
 "
 RDEPEND="${DEPEND}"
 BDEPEND="${DEPEND}"
