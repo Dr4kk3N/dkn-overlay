@@ -35,7 +35,8 @@ RDEPEND=">=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/pyinstaller-6.12.0[${PYTHON_USEDEP}]
 	>=dev-python/pillow-1.11.0[${PYTHON_USEDEP}]
 	>=dev-python/numpy-2.2.3[${PYTHON_USEDEP}]
-	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]"
+	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]
+	>=dev-python/pmw-2.1.1[${PYTHON_USEDEP}]"
 
 S="${WORKDIR}/turing-smart-screen-python-${PV}"
 
