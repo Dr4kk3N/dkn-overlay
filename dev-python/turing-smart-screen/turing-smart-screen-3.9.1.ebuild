@@ -2,9 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{11..13} )
-#DISTUTILS_USE_PEP517=setuptools
-inherit python-r1 #distutils-r1 # pypi
+PYTHON_COMPAT=( python3_{11..12} )
+inherit python-r1
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
