@@ -39,6 +39,7 @@ RDEPEND="systemd? ( sys-apps/systemd:= )
 	>=dev-python/pillow-1.11.0[${PYTHON_USEDEP}]
 	>=dev-python/numpy-2.2.3[${PYTHON_USEDEP}]
 	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]
+	>=dev-python/gputil-1.0.4[${PYTHON_USEDEP}]
 "
 #	>=dev-python/pmw-2.1.1[${PYTHON_USEDEP}]"
 
