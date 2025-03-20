@@ -27,6 +27,7 @@ RESTRICT="!test? ( test )"
 
 RDEPEND="systemd? ( sys-apps/systemd:= )
 	>=dev-python/ping3-4.0.4[${PYTHON_USEDEP}]
+	>=dev-python/uptime-3.0.1[${PYTHON_USEDEP}]
 	>=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/pyyaml-6.0.2[${PYTHON_USEDEP}]
 	>=dev-python/psutil-7.0.0[${PYTHON_USEDEP}]
