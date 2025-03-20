@@ -3,8 +3,8 @@
 
 EAPI=8
 PYTHON_COMPAT=( python3_{11..13} )
-DISTUTILS_USE_PEP517=setuptools
-inherit distutils-r1 pypi
+#DISTUTILS_USE_PEP517=setuptools
+inherit python-r1 #distutils-r1 # pypi
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -26,6 +26,7 @@ IUSE="systemd test"
 RESTRICT="!test? ( test )"
 
 RDEPEND="systemd? ( sys-apps/systemd:= )
+	>=dev-python/ping3-4.0.4[${PYTHON_USEDEP}]
 	>=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/pyyaml-6.0.2[${PYTHON_USEDEP}]
 	>=dev-python/psutil-7.0.0[${PYTHON_USEDEP}]
@@ -51,7 +52,7 @@ src_install() {
 #       cp "${FILESDIR}/turing-smart-screen.confd" "${T}/turing-smart-screen" || die
 
         insinto /opt/turing-smart-screen-python/
-        doins -r "${BUILD_DIR}"/.
+        doins -r *
 #        insopts -m0755
 
 #        use !test || rm "${ED}"/opt/${PN}/*_test || die
@@ -75,4 +76,4 @@ pkg_postinst() {
 	ewarn ""
 }
 
-distutils_enable_tests pytest
+#distutils_enable_tests pytest
