@@ -1,23 +1,24 @@
 diff --git a/Cargo.lock b/Cargo.lock
-index fde45fc..7eb4af6 100644
+index df31171..9305bfe 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -2084,7 +2084,7 @@ checksum = "5aaeb2981e0606ca11d79718f8bb01164f1d6ed75080182d3abf017e6d244b6d"
+@@ -2191,7 +2191,7 @@ checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
  [[package]]
  name = "libdrm_amdgpu_sys"
- version = "0.7.7"
--source = "git+https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs#b5e3441c39ea680871a255c702addbf24c90118a"
-+source = "git+https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs#b7e28f61a249a52e9d7d3644d59fe0635127483e"
+ version = "0.8.4"
+-source = "git+https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs?rev=69196107b2a8ab8dabfd67265f004f16f146a308#69196107b2a8ab8dabfd67265f004f16f146a308"
++source = "git+https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs?rev=69196107b2a8ab8dabfd67265f004f16f146a308#69196107b2a8ab8dabfd67265f004f16f146a308"
  dependencies = [
   "libc",
- ]
+  "libloading",
 diff --git a/crates/libamdgpu_top/Cargo.toml b/crates/libamdgpu_top/Cargo.toml
-index 74bd9a7..22a87e1 100644
+index e1a5631..6888dc3 100644
 --- a/crates/libamdgpu_top/Cargo.toml
 +++ b/crates/libamdgpu_top/Cargo.toml
-@@ -11,4 +11,4 @@ authors.workspace = true
+@@ -16,5 +16,5 @@ libdrm_dynamic_loading = ["libdrm_amdgpu_sys/dynamic_loading"]
  
  [dependencies]
  anyhow = { version = "1.0" }
--libdrm_amdgpu_sys = { version = "0.7.7", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs" }
-+libdrm_amdgpu_sys = { version = "0.7.7", git = "https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs" }
+-libdrm_amdgpu_sys = { version = "0.8.4", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs", default-features = false, rev = "69196107b2a8ab8dabfd67265f004f16f146a308" }
++libdrm_amdgpu_sys = { version = "0.8.4", git = "https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs", default-features = false, rev = "69196107b2a8ab8dabfd67265f004f16f146a308" }
+ nix = { version = "0.29", default-features = false, features = [ "ioctl" ] }
