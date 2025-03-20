@@ -22,10 +22,11 @@ HOMEPAGE="https://github.com/mathoudebine/turing-smart-screen-python"
 
 LICENSE="MIT"
 SLOT="0"
-IUSE="test"
+IUSE="systemd test"
 RESTRICT="!test? ( test )"
 
-RDEPEND=">=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
+RDEPEND="systemd? ( sys-apps/systemd:= )
+	>=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/pyyaml-6.0.2[${PYTHON_USEDEP}]
 	>=dev-python/psutil-7.0.0[${PYTHON_USEDEP}]
 	>=dev-python/pystray-0.19.5[${PYTHON_USEDEP}]
@@ -35,17 +36,43 @@ RDEPEND=">=dev-python/pyserial-3.5-r2[${PYTHON_USEDEP}]
 	>=dev-python/pyinstaller-6.12.0[${PYTHON_USEDEP}]
 	>=dev-python/pillow-1.11.0[${PYTHON_USEDEP}]
 	>=dev-python/numpy-2.2.3[${PYTHON_USEDEP}]
-	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]"
+	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]
+"
 #	>=dev-python/pmw-2.1.1[${PYTHON_USEDEP}]"
 
 S="${WORKDIR}/turing-smart-screen-python-${PV}"
 
 src_install() {
+#	newinitd "${FILESDIR}/turing-smart-screen.initd" turing-smart-screen
+#        if use systemd; then
+#                systemd_newunit "${FILESDIR}/turing-smart-screen.service-1" turing-smart-screen.service
+#                systemd_install_serviced "${FILESDIR}/turing-smart-screen.service.conf"
+#        fi
+#       cp "${FILESDIR}/turing-smart-screen.confd" "${T}/turing-smart-screen" || die
+
         insinto /opt/turing-smart-screen-python/
         doins -r "${BUILD_DIR}"/.
 #        insopts -m0755
 
 #        use !test || rm "${ED}"/opt/${PN}/*_test || die
+}
+
+pkg_postinst() {
+	if use systemd; then
+		systemd_newunit "${FILESDIR}/turing-smart-screen.service-1" turing-smart-screen.service
+#                systemd_install_serviced "${FILESDIR}/turing-smart-screen.service.conf"
+        else
+		newinitd "${FILESDIR}/turing-smart-screen.initd" turing-smart-screen
+#       cp "${FILESDIR}/turing-smart-screen.confd" "${T}/turing-smart-screen" || die
+	fi
+
+	ewarn ""
+	ewarn "Configure your screen first:"
+	ewarn "python3 /opt/turing-smart-screen-python/configure.py"
+	ewarn "and launch service:"
+	ewarn "rc-service start turing-smart-screen"
+	ewarn "ou systemctl start turing-smart-screen.service"
+	ewarn ""
 }
 
 distutils_enable_tests pytest
