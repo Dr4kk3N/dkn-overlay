@@ -3,7 +3,7 @@
 
 EAPI=8
 PYTHON_COMPAT=( python3_{11..13} )
-inherit python-r1 systemd
+inherit python-r1 systemd optfeature
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -48,6 +48,7 @@ S="${WORKDIR}/turing-smart-screen-python-${PV}"
 src_install() {
         insinto /opt/turing-smart-screen-python
         #doins -r /opt/${PN}
+	doins -r *
         insopts -m0755
 }
 
