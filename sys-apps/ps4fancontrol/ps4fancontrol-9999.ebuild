@@ -3,7 +3,7 @@
 
 EAPI="8"
 
-inherit git-r3
+inherit git-r3 systemd
 
 DESCRIPTION="Hardware PS4 FAN control util"
 HOMEPAGE="https://github.com/Dr4kk3N/ps4fancontrol"
@@ -26,15 +26,15 @@ DEPEND="${RDEPEND}
 	>=x11-libs/xforms-1.2.4-r1"
 
 src_install() {
-	newinitd "${FILESDIR}/ps4fancontrol.initd" ps4fancontrol
 	if use systemd; then
-		systemd_newunit "${FILESDIR}/ps4fancontrol.service-1" ps4fancontrol.service
-		systemd_newunit "${FILESDIR}/ps4fancontrol-reset.service" ps4fancontrol-reset.service
-		systemd_install_serviced "${FILESDIR}/ps4fancontrol.service.conf"
+		systemd_newunit "${FILESDIR}"/ps4fancontrol.service-1 ps4fancontrol.service
+		systemd_newunit "${FILESDIR}"/ps4fancontrol-reset.service ps4fancontrol-reset.service
+		systemd_install_serviced "${FILESDIR}"/ps4fancontrol.service.conf
+	else
+		newconfd "${FILESDIR}"/ps4fancontrol.conf.d ps4fancontrol
+		newinitd "${FILESDIR}"/ps4fancontrol.initd ps4fancontrol
 	fi
-#	cp "${FILESDIR}/ps4fancontrol.confd" "${T}/ps4fancontrol" || die
 
 	into /
 	dosbin ps4fancontrol
-
 }

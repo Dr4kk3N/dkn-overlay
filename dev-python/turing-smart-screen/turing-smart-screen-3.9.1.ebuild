@@ -3,7 +3,7 @@
 
 EAPI=8
 PYTHON_COMPAT=( python3_{11..12} )
-inherit python-r1
+inherit python-r1 systemd
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -61,11 +61,11 @@ src_install() {
 
 pkg_postinst() {
 	if use systemd; then
-		systemd_newunit "${FILESDIR}/turing-smart-screen.service-1" turing-smart-screen.service
-#                systemd_install_serviced "${FILESDIR}/turing-smart-screen.service.conf"
+		systemd_newunit "${FILESDIR}"/turing-smart-screen.service-1 turing-smart-screen.service
+                systemd_install_serviced "${FILESDIR}"/turing-smart-screen.service.conf
         else
-		newinitd "${FILESDIR}/turing-smart-screen.initd" turing-smart-screen
-#       cp "${FILESDIR}/turing-smart-screen.confd" "${T}/turing-smart-screen" || die
+		newconfd "${FILESDIR}"/turing-smart-screen.conf.d turing-smart-screen
+		newinitd "${FILESDIR}"/turing-smart-screen.initd turing-smart-screen
 	fi
 
 	ewarn ""
