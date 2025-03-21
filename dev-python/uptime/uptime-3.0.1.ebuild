@@ -16,8 +16,3 @@ LICENSE="LGPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="test"
-
-#RDEPEND="
-#	dev-python/pillow[${PYTHON_USEDEP}]
-#	dev-python/six[${PYTHON_USEDEP}]
-#"

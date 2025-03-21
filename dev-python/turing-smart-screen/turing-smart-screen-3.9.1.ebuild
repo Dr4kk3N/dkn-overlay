@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{11..12} )
+PYTHON_COMPAT=( python3_{11..13} )
 inherit python-r1 systemd
 
 if [[ ${PV} == 9999 ]]; then
@@ -39,24 +39,16 @@ RDEPEND="systemd? ( sys-apps/systemd:= )
 	>=dev-python/numpy-2.2.3[${PYTHON_USEDEP}]
 	>=dev-python/pyamdgpuinfo-2.1.6[${PYTHON_USEDEP}]
 	>=dev-python/gputil-1.0.4[${PYTHON_USEDEP}]
+	>=dev-python/sv-ttk-2.6.0[${PYTHON_USEDEP}]
 "
 #	>=dev-python/pmw-2.1.1[${PYTHON_USEDEP}]"
 
 S="${WORKDIR}/turing-smart-screen-python-${PV}"
 
 src_install() {
-#	newinitd "${FILESDIR}/turing-smart-screen.initd" turing-smart-screen
-#        if use systemd; then
-#                systemd_newunit "${FILESDIR}/turing-smart-screen.service-1" turing-smart-screen.service
-#                systemd_install_serviced "${FILESDIR}/turing-smart-screen.service.conf"
-#        fi
-#       cp "${FILESDIR}/turing-smart-screen.confd" "${T}/turing-smart-screen" || die
-
-        insinto /opt/turing-smart-screen-python/
-        doins -r *
-#        insopts -m0755
-
-#        use !test || rm "${ED}"/opt/${PN}/*_test || die
+        insinto /opt/turing-smart-screen-python
+        doins -r "${BUILD_DIR}"/.
+        insopts -m0755
 }
 
 pkg_postinst() {
@@ -76,5 +68,3 @@ pkg_postinst() {
 	ewarn "ou systemctl start turing-smart-screen.service"
 	ewarn ""
 }
-
-#distutils_enable_tests pytest
