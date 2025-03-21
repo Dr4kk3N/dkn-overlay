@@ -27,7 +27,7 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	if use systemd; then
-		systemd_newunit "${FILESDIR}"/ps4fancontrol.service-1 ps4fancontrol.service
+		systemd_newunit "${FILESDIR}"/ps4fancontrol.service ps4fancontrol.service
 		systemd_newunit "${FILESDIR}"/ps4fancontrol-reset.service ps4fancontrol-reset.service
 		systemd_install_serviced "${FILESDIR}"/ps4fancontrol.service.conf
 	else
