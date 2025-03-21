@@ -6,7 +6,6 @@ After=network-online.target
 [Service]
 Type=simple
 
-; Don't forget to change the value here!
 ; There is no reason to run this program as root, just use your username
 User=user
 

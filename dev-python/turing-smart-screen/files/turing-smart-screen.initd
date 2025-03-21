@@ -38,10 +38,3 @@ depend() {
 	need net
 	use avahi-daemon ypbind
 }
-
-#command="${DISTCCD_EXEC:-usr/bin/distccd}"
-#command_args="--user distcc --daemon --no-detach ${DISTCCD_OPTS}"
-#command_background="true"
-#pidfile="/run/${RC_SVCNAME}.pid"
-#
-#export TMPDIR="${TMPDIR:-/tmp}"
