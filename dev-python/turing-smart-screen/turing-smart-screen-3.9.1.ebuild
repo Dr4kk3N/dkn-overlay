@@ -53,7 +53,7 @@ src_install() {
 
 pkg_postinst() {
 	if use systemd; then
-		systemd_newunit "${FILESDIR}"/turing-smart-screen.service-1 turing-smart-screen.service
+		systemd_newunit "${FILESDIR}"/turing-smart-screen.service turing-smart-screen.service
                 systemd_install_serviced "${FILESDIR}"/turing-smart-screen.service.conf
         else
 		newconfd "${FILESDIR}"/turing-smart-screen.conf.d turing-smart-screen
