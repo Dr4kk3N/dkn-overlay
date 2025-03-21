@@ -50,17 +50,16 @@ src_install() {
         #doins -r /opt/${PN}
 	doins -r *
         insopts -m0755
+	if use systemd; then
+                systemd_newunit "${FILESDIR}"/turing-smart-screen.service turing-smart-screen.service
+                systemd_install_serviced "${FILESDIR}"/turing-smart-screen.service.conf
+        else
+                newconfd "${FILESDIR}"/turing-smart-screen.conf.d turing-smart-screen
+                newinitd "${FILESDIR}"/turing-smart-screen.initd turing-smart-screen
+        fi
 }
 
 pkg_postinst() {
-	if use systemd; then
-		systemd_newunit "${FILESDIR}"/turing-smart-screen.service turing-smart-screen.service
-                systemd_install_serviced "${FILESDIR}"/turing-smart-screen.service.conf
-        else
-		newconfd "${FILESDIR}"/turing-smart-screen.conf.d turing-smart-screen
-		newinitd "${FILESDIR}"/turing-smart-screen.initd turing-smart-screen
-	fi
-
 	ewarn ""
 	ewarn "Configure your screen first:"
 	ewarn "python3 /opt/turing-smart-screen-python/configure.py"
