@@ -16,3 +16,5 @@ LICENSE="LGPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="test"
+
+S="${WORKDIR}/sv_ttk-${PV}"
