@@ -47,7 +47,7 @@ S="${WORKDIR}/turing-smart-screen-python-${PV}"
 
 src_install() {
         insinto /opt/turing-smart-screen-python
-        doins -r "${BUILD_DIR}"/.
+        #doins -r /opt/${PN}
         insopts -m0755
 }
 
