@@ -4,11 +4,21 @@
 EAPI=7
 
 LIBRETRO_REPO_NAME="libretro/mame"
-inherit git-r3 check-reqs libretro-core
+inherit check-reqs #libretro-core
+
+if [[ ${PV} == 9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/libretro/mame.git"
+else
+	SRC_URI="
+		https://github.com/libretro/mame.git/archive/refs/tags/v${PV}.tar.gz
+			-> ${P}.tar.gz
+	"
+	KEYWORDS="-* ~amd64"
+fi
 
 DESCRIPTION="MAME (current) for libretro."
 HOMEPAGE="https://github.com/libretro/mame"
-KEYWORDS="~amd64 ~x86"
 
 LICENSE="MAME-GPL"
 SLOT="0"
@@ -40,3 +50,7 @@ src_compile() {
 #        #libretro-core_src_compile
 }
 
+src_install() {
+	insinto "/usr/lib64/libretro"
+	doins "/usr/lib64/libretro"
+}
