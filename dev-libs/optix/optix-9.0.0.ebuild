@@ -24,9 +24,15 @@ pkg_nofetch() {
 	einfo "and move it to your distfiles directory."
 }
 
+#src_unpack() {
+#	tail -n +226 "${DISTDIR}"/${A} | tar -zx
+#	assert "unpacking ${A} failed"
+#}
+
 src_unpack() {
-	tail -n +226 "${DISTDIR}"/${A} | tar -zx
-	assert "unpacking ${A} failed"
+	if [[ -n ${A} ]]; then
+		unpack ${A}
+	fi
 }
 
 src_install() {
