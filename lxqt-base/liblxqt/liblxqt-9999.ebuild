@@ -22,7 +22,7 @@ IUSE="+backlight"
 
 BDEPEND="
 	>=dev-qt/qttools-6.6:6[linguist]
-	>=dev-util/lxqt-build-tools-2.0.0
+	>=dev-util/lxqt-build-tools-2.1.0
 "
 DEPEND="
 	>=dev-libs/libqtxdg-4.0.0
@@ -30,7 +30,7 @@ DEPEND="
 	kde-frameworks/kwindowsystem:6[X]
 	x11-libs/libX11
 	x11-libs/libXScrnSaver
-	backlight? ( sys-auth/polkit-qt[qt6] )
+	backlight? ( >=sys-auth/polkit-qt-0.200.0[qt6] )
 "
 RDEPEND="${DEPEND}"
 
