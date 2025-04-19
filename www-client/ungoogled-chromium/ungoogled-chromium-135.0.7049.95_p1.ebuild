@@ -1,4 +1,4 @@
-# Copyright 2009-2024 Gentoo Authors
+# Copyright 2009-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -35,9 +35,9 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
-IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless hevc kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
+IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
 	!system-ffmpeg? ( proprietary-codecs? ( bindist ) )
 	!system-openh264? ( bindist )
@@ -52,26 +52,22 @@ REQUIRED_USE="
 	debug? ( !official )
 	screencast? ( wayland )
 	!headless? ( || ( X wayland ) )
-	!proprietary-codecs? ( !hevc )
-	hevc? ( system-ffmpeg )
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="2d603520e2c1aaf8786eea60fde60311587235ca"
+#UGC_COMMIT_ID="d4bff63612f2e9b0ca11b2f03f9bc4d7b06fa426"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="f13b33b73e22ecaa1ae9a567a8e0c74caf446678"
+CROMITE_COMMIT_ID="0ffdb845a6a3308cbd9826bb78269d1d05cfb8aa"
 
 declare -A CHROMIUM_COMMITS=(
 	["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
 	["-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e"]="."
-	["63c33ef8035608d31b3f44841df70b30925e3073"]="." # 135+
-	["1e7508ce083f6c7e43011f899faf10537a6379e2"]="." # 135+
-	["5edd4972ff364d7bad465925249a7184e36c3226"]="." # 135+
-	["4ca8cffec2e6dea43de24a6a9d88095b73ab10f4"]="." # 135+
+	["-49b23faa16ad14e96601aea8772c7279fcbd6b44"]="."
+	["-be0c460cbca7b0c927e44a529b8489c6d50ea463"]="."
 )
 
 UGC_PV="${PV/_p/-}"
@@ -179,6 +175,7 @@ COMMON_SNAPSHOT_DEPEND="
 		>=media-libs/libaom-3.7.0:=
 	)
 	sys-libs/zlib:=
+	>=media-libs/libavif-1.2.0:=
 	!headless? (
 		dev-libs/glib:2
 		>=media-libs/alsa-lib-1.0.19:=
@@ -220,7 +217,7 @@ COMMON_DEPEND="
 	app-arch/bzip2:=
 	dev-libs/expat:=
 	system-ffmpeg? (
-		>=media-video/ffmpeg-4.3:=
+		>=media-video/ffmpeg-6.1:=
 		|| (
 			media-video/ffmpeg[-samba]
 			>=net-fs/samba-4.5.10-r1[-debug(-)]
@@ -463,9 +460,9 @@ src_prepare() {
 		"${FILESDIR}/chromium-109-system-zlib.patch"
 		"${FILESDIR}/chromium-111-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
-		"${FILESDIR}/chromium-134-map_droppable-glibc.patch"
-		"${FILESDIR}/chromium-134-oauth2-client-switches.patch"
-		"${FILESDIR}/chromium-135-fix-non-wayland-build.patch"
+		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
+		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
+		"${FILESDIR}/chromium-135-webrtc-pipewire.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
@@ -474,11 +471,11 @@ src_prepare() {
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
 		"${FILESDIR}/chromium-132-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
-		"${FILESDIR}/chromium-132-no-rust.patch"
 		"${FILESDIR}/chromium-132-optional-lens.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
-		"${FILESDIR}/chromium-134-fontations.patch"
-		"${FILESDIR}/chromium-134-crabby.patch"
+		"${FILESDIR}/chromium-135-no-rust.patch"
+		"${FILESDIR}/chromium-135-fontations.patch"
+		"${FILESDIR}/chromium-135-crabby.patch"
 	)
 
 	shopt -s globstar nullglob
@@ -520,16 +517,15 @@ src_prepare() {
 	fi
 
 	ewarn
-	ewarn "Following features are disabled:"
-	ewarn " - Fontations Rust font stack"
-	ewarn " - Crabby Avif parser/decoder implementation in Rust"
+	ewarn "Fontations Rust font stack is disabled"
+	ewarn "Using media-libs/libavif instead of CrabbyAvif"
 	ewarn
 
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-134-libstdc++.patch"
+			"${FILESDIR}/chromium-135-libstdc++.patch"
 			"${FILESDIR}/chromium-134-stdatomic.patch"
-			"${FILESDIR}/font-gc-r4.patch"
+			"${FILESDIR}/font-gc-asan.patch"
 		)
 	fi
 
@@ -568,7 +564,7 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r2.patch"
+			"${FILESDIR}/disable-bluez-r3.patch"
 		)
 	fi
 
@@ -580,7 +576,8 @@ src_prepare() {
 
 	if use system-ffmpeg; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-99-opus.patch"
+			"${FILESDIR}/chromium-135-opus.patch"
+			"${FILESDIR}/chromium-135-hevc.patch"
 		)
 		sed -i "\!AVFMT_FLAG_NOH264PARSE!d" media/filters/ffmpeg_glue.cc || die
 		ewarn "You need to expose \"av_stream_get_first_dts\" in ffmpeg via user patch"
@@ -682,11 +679,6 @@ src_prepare() {
 		build/linux/unbundle/replace_gn_files.py || die
 	sed -i '/^.*deps.*third_party\/jsoncpp.*$/{s++public_deps \+= [ "//third_party/jsoncpp" ]+;h};${x;/./{x;q0};x;q1}' \
 		third_party/webrtc/rtc_base/BUILD.gn || die
-
-	if use hevc; then
-		sed -i '/^bool IsDecoderHevcProfileSupported(const VideoType& type) {$/{s++bool IsDecoderHevcProfileSupported(const VideoType\& type) { return true;+;h};${x;/./{x;q0};x;q1}' \
-			media/base/supported_types.cc || die
-	fi
 
 	if use override-data-dir; then
 		sed -i '/"chromium";/{s++"ungoogled-chromium";+;h};${x;/./{x;q0};x;q1}' \
@@ -925,7 +917,6 @@ src_prepare() {
 		third_party/googletest
 		third_party/highway
 		third_party/hunspell
-		third_party/iccjpeg
 		third_party/ink_stroke_modeler/src/ink_stroke_modeler
 		third_party/ink_stroke_modeler/src/ink_stroke_modeler/internal
 		third_party/ink/src/ink/brush
@@ -1019,6 +1010,7 @@ src_prepare() {
 		third_party/private_membership
 		third_party/private-join-and-compute
 		third_party/protobuf
+		third_party/protobuf/third_party/utf8_range
 		third_party/pthreadpool
 		third_party/puffin
 		third_party/pyjson5
@@ -1455,6 +1447,7 @@ src_configure() {
 		myconf_gn+=" use_custom_libcxx=true"
 	else
 		myconf_gn+=" use_custom_libcxx=false"
+		append-cppflags -U_GLIBCXX_ASSERTIONS #See #318
 	fi
 
 	myconf_gn+=" use_bluez=$(usex bluetooth true false)"
@@ -1479,8 +1472,6 @@ src_configure() {
 	myconf_gn+=" enable_pdf=true"
 	myconf_gn+=" use_system_lcms2=true"
 	myconf_gn+=" enable_print_preview=true"
-	myconf_gn+=" enable_platform_hevc=$(usex hevc true false)"
-	myconf_gn+=" enable_hevc_parser_and_hw_decoder=$(usex hevc true false)"
 
 	# Ungoogled flags
 	myconf_gn+=" build_with_tflite_lib=false"
@@ -1767,7 +1758,7 @@ src_compile() {
 
 	pax-mark m out/Release/chrome
 
-	use enable-driver && mv out/Release/chromedriver{.unstripped,}
+	use enable-driver && mv out/Release/chromedriver
 
 	rm -f out/Release/locales/*.pak.info || die
 
