@@ -1,51 +1,38 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
-inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils desktop
+PYTHON_COMPAT=( python3_{10..13} python3_13t )
+inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
 
-MY_PN="VMware-Player-Full"
+MY_PN="VMware-Workstation"
 MY_PV=$(ver_cut 1-3)
 PV_MODULES="${MY_PV}"
 PV_BUILD=$(ver_cut 4)
 MY_P="${MY_PN}-${MY_PV}-${PV_BUILD}"
-#VMWARE_FUSION_VER="12.1.2/17964953" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
-VMWARE_FUSION_VER="13.0.2"
-FUSION_BUILD="21581413"
-MY_VMWARE_FUSION_VER="${VMWARE_FUSION_VER}-${FUSION_BUILD}}"
 SYSTEMD_UNITS_TAG="gentoo-02"
 UNLOCKER_VERSION="3.0.5"
 
 DESCRIPTION="Emulate a complete PC without the performance overhead of most emulators"
-HOMEPAGE="http://www.vmware.com/products/workstation-player/"
+HOMEPAGE="http://www.vmware.com/products/workstation/"
 SRC_URI="
-	https://download3.vmware.com/software/WKST-PLAYER-${MY_PV//./}/${MY_P}.x86_64.bundle
+	${MY_PN}-Full-${MY_PV}-${PV_BUILD}.x86_64.bundle
 	macos-guests? (
-		https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
-		vmware-tools-darwinPre15? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/${FUSION_BUILD}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${MY_VMWARE_FUSION_VER}.zip.tar )
-		vmware-tools-darwin? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/${FUSION_BUILD}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${MY_VMWARE_FUSION_VER}.zip.tar )
+		fetch+https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
 	)
-	systemd? ( https://github.com/akhuettel/systemd-vmware/archive/${SYSTEMD_UNITS_TAG}.tar.gz -> vmware-systemd-${SYSTEMD_UNITS_TAG}.tgz )
+	systemd? ( fetch+https://github.com/akhuettel/systemd-vmware/archive/${SYSTEMD_UNITS_TAG}.tar.gz -> vmware-systemd-${SYSTEMD_UNITS_TAG}.tgz )
 	"
+S=${WORKDIR}/extracted
 
 LICENSE="GPL-2 GPL-3 MIT-with-advertising vmware"
 SLOT="0"
-KEYWORDS="-* ~amd64"
+KEYWORDS="~amd64"
 # the kernel modules are optional because they're not needed to connect to VMs
 # running on remote systems - https://bugs.gentoo.org/604426
-IUSE="cups doc macos-guests +modules ovftool systemd"
-DARWIN_GUESTS="darwin darwinPre15"
-IUSE_VMWARE_GUESTS="${DARWIN_GUESTS} linux linuxPreGlibc25 netware solaris windows winPre2k winPreVista"
-for guest in ${IUSE_VMWARE_GUESTS}; do
-	IUSE+=" vmware-tools-${guest}"
-done
-REQUIRED_USE="
-	vmware-tools-darwin? ( macos-guests )
-	vmware-tools-darwinPre15? ( macos-guests )
-"
-RESTRICT="mirror preserve-libs strip"
+IUSE="doc macos-guests +modules ovftool systemd vix"
+
+RESTRICT="mirror preserve-libs strip fetch"
 
 RDEPEND="
 	app-arch/bzip2
@@ -65,19 +52,17 @@ RDEPEND="
 	media-plugins/alsa-plugins[speex]
 	net-dns/libidn
 	net-libs/gnutls
-	cups? ( net-print/cups )
 	sys-apps/tcp-wrappers
 	sys-apps/util-linux
 	sys-auth/polkit
 	virtual/libcrypt:*
+	x11-libs/libXinerama
 	x11-libs/libXxf86vm
 	x11-libs/libdrm
 	x11-libs/libxshmfence
 	x11-libs/startup-notification
 	x11-libs/xcb-util
 	x11-themes/hicolor-icon-theme
-	!app-emulation/vmware-workstation
-	!app-emulation/vmware-tools
 "
 DEPEND="
 	${PYTHON_DEPS}
@@ -88,7 +73,6 @@ BDEPEND="
 	app-admin/chrpath
 "
 
-S=${WORKDIR}/extracted
 VM_INSTALL_DIR="/opt/vmware"
 
 QA_PREBUILT="/opt/*"
@@ -96,7 +80,15 @@ QA_PREBUILT="/opt/*"
 QA_WX_LOAD="opt/vmware/lib/vmware/tools-upgraders/vmware-tools-upgrader-32 opt/vmware/lib/vmware/bin/vmware-vmx-stats opt/vmware/lib/vmware/bin/vmware-vmx-debug opt/vmware/lib/vmware/bin/vmware-vmx"
 # adding "opt/vmware/lib/vmware/lib/libvmware-gksu.so/libvmware-gksu.so" to QA_WX_LOAD doesn't work
 
+pkg_nofetch() {
+	einfo "${MY_PN}-Full-${MY_PV}-${PV_BUILD}.x86_64.bundle should be downloaded manually"
+}
+
 src_unpack() {
+	if has usersandbox ${FEATURES}; then
+		ewarn "You are emerging ${P} with 'usersandbox' enabled." \
+			"If unpacking fails, try emerging with 'FEATURES=-usersandbox'!"
+	fi
 
 	for a in ${A}; do
 		if [ ${a##*.} == 'bundle' ]; then
@@ -107,24 +99,13 @@ src_unpack() {
 	done
 
 	export LC_ALL=C # https://communities.vmware.com/thread/618570?start=15&tstart=0
-	local bundle="${MY_P}.x86_64.bundle"
+	local bundle="${MY_PN}-Full-${MY_PV}-${PV_BUILD}.x86_64.bundle"
 	chmod 755 "${bundle}"
 	# this needs a /tmp mounted without "noexec" because it extracts and executes scripts in there
 	./${bundle} --console --required --eulas-agreed --extract=extracted || die "unable to extract bundle"
 
-#	if ! use vix; then
-#		rm -r extracted/vmware-vix-core extracted/vmware-vix-lib-Workstation* || die "unable to remove dir"
-#	fi
-
-	if use vmware-tools-darwinPre15 || use vmware-tools-darwin; then
-		unzip -q com.vmware.fusion.zip || die
-		for guest in ${DARWIN_GUESTS}; do
-			if use vmware-tools-${guest}; then
-				mkdir extracted/vmware-tools-${guest}
-				mv "payload/VMware Fusion.app/Contents/Library/isoimages/${guest}.iso" extracted/vmware-tools-${guest}/ || die
-			fi
-		done
-		rm -rf __MACOSX payload manifest.plist preflight postflight com.vmware.fusion.zip
+	if ! use vix; then
+		rm -r extracted/vmware-vix-core extracted/vmware-vix-lib-Workstation* || die "unable to remove dir"
 	fi
 }
 
@@ -141,13 +122,6 @@ src_prepare() {
 		chrpath -d vmware-ovftool/libcurl.so.4
 	fi
 
-	if use macos-guests; then
-		sed -i -e "s#vmx_path = '/usr#vmx_path = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
-			-e "s#os\.path\.isfile('/usr#os.path.isfile('${ED}${VM_INSTALL_DIR//\//\\/}#" \
-			-e "s#vmwarebase = '/usr#vmwarebase = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
-			"${WORKDIR}"/unlocker-*/unlocker.py
-	fi
-
 	DOC_CONTENTS="
 /etc/env.d is updated during ${PN} installation. Please run:\n
 'env-update && source /etc/profile'\n
@@ -162,7 +136,7 @@ src_install() {
 
 	# revdep-rebuild entry
 	insinto /etc/revdep-rebuild
-	echo "SEARCH_DIRS_MASK=\"${VM_INSTALL_DIR}\"" >> ${T}/10${PN}
+	echo "SEARCH_DIRS_MASK=\"${VM_INSTALL_DIR}\"" >> "${T}/10${PN}"
 	doins "${T}"/10${PN}
 
 	# install the binaries
@@ -173,7 +147,7 @@ src_install() {
 	mv "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher.bin
 	cat > "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher <<-EOF
 		#!/usr/bin/env bash
-		export LD_LIBRARY_PATH="/opt/vmware/lib/vmware/lib/libssl.so.1.1:/opt/vmware/lib/vmware/lib/libcrypto.so.1.1"
+		export LD_LIBRARY_PATH="/opt/vmware/lib/vmware/lib/libssl.so.1.0.2:/opt/vmware/lib/vmware/lib/libcrypto.so.1.0.2"
 		"${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher.bin "\$@"
 	EOF
 	chmod 755 "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher
@@ -185,7 +159,7 @@ src_install() {
 
 	# install the installer
 	insinto "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}
-	doins -r vmware-installer/{cdsHelper,vmis,vmis-launcher,vmware-cds-helper,vmware-installer,vmware-installer.py,python}
+	doins -r vmware-installer/{cdsHelper,vmis,vmis-launcher,vmware-cds-helper,vmware-installer,vmware-installer.py,python,sopython}
 	chrpath -k -r '/../lib:$ORIGIN/../lib' "${ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/python/lib/lib-dynload/*.so >/dev/null || die
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/{vmis-launcher,cdsHelper,vmware-installer}
 	dosym "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/vmware-installer "${VM_INSTALL_DIR}"/bin/vmware-installer
@@ -194,23 +168,20 @@ src_install() {
 	sed -i \
 		-e "s/@@VERSION@@/${vmware_installer_version}/" \
 		-e "s,@@VMWARE_INSTALLER@@,${VM_INSTALL_DIR}/lib/vmware-installer/${vmware_installer_version}," \
-		"${ED}/etc/vmware-installer/bootstrap"
+		"${ED}/etc/vmware-installer/bootstrap" || die
+
+	# fix libxcb incompatibility
+	rm -rf "${ED}${VM_INSTALL_DIR}"/lib/vmware/lib/libxcb.so.1
+	rm -rf "${ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/cdsHelper/lib/libxcb.so.1
 
 	# install the ancillaries
 	insinto /usr
 	doins -r */share
 
-	if use cups; then
-		exeinto $(cups-config --serverbin)/filter
-		doexe */extras/thnucups
-
-		insinto /etc/cups
-		doins -r */etc/cups/*
-	fi
-
 	# Hardcoded EULA path. We need to disable the default compression.
-#	insinto /usr/share/doc/vmware-player
-	dodoc vmware-player/doc/EULA
+	insinto /usr/share/doc/vmware-workstation
+	doins vmware-workstation/doc/EULA
+	docompress -x /usr/share/doc/vmware-workstation
 	# always needed
 	insinto /usr/lib/vmware-ovftool
 	doins vmware-ovftool/vmware.eula
@@ -230,25 +201,25 @@ src_install() {
 	newins vmware-vmx/etc/modprobe.d/modprobe-vmware-fuse.conf vmware-fuse.conf
 
 	# install vmware-vix
-#	if use vix; then
-#		# install the binary
-#		into "${VM_INSTALL_DIR}"
-#		dobin "$S"/vmware-vix-*/bin/*
-#
-#		# install the libraries
-#		insinto "${VM_INSTALL_DIR}"/lib/vmware-vix
-#		doins -r "$S"/vmware-vix-*/lib/*
-#
-#		dosym vmware-vix/libvixAllProducts.so "${VM_INSTALL_DIR}"/lib/libbvixAllProducts.so
-#
-#		# install headers
-#		insinto /usr/include/vmware-vix
-#		doins "$S"/vmware-vix-*/include/*
-#
-#		if use doc; then
-#			dodoc -r "$S"/vmware-vix-*/doc/*
-#		fi
-#	fi
+	if use vix; then
+		# install the binary
+		into "${VM_INSTALL_DIR}"
+		dobin "$S"/vmware-vix-*/bin/*
+
+		# install the libraries
+		insinto "${VM_INSTALL_DIR}"/lib/vmware-vix
+		doins -r "$S"/vmware-vix-*/lib/*
+
+		dosym vmware-vix/libvixAllProducts.so "${VM_INSTALL_DIR}"/lib/libbvixAllProducts.so
+
+		# install headers
+		insinto /usr/include/vmware-vix
+		doins "$S"/vmware-vix-*/include/*
+
+		if use doc; then
+			dodoc -r "$S"/vmware-vix-*/doc/*
+		fi
+	fi
 
 	# install ovftool
 	if use ovftool; then
@@ -258,7 +229,9 @@ src_install() {
 		doins -r *
 
 		chmod 0755 "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/{ovftool,ovftool.bin}
-		sed -i 's/readlink/readlink -f/' "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/ovftool
+		sed -i \
+			-e 's/readlink/readlink -f/' \
+			"${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/ovftool || die
 		dosym ../lib/vmware-ovftool/ovftool "${VM_INSTALL_DIR}"/bin/ovftool
 
 		cd - >/dev/null
@@ -277,16 +250,19 @@ src_install() {
 	dosym "${VM_INSTALL_DIR}"/lib/vmware/icu /etc/vmware/icu
 
 	# fix permissions
-	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/bin/{appLoader,fusermount,mkisofs,vmware-remotemks}
+
+	# (we can't use "fperms" here, because globbing is done before the "${ED}"
+	# prefix is added to the path and this will obviously fail the first time
+	# the package is installed)
+	chmod 0755 "${ED}${VM_INSTALL_DIR}"/lib/vmware/bin/*
+
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/setup/vmware-config
 	fperms 4711 "${VM_INSTALL_DIR}"/lib/vmware/bin/vmware-vmx{,-debug,-stats}
-	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/bin/mksSandbox{,-debug,-stats}
-	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/bin/tpm2emu
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/lib/libvmware-gksu.so/gksu-run-helper
 	fperms 4711 "${VM_INSTALL_DIR}"/sbin/vmware-authd
-#	if use vix; then
-#		fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware-vix/setup/vmware-config
-#	fi
+	if use vix; then
+		fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware-vix/setup/vmware-config
+	fi
 
 	# create the environment
 	local envd="${T}/90vmware"
@@ -321,7 +297,7 @@ src_install() {
 		player.product.version = "${MY_PV}"
 		product.buildNumber = "${PV_BUILD}"
 		product.version = "${MY_PV}"
-		product.name = "VMware Player"
+		product.name = "VMware Workstation"
 		workstation.product.version = "${MY_PV}"
 		vmware.fullpath = "${VM_INSTALL_DIR}/bin/vmware"
 		installerDefaults.componentDownloadEnabled = "no"
@@ -334,31 +310,38 @@ src_install() {
 		acceptOVFEULA = "yes"
 	EOF
 
-#	if use vix; then
-#		cat >> "${ED}"/etc/vmware/config <<-EOF
-#			vix.libdir = "${VM_INSTALL_DIR}/lib/vmware-vix"
-#			vix.config.version = "1"
-#		EOF
-#	fi
+	if use vix; then
+		cat >> "${ED}"/etc/vmware/config <<-EOF
+			vix.libdir = "${VM_INSTALL_DIR}/lib/vmware-vix"
+			vix.config.version = "1"
+		EOF
+	fi
 
 	if use modules; then
 		# install the init.d script
 		local initscript="${T}/vmware.rc"
-		sed -e "s:@@BINDIR@@:${VM_INSTALL_DIR}/bin:g" \
-			"${FILESDIR}/vmware-16.1.rc" > "${initscript}" || die
+		sed \
+			-e "s:@@BINDIR@@:${VM_INSTALL_DIR}/bin:g" \
+			"${FILESDIR}/vmware.rc" > "${initscript}" || die
 		newinitd "${initscript}" vmware
 	fi
 
 	# fill in variable placeholders
-	sed -e "s:@@LIBCONF_DIR@@:${VM_INSTALL_DIR}/lib/vmware/libconf:g" \
-		-i "${ED}${VM_INSTALL_DIR}"/lib/vmware/libconf/etc/gtk-3.0/gdk-pixbuf.loaders || die
-	domenu vmware-player-app/share/applications/vmware-player.desktop
-	sed -e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmplayer:g" \
+	sed -i \
+		-e "s:@@LIBCONF_DIR@@:${VM_INSTALL_DIR}/lib/vmware/libconf:g" \
+		"${ED}${VM_INSTALL_DIR}"/lib/vmware/libconf/etc/gtk-3.0/gdk-pixbuf.loaders || die
+	sed -i \
+		-e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmplayer:g" \
 		-e "/^Encoding/d" \
-		-i "${ED}/usr/share/applications/vmware-player.desktop" || die
-#	sed -e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmware-netcfg:g" \
-#		-e "/^Encoding/d" \
-#		-i "${ED}/usr/share/applications/vmware-netcfg.desktop" || die
+		"${ED}/usr/share/applications/vmware-player.desktop" || die
+	sed -i \
+		-e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmware:g" \
+		-e "/^Encoding/d" \
+		"${ED}/usr/share/applications/vmware-workstation.desktop" || die
+	sed -i \
+		-e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmware-netcfg:g" \
+		-e "/^Encoding/d" \
+		"${ED}/usr/share/applications/vmware-netcfg.desktop" || die
 
 	# install systemd unit files
 	if use systemd; then
@@ -367,12 +350,17 @@ src_install() {
 
 	# enable macOS guests support
 	if use macos-guests; then
+		sed -i \
+			-e "s#vmx_path = '/usr#vmx_path = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
+			-e "s#os\.path\.isfile('/usr#os.path.isfile('${ED}${VM_INSTALL_DIR//\//\\/}#" \
+			-e "s#vmwarebase = '/usr#vmwarebase = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
+			"${WORKDIR}"/unlocker-*/unlocker.py || die
+
 		python3 "${WORKDIR}"/unlocker-*/unlocker.py >/dev/null || die "unlocker.py failed"
 	fi
 
 	# VMware tools
-	for guest in ${IUSE_VMWARE_GUESTS}; do
-		if use vmware-tools-${guest}; then
+	for guest in windows windows-x86; do
 			local dbfile="${ED}/etc/vmware-installer/database"
 			if ! [ -e "${dbfile}" ]; then
 				> "${dbfile}"
@@ -383,13 +371,19 @@ src_install() {
 			local manifest="vmware-tools-${guest}/manifest.xml"
 			if [ -e "${manifest}" ]; then
 				local version="$(grep -oPm1 '(?<=<version>)[^<]+' ${manifest})"
-				sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES(\"vmware-tools-$guest\",\"$version\",\"${PV_BUILD}\",1,\"$guest\",\"$guest\",1);"
+				sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${version}','${PV_BUILD}',1,'${guest}','${guest}',1);"
 			else
-				sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES(\"vmware-tools-$guest\",\"${VMWARE_FUSION_VER%/*}\",\"${VMWARE_FUSION_VER#*/}\",1,\"$guest\",\"$guest\",1);"
+				if [[ "${guest}" =~ "darwin" ]]; then
+					sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${VMWARE_FUSION_VER%/*}','${VMWARE_FUSION_VER#*/}',1,'${guest}','${guest}',1);"
+				else
+					sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${VMWARE_TOOLS_VER%-*}','${VMWARE_TOOLS_VER#*-}',1,'${guest}','${guest}',1);"
+				fi
 			fi
+
 			insinto "${VM_INSTALL_DIR}/lib/vmware/isoimages"
-			doins vmware-tools-${guest}/${guest}.iso
-		fi
+			if [[ -e "vmware-tools-${guest}/${guest}.iso" ]]; then
+				doins "vmware-tools-${guest}/${guest}.iso"
+			fi
 	done
 
 	# metadata
@@ -408,7 +402,6 @@ pkg_postinst() {
 	xdg_mimeinfo_database_update
 	xdg_icon_cache_update
 	elog "${DOC_CONTENTS}"
-	ewarn "This is a WIP ebuild, some things have changed since 16.x and may have broken"
 }
 
 pkg_postrm() {
