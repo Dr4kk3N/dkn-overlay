@@ -23,7 +23,7 @@ inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/ungoogled-software/ungoogled-chromium"
-PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
+PPC64_HASH="2c25ddd2bbabaef094918fe15eb5de524d16949c"
 LITE_TARBALL=1
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz
 	ppc64? (
@@ -35,7 +35,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -55,19 +55,20 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="d4bff63612f2e9b0ca11b2f03f9bc4d7b06fa426"
+UGC_COMMIT_ID="87bb243619c37600f637bc129f5516944a4263d2"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="0ffdb845a6a3308cbd9826bb78269d1d05cfb8aa"
+CROMITE_COMMIT_ID="555f445aa033f78991d2df3544fd44b1de0f4340"
 
-declare -A CHROMIUM_COMMITS=(
-	["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
-	["-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e"]="."
-	["-49b23faa16ad14e96601aea8772c7279fcbd6b44"]="."
-	["-be0c460cbca7b0c927e44a529b8489c6d50ea463"]="."
+CHROMIUM_COMMITS=(
+	-da443d7bd3777a5dd0587ecff1fbad1722b106b5
+	-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e
+	-49b23faa16ad14e96601aea8772c7279fcbd6b44
+	-6db9674ad4375d40db7df622652287ccdae82f24
+	-be0c460cbca7b0c927e44a529b8489c6d50ea463
 )
 
 UGC_PV="${PV/_p/-}"
@@ -93,33 +94,34 @@ if [ ! -z "${UGC_PR_COMMITS[*]}" ]; then
 fi
 
 if [ ! -z "${CHROMIUM_COMMITS[*]}" ]; then
-	for i in "${!CHROMIUM_COMMITS[@]}"; do
-		if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
-		#TODO: is it safe to use this mirror?
-		SRC_URI+="https://github.com/webrtc-mirror/webrtc/commit/${i/-}.patch?full_index=true -> webrtc-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
-		SRC_URI+="https://github.com/google/angle/commit/${i/-}.patch?full_index=true -> angle-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
-		SRC_URI+="https://github.com/google/quiche/commit/${i/-}.patch?full_index=true -> quiche-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
-		SRC_URI+="https://github.com/google/dawn/commit/${i/-}.patch?full_index=true -> dawn-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
-		SRC_URI+="https://github.com/google/ink/commit/${i/-}.patch?full_index=true -> ink-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
-		SRC_URI+="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/commit/${i/-}.patch?full_index=true -> vulkan-utility-libraries-${i/-}.patch
-		"
-		elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
-		SRC_URI+="https://github.com/google/ruy/commit/${i/-}.patch?full_index=true -> ruy-${i/-}.patch
-		"
-		else
+	for i in "${CHROMIUM_COMMITS[@]}"; do
+	# for i in "${!CHROMIUM_COMMITS[@]}"; do
+		# if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
+		# #TODO: is it safe to use this mirror?
+		# SRC_URI+="https://github.com/webrtc-mirror/webrtc/commit/${i/-}.patch?full_index=true -> webrtc-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
+		# SRC_URI+="https://github.com/google/angle/commit/${i/-}.patch?full_index=true -> angle-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
+		# SRC_URI+="https://github.com/google/quiche/commit/${i/-}.patch?full_index=true -> quiche-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
+		# SRC_URI+="https://github.com/google/dawn/commit/${i/-}.patch?full_index=true -> dawn-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
+		# SRC_URI+="https://github.com/google/ink/commit/${i/-}.patch?full_index=true -> ink-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
+		# SRC_URI+="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/commit/${i/-}.patch?full_index=true -> vulkan-utility-libraries-${i/-}.patch
+		# "
+		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
+		# SRC_URI+="https://github.com/google/ruy/commit/${i/-}.patch?full_index=true -> ruy-${i/-}.patch
+		# "
+		# else
 		SRC_URI+="https://github.com/chromium/chromium/commit/${i/-}.patch?full_index=true -> chromium-${i/-}.patch
 		"
-		fi
+		# fi
 	done
 fi
 
@@ -530,25 +532,26 @@ src_prepare() {
 	fi
 
 	if [ ! -z "${CHROMIUM_COMMITS[*]}" ]; then
-		for i in "${!CHROMIUM_COMMITS[@]}"; do
-			if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
-				patch_prefix="webrtc"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
-				patch_prefix="angle"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
-				patch_prefix="quiche"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
-				patch_prefix="dawn"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
-				patch_prefix="ink"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
-				patch_prefix="vulkan-utility-libraries"
-			elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
-				patch_prefix="ruy"
-			else
+		for i in "${CHROMIUM_COMMITS[@]}"; do
+		# for i in "${!CHROMIUM_COMMITS[@]}"; do
+			# if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
+			# 	patch_prefix="webrtc"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
+			# 	patch_prefix="angle"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
+			# 	patch_prefix="quiche"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
+			# 	patch_prefix="dawn"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
+			# 	patch_prefix="ink"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
+			# 	patch_prefix="vulkan-utility-libraries"
+			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
+			# 	patch_prefix="ruy"
+			# else
 				patch_prefix="chromium"
-			fi
-			pushd "${CHROMIUM_COMMITS[$i]}" > /dev/null || die
+			# fi
+			# pushd "${CHROMIUM_COMMITS[$i]}" > /dev/null || die
 			if [[ $i = -*  ]]; then
 				einfo "Reverting ${patch_prefix}-${i/-}.patch"
 				git_wrapper apply -R --exclude="*unittest.cc" --exclude="DEPS" \
@@ -558,7 +561,7 @@ src_prepare() {
 				git_wrapper apply --exclude="*unittest.cc" --exclude="DEPS" \
 					-p1 < "${DISTDIR}/${patch_prefix}-${i/-}.patch"
 			fi
-			popd > /dev/null || die
+			# popd > /dev/null || die
 		done
 	fi
 
@@ -718,6 +721,7 @@ src_prepare() {
 			extra/bromite/flag-max-connections-per-host
 			extra/bromite/flag-fingerprinting-canvas-image-data-noise
 			extra/ungoogled-chromium/add-components-ungoogled
+			extra/ungoogled-chromium/remove-pac-size-limit
 		)
 	fi
 
