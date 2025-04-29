@@ -61,7 +61,7 @@ UGC_COMMIT_ID="ff88e8bafb3c25b04cc3043ba136b44eb614d56f"
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="e6c3e4498683ffa8335cfc4436ea75763ccce6b9"
+CROMITE_COMMIT_ID="f2122e2d4afe0744eec097411b5100966ac99bb2"
 
 CHROMIUM_COMMITS=(
 	-da443d7bd3777a5dd0587ecff1fbad1722b106b5
@@ -72,6 +72,7 @@ CHROMIUM_COMMITS=(
 	-234e68c6b6cf66bec7f367c3be40ff19b5100cc5
 	-be0c460cbca7b0c927e44a529b8489c6d50ea463
 	-4308d83bdf54a2f99329708308a358f930000c63
+	ba427d080df41b82e0e121326e9dd8e1853ea7bc
 )
 
 UGC_PV="${PV/_p/-}"
@@ -528,7 +529,7 @@ src_prepare() {
 
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-135-libstdc++.patch"
+			"${FILESDIR}/chromium-136-libstdc++.patch"
 			"${FILESDIR}/chromium-134-stdatomic.patch"
 			"${FILESDIR}/font-gc-asan.patch"
 		)
@@ -570,7 +571,7 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r3.patch"
+			"${FILESDIR}/disable-bluez-r4.patch"
 		)
 	fi
 
@@ -1756,8 +1757,6 @@ src_compile() {
 	# Don't inherit PYTHONPATH from environment, bug #789021, #812689
 	local -x PYTHONPATH=
 
-	use convert-dict && eninja -C out/Release convert_dict
-
 	# Build mksnapshot and pax-mark it.
 	if use pax-kernel; then
 		local x
@@ -1775,6 +1774,8 @@ src_compile() {
 	# Even though ninja autodetects number of CPUs, we respect
 	# user's options, for debugging with -j 1 or any other reason.
 	eninja -C out/Release chrome
+
+	use convert-dict && eninja -C out/Release convert_dict
 
 	use enable-driver && eninja -C out/Release chromedriver
 	#use suid && eninja -C out/Release chrome_sandbox
