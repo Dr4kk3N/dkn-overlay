@@ -1,5 +1,5 @@
-# Copyright 2021 Aisha Tammy, B. Gazotti and Daniella Kicsak
-# Distributed under the terms of the ISC License
+# Copyright 1999-2025 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
@@ -18,14 +18,15 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+nls +svg +X"
+IUSE="X icons nls svg man static-analyzer test"
+RESTRICT="!test? ( test )"
 
 RDEPEND="
-	dev-libs/libsfdo
+	>=dev-libs/wayland-1.19
 	dev-libs/glib:2
-	dev-libs/libinput
+	>=dev-libs/libinput-1.14
 	dev-libs/libxml2:2
-	>=gui-libs/wlroots-0.17.0:=[X?]
+	>=gui-libs/wlroots-0.18.1[X?]
 	media-libs/libpng
 	x11-libs/cairo[X?]
 	x11-libs/libdrm:=
@@ -33,23 +34,32 @@ RDEPEND="
 	x11-libs/pango[X?]
 	x11-libs/pixman
 	nls? ( sys-devel/gettext )
-	svg? ( gnome-base/librsvg:= )
+	svg? ( >=gnome-base/librsvg-2.46 )
 	X? ( x11-libs/libxcb:0= )
+	X? ( x11-base/xwayland )
+	icons? ( gui-libs/libsfdo )
 "
 DEPEND="${RDEPEND}"
 BDEPEND="
-	app-text/scdoc
-	dev-libs/wayland-protocols
+	>=dev-libs/wayland-protocols-1.35
 	sys-devel/gettext
 	virtual/pkgconfig
+	man? ( app-text/scdoc )
+	test? ( dev-util/cmocka )
 "
+PATCHES=(
+	"${FILESDIR}"/${PN}-meson_doc_path.patch
+)
 
 src_configure() {
 	local emesonargs=(
 		$(meson_feature X xwayland)
 		$(meson_feature nls)
 		$(meson_feature svg)
-		-Dman-pages=enabled
+		$(meson_feature icons icon)
+		$(meson_feature man man-pages)
+		$(meson_feature test)
+		$(meson_feature static-analyzer static_analyzer)
 	)
 	meson_src_configure
 }
