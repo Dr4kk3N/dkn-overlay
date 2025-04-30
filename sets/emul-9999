@@ -1,0 +1,11 @@
+=games-emulation/dosbox-x-9999
+=games-emulation/dolphin-9999-r8
+=games-emulation/cemu-9999
+#=games-emulation/shadps4-emu-9999
+=games-emulation/rpcs3-9999-r2
+=games-emulation/pcsx2-9999
+=games-emulation/pcsx2_patches-9999
+=media-libs/jg-9999
+=games-emulation/jgrf-9999
+=games-emulation/geolith-jg-9999
+
