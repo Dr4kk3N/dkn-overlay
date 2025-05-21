@@ -1,115 +1,131 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-CHROMIUM_LANGS="af am ar bg bn ca cs da de el en-GB en-US es es-419 et fa fi fil fr
-	gu he hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk
-	sl sr sv sw ta te th tr uk ur vi zh-CN zh-TW"
+BRAVE_PN="${PN/-bin/}"
 
-inherit chromium-2 desktop pax-utils unpacker xdg
+CHROMIUM_LANGS="
+	af am ar bg bn ca cs da de el en-GB en-US es es-419 et fa fi fil fr gu he hi
+	hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr sv
+	sw ta te th tr uk ur vi zh-CN zh-TW
+"
 
-MY_PN=${PN/-bin}-browser
-DESCRIPTION="Web browser that blocks ads and trackers by default"
-HOMEPAGE="https://brave.com/"
-SRC_URI="https://github.com/${PN/-bin}/${MY_PN}/releases/download/v${PV}/${MY_PN}_${PV}_amd64.deb"
+inherit chromium-2 xdg-utils desktop
 
-S=${WORKDIR}
+DESCRIPTION="Brave Web Browser"
+HOMEPAGE="https://brave.com"
+SRC_URI="https://github.com/brave/brave-browser/releases/download/v${PV}/brave-browser-${PV}-linux-amd64.zip -> ${P}.zip"
 
 LICENSE="MPL-2.0"
 SLOT="0"
-KEYWORDS="-* amd64"
+KEYWORDS="amd64"
+IUSE="keyring"
 
-IUSE="qt5 qt6"
-RESTRICT="bindist mirror strip"
-
+# gconf is deprecated.
+# DEPEND="gnome-base/gconf:2"
 RDEPEND="
-	>=app-accessibility/at-spi2-core-2.46.0:2
-	dev-libs/expat
-	dev-libs/glib:2
-	dev-libs/nspr
-	dev-libs/nss
-	media-libs/alsa-lib
-	media-libs/mesa[gbm(+)]
-	net-misc/curl
-	net-print/cups
-	sys-apps/dbus
-	sys-libs/glibc
-	x11-libs/cairo
-	x11-libs/gdk-pixbuf
-	x11-libs/gtk+:3
-	x11-libs/libdrm
+	${DEPEND}
+	dev-libs/libpthread-stubs
 	x11-libs/libxcb
-	x11-libs/libxkbcommon
-	x11-libs/libxshmfence
-	x11-libs/libX11
 	x11-libs/libXcomposite
+	x11-libs/libXcursor
 	x11-libs/libXdamage
 	x11-libs/libXext
 	x11-libs/libXfixes
+	x11-libs/libXi
+	x11-libs/libXrender
+	x11-libs/libXtst
+	x11-libs/libxshmfence
+	x11-libs/libXxf86vm
+	x11-libs/libXScrnSaver
 	x11-libs/libXrandr
+	x11-libs/libXau
+	x11-libs/libXdmcp
+	x11-libs/libXinerama
+	x11-libs/libxkbcommon
+	dev-libs/glib
+	dev-libs/nss
+	dev-libs/nspr
+	net-print/cups
+	sys-apps/dbus
+	dev-libs/expat
+	media-libs/alsa-lib
 	x11-libs/pango
-	qt5? (
-		dev-qt/qtcore:5
-		dev-qt/qtgui:5[X]
-		dev-qt/qtwidgets:5
-	)
-	qt6? ( dev-qt/qtbase:6[gui,widgets] )
+	x11-libs/cairo
+	dev-libs/gobject-introspection
+	dev-libs/atk
+	app-accessibility/at-spi2-core
+	app-accessibility/at-spi2-atk
+	x11-libs/gtk+
+	x11-libs/gdk-pixbuf
+	dev-libs/libffi
+	dev-libs/libpcre
+	net-libs/gnutls
+	sys-libs/zlib
+	dev-libs/fribidi
+	media-libs/harfbuzz
+	media-libs/fontconfig
+	media-libs/freetype
+	x11-libs/pixman
+	>=media-libs/libpng-1.6.34
+	media-libs/libepoxy
+	dev-libs/libbsd
+	dev-libs/libunistring
+	dev-libs/libtasn1
+	dev-libs/nettle
+	dev-libs/gmp
+	net-dns/libidn2
+	media-gfx/graphite2
+	app-arch/bzip2
 "
 
 QA_PREBUILT="*"
-BRAVE_HOME="opt/brave.com/brave"
 
-pkg_setup() {
-	chromium_suid_sandbox_check_kernel_config
-}
+S=${WORKDIR}
 
-src_unpack() {
-	:
-}
-
-src_install() {
-	dodir /
-	cd "${ED}" || die
-	unpacker
-
-	# The appdata directory is deprecated.
-	mv usr/share/{appdata,metainfo}/ || die
-
-	# Remove cron job and menu for updating from Debian repos.
-	rm -r ${BRAVE_HOME}/cron/ || die
-	rm -r etc usr/share/menu || die
-
-	# Rename docs directory to our needs.
-	mv usr/share/doc/${MY_PN} usr/share/doc/${PF} || die
-
-	# Decompress the docs.
-	gzip -d usr/share/doc/${PF}/changelog.gz || die
-	gzip -d usr/share/man/man1/${MY_PN}-stable.1.gz || die
-	if [[ -L usr/share/man/man1/brave-browser.1.gz ]]; then
-	    rm usr/share/man/man1/brave-browser.1.gz || die
-	    dosym ${MY_PN}-stable.1 usr/share/man/man1/brave-browser.1
-	fi
-
-	# Remove unused language packs
-	pushd "${BRAVE_HOME}/locales" > /dev/null || die
-	chromium_remove_language_paks
+src_prepare() {
+	pushd "${S}/locales" > /dev/null || die
+		chromium_remove_language_paks
 	popd > /dev/null || die
 
-	if ! use qt5; then
-		rm "${BRAVE_HOME}/libqt5_shim.so" || die
-	fi
-	if ! use qt6; then
-		rm "${BRAVE_HOME}/libqt6_shim.so" || die
-	fi
+	default
+}
 
-	local logo size
-	for logo in "${ED}"/${BRAVE_HOME}/product_logo_*.png; do
-	    size=${logo##*_}
-		size=${size%.*}
-		newicon -s "${size}" "${logo}" ${PN/-bin}.png
-	done
+src_install() (
+	shopt -s extglob
 
-	pax-mark m "${BRAVE_HOME}/brave"
-	fperms 4711 "/${BRAVE_HOME}/chrome-sandbox"
+		declare BRAVE_HOME=/opt/${BRAVE_PN}
+
+		dodir ${BRAVE_HOME%/*}
+
+		insinto ${BRAVE_HOME}
+			doins -r *
+	# Brave has a bug in 1.27.105 where it needs crashpad_handler chmodded
+	# Delete crashpad_handler when https://github.com/brave/brave-browser/issues/16985 is resolved.
+			exeinto ${BRAVE_HOME}
+				doexe brave chrome_crashpad_handler
+
+		dosym ${BRAVE_HOME}/brave /usr/bin/${PN} || die
+
+	# Install Icons for Brave.
+		newicon "${FILESDIR}/braveAbout.png" "${PN}.png" || die
+		newicon -s 128 "${FILESDIR}/braveAbout.png" "${PN}.png" || die
+
+	# install-xattr doesnt approve using domenu or doins from FILESDIR
+		cp "${FILESDIR}"/${PN}.desktop "${S}"
+		domenu "${S}"/${PN}.desktop
+)
+
+pkg_postinst() {
+	xdg_desktop_database_update
+	xdg_mimeinfo_database_update
+	xdg_icon_cache_update
+	elog "If upgrading from 1.50.x release or earlier, note that Brave has changed the format of the"
+	elog "password file, and ALL YOUR OLD PASSWORDS WILL NOT WORK."
+	elog "YOUR BRAVE REWARDS WILL NOT WORK EITHER."
+	elog "The solution is to temporarily downgrade back to 1.50.x (legacy ebuild provided),"
+	elog "so you can export passwords from Brave's Password Manager."
+	elog "once you're back in a newer build, import passwords from inside Brave's Password Manager,"
+	elog "and select the file you saved."
 }
