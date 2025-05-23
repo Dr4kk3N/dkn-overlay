@@ -1,11 +1,11 @@
-# Copyright 1999-2024 Gentoo Foundation
+# Copyright 1999-2025 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 EAPI=8
 
-RUST_MIN_VER="1.81.0"
-RUST_MAX_VER="1.81.0"
+RUST_MIN_VER="1.82.0"
+RUST_MAX_VER="1.85.0"
 RUST_NEEDS_LLVM=1
-LLVM_COMPAT=( 18 )
+LLVM_COMPAT=( 19 )
 
 inherit llvm-r1 systemd cargo linux-info udev xdg desktop
 
@@ -16,20 +16,9 @@ _PN="asusd"
 DESCRIPTION="${PN} (${_PN}) is a utility for Linux to control many aspects of various ASUS laptops."
 HOMEPAGE="https://asus-linux.org"
 
-## howto create vendor bundle (upstream approach is not feasable)
-# >> git clone https://gitlab.com/asus-linux/asusctl -b <version> /tmp/asusctl
-# >> cd /tmp/asusctl && version=`git describe --tags | sed -E "s/v([0-9.]+)/\1/g"`
-# >> mkdir -p .cargo && cargo vendor | head -n -1 > .cargo/config
-# >> echo 'directory = "vendor"' >> .cargo/config
-# >> mkdir -p asusctl-${version}/.cargo &&  mv vendor asusctl-${version}/vendor
-# >> mv .cargo/config asusctl-${version}/.cargo
-# >> tar -caf asusctl-${version}-vendor.tar.xz asusctl-${version}/vendor
-# >> tar -caf asusctl-${version}-cargo_config.tar.xz asusctl-${version}/.cargo
-
 SRC_URI="
     https://gitlab.com/asus-linux/${PN}/-/archive/${_PV}/${PN}-${_PV}.tar.gz -> ${P}.tar.gz
-    https://vendors.simple-co.de/${PN}/${P}-vendor.tar.xz
-    https://vendors.simple-co.de/${PN}/${P}-cargo_config.tar.xz
+	https://gitlab.com/-/project/20328305/uploads/0f0ff7247d7a63cae89a4a705c78f4ad/vendor_${PN}_${_PV}.tar.xz -> vendor_${PN}_${_PV}.tar.xz
 "
 LICENSE="0BSD Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0 ISC LicenseRef-UFL-1.0 MIT MPL-2.0 OFL-1.1 Unicode-DFS-2016 Unlicense ZLIB"
 SLOT="0/6"
@@ -50,9 +39,9 @@ RDEPEND="!!sys-power/rog-core
 DEPEND="${RDEPEND}
     dev-libs/libusb:1
     !openrc? ( sys-apps/systemd:0= )
-    openrc? ( || ( 
+    openrc? ( || (
         sys-apps/openrc
-        sys-apps/sysvinit 
+        sys-apps/sysvinit
     ) )
 	sys-apps/dbus
     media-libs/sdl2-gfx
@@ -62,6 +51,16 @@ DEPEND="${RDEPEND}
 		llvm-core/llvm:${LLVM_SLOT}=
 	')
 "
+
+src_unpack() {
+    cargo_src_unpack
+    unpack ${PN}-${_PV/_/.}.tar.gz
+    sed -i "1s/.*/Version=\"${_PV}\"/" ${S}/Makefile
+
+    # adding vendor-package
+    cd ${S} && unpack vendor_${PN}_${_PV%%_*}.tar.xz
+}
+
 src_prepare() {
     require_configured_kernel
 
@@ -73,11 +72,11 @@ src_prepare() {
     linux_chkconfig_builtin PINCTRL_AMD || k_wrn_touch="${k_wrn_touch}> CONFIG_PINCTRL_AMD not found, must be builtin\n"
     [[ ${k_wrn_touch} != "" ]] && ewarn "\nKernel configuration issue(s), needed for touchpad support:\n\n${k_wrn_touch}"
 
+	# adding vendor package config
+	mkdir -p ${S}/.cargo && cp ${FILESDIR}/${P}-vendor_config ${S}/.cargo/config.toml
+
     # only build rog-control-center when "gui" flag is set (TODO!)
     ! use gui && eapply "${FILESDIR}/${P}-disable_rog-cc.patch"
-
-    # setting correct version
-    sed -i "1s/.*/Version=\"${_PV}\"/" ${S}/Makefile
 
     default
     rust_pkg_setup

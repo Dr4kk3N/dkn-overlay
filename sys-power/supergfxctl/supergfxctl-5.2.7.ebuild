@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Foundation
+# Copyright 1999-2025 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 EAPI=8
 
@@ -12,12 +12,11 @@ DESCRIPTION="${PN} (${_PN}) Graphics switching"
 HOMEPAGE="https://asus-linux.org"
 SRC_URI="
     https://gitlab.com/asus-linux/${PN}/-/archive/${PV}/${PN}-${PV}.tar.gz
-    https://vendors.simple-co.de/${PN}/${P}-vendor.tar.xz
-    https://vendors.simple-co.de/${PN}/${P}-cargo_config.tar.xz
+	https://gitlab.com/-/project/29139415/uploads/5c6c5fd51467bd7abf84b98d6368f13c/vendor-${PV}.tar.xz -> vendor_${PN}_${PV}.tar.xz
 "
 LICENSE="MPL-2.0"
 IUSE="gnome -openrc"
-SLOT="5/5.2.4"
+SLOT="5/5.2.7"
 KEYWORDS="~amd64"
 RESTRICT="mirror"
 
@@ -36,9 +35,9 @@ RDEPEND="
 DEPEND="${BDEPEND}
     ${RDEPEND}
     !openrc? ( sys-apps/systemd:0= )
-    openrc? ( || ( 
+    openrc? ( || (
         sys-apps/openrc
-        sys-apps/sysvinit 
+        sys-apps/sysvinit
     ) )
 	sys-apps/dbus
 "
@@ -48,6 +47,14 @@ QA_PRESTRIPPED="
     /usr/bin/${PN}
     /usr/bin/${_PN}
 "
+
+src_unpack() {
+    cargo_src_unpack
+    unpack ${PN}-${PV}.tar.gz
+
+    # adding vendor-package
+    cd ${S} && unpack vendor_${PN}_${PV%%_*}.tar.xz
+}
 
 src_prepare() {
     require_configured_kernel
@@ -59,13 +66,16 @@ src_prepare() {
     linux_chkconfig_module VFIO_MDEV || k_wrn_vfio="${k_wrn_vfio}> CONFIG_VFIO_MDEV should be enabled as module\n"
     linux_chkconfig_module VFIO_PCI || k_wrn_vfio="${k_wrn_vfio}> CONFIG_VFIO_PCI should be enabled as module\n"
     linux_chkconfig_module VFIO_VIRQFD || k_wrn_vfio="${k_wrn_vfio}> CONFIG_VFIO_VIRQFD should be enabled as module\n"
-    if [[ ${k_wrn_vfio} != "" ]]; then 
+    if [[ ${k_wrn_vfio} != "" ]]; then
         ewarn "\nKernel configuration issue(s), needed for switching gfx vfio mode (disabled by default):\n\n${k_wrn_vfio}"
     else
         ## enabeling fvio mode
         einfo "Kernel configuration matches FVIO requirements. (enabeling now vfio gfx switch by default)"
         sed -i 's/gfx_vfio_enable:\ false,/gfx_vfio_enable:\ true,/g' ${S}/src/config.rs || die "Could not enable VFIO."
     fi
+
+    # adding vendor package config
+    mkdir -p ${S}/.cargo && cp ${FILESDIR}/${P}-vendor_config ${S}/.cargo/config.toml
 
     default
     rust_pkg_setup
@@ -82,7 +92,7 @@ src_compile() {
 src_install() {
     insinto /lib/udev/rules.d/
     doins data/*${_PN}*.rules
-    
+
     ## mod blacklisting
     insinto /etc/modprobe.d
     doins ${FILESDIR}/90-nvidia-blacklist.conf
@@ -130,7 +140,7 @@ by runnning:\n \`rc-update add ${_PN} default && /etc/init.d/${_PN} start\`\n"
 
 
     x11_warn_conf=""
-    for c in `grep -il nvidia /etc/X11/xorg.conf.d/*.*`; do 
+    for c in `grep -il nvidia /etc/X11/xorg.conf.d/*.*`; do
         if ! `grep -q ${_PN} "$c"` && [[ "$c" != *"90-${_PN}-nvidia-pm.rules" ]]; then
             x11_warn_conf="$x11_warn_conf$c\n";
         fi
