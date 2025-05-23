@@ -1,41 +1,40 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit fcaps meson
+inherit fcaps meson djs-functions
 
 MY_PV=$(ver_rs 3 -)
 MY_PV="${MY_PV//_/-}"
 
 DESCRIPTION="Efficient micro-compositor for running games"
 HOMEPAGE="https://github.com/ValveSoftware/gamescope"
-EGIT_SUBMODULES=( src/reshade subprojects/{libliftoff,vkroots,wlroots} )
+EGIT_SUBMODULES=( src/reshade subprojects/{libliftoff,vkroots,wlroots,glm,stb} )
 
-if [[ ${PV} == "9999" ]]; then
-	EGIT_REPO_URI="https://github.com/ValveSoftware/${PN}.git"
-	inherit git-r3
-else
-	RESHADE_COMMIT="696b14cd6006ae9ca174e6164450619ace043283"
-	LIBLIFTOFF_COMMIT="0.5.0" # Upstream points at this release.
-	VKROOTS_COMMIT="5106d8a0df95de66cc58dc1ea37e69c99afc9540"
-	WLROOTS_COMMIT="4bc5333a2cbba0b0b88559f281dbde04b849e6ef"
-	SRC_URI="
-		https://github.com/ValveSoftware/${PN}/archive/refs/tags/${MY_PV}.tar.gz -> ${P}.tar.gz
-		https://gitlab.freedesktop.org/emersion/libliftoff/-/releases/v${LIBLIFTOFF_COMMIT}/downloads/libliftoff-${LIBLIFTOFF_COMMIT}.tar.gz
-		https://github.com/Joshua-Ashton/reshade/archive/${RESHADE_COMMIT}.tar.gz -> reshade-${RESHADE_COMMIT}.tar.gz
-		https://github.com/Joshua-Ashton/vkroots/archive/${VKROOTS_COMMIT}.tar.gz -> vkroots-${VKROOTS_COMMIT}.tar.gz
-		https://github.com/Joshua-Ashton/wlroots/archive/${WLROOTS_COMMIT}.tar.gz -> wlroots-${WLROOTS_COMMIT}.tar.gz
-	"
-	KEYWORDS="~amd64"
-fi
-
+RESHADE_COMMIT="696b14cd6006ae9ca174e6164450619ace043283"
+LIBLIFTOFF_COMMIT="0.5.0" # Upstream points at this release.
+VKROOTS_COMMIT="5106d8a0df95de66cc58dc1ea37e69c99afc9540"
+WLROOTS_COMMIT="4bc5333a2cbba0b0b88559f281dbde04b849e6ef"
+GLM_COMMIT="1.0.1"
+STB_COMMIT="802cd454f25469d3123e678af41364153c132c2a"
+SRC_URI="
+	https://github.com/ValveSoftware/${PN}/archive/refs/tags/${MY_PV}.tar.gz -> ${P}.tar.gz
+	https://gitlab.freedesktop.org/emersion/libliftoff/-/releases/v${LIBLIFTOFF_COMMIT}/downloads/libliftoff-${LIBLIFTOFF_COMMIT}.tar.gz
+	https://github.com/Joshua-Ashton/reshade/archive/${RESHADE_COMMIT}.tar.gz -> reshade-${RESHADE_COMMIT}.tar.gz
+	https://github.com/Joshua-Ashton/vkroots/archive/${VKROOTS_COMMIT}.tar.gz -> vkroots-${VKROOTS_COMMIT}.tar.gz
+	https://github.com/Joshua-Ashton/wlroots/archive/${WLROOTS_COMMIT}.tar.gz -> wlroots-${WLROOTS_COMMIT}.tar.gz
+	https://github.com/g-truc/glm/archive/refs/tags/${GLM_COMMIT}.tar.gz -> glm-${GLM_COMMIT}.tar.gz
+	https://github.com/nothings/stb/archive/${STB_COMMIT}.tar.gz -> stb-${STB_COMMIT}.tar.gz
+"
+KEYWORDS="~amd64"
 S="${WORKDIR}/${PN}-${MY_PV}"
 LICENSE="BSD-2"
 SLOT="0"
 IUSE="avif libei pipewire +sdl +wsi-layer"
 
 RDEPEND="
+	dev-lang/luajit:2=
 	>=dev-libs/wayland-1.23
 	gui-libs/libdecor
 	<media-libs/libdisplay-info-0.3:=
@@ -89,10 +88,6 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-deprecated-stb.patch
-)
-
 FILECAPS=(
 	cap_sys_nice usr/bin/${PN}
 )
@@ -104,21 +99,33 @@ src_prepare() {
 	# fork, so we cannot unbundle it. Upstream have requested that we do not
 	# unbundle libliftoff, vkroots, or wlroots. Symlink to the extracted sources
 	# when not using the git submodules in 9999.
-	if [[ ${PV} != "9999" ]]; then
-		local dir name commit
-		for dir in "${EGIT_SUBMODULES[@]}"; do
+	local dir name commit
+	for dir in "${EGIT_SUBMODULES[@]}"; do
+		# Delete dir only if exists
+		if [ -d ${dir} ]; then
 			rmdir "${dir}" || die
-			name=${dir##*/}
-			commit=${name^^}_COMMIT
-			ln -snfT "../../${name}-${!commit}" "${dir}" || die
-		done
-	fi
+		fi
+		name=${dir##*/}
+		commit=${name^^}_COMMIT
+		ln -snfT "../../${name}-${!commit}" "${dir}" || die
+
+		# Copy meson.build only if it exists in /subprojects/packagefiles/${name}/meson.build
+		einfo ${name}
+		einfo "${dir}"
+
+		if [ -f "${WORKDIR}/${P}/subprojects/packagefiles/${name}/meson.build" ]; then
+			cp "${WORKDIR}/${P}/subprojects/packagefiles/${name}/meson.build" "${WORKDIR}/${name}-${!commit}/"
+		fi
+	done
 
 	# SPIRV-Headers is required by ReShade. It is bundled as a git submodule but
 	# not wrapped with Meson, so we can symlink to our system-wide headers.
 	# For 9999, this submodule is not included.
 	mkdir -p thirdparty/SPIRV-Headers/include || die
 	ln -snf "${ESYSROOT}"/usr/include/spirv thirdparty/SPIRV-Headers/include/ || die
+
+	# Apply package version PATCHES
+	patchPackage "${FILESDIR}" "${PN}" "${PVR}"
 }
 
 src_configure() {
