@@ -5,7 +5,7 @@ EAPI=8
 
 inherit desktop java-utils-2
 
-RNAME="2024-03"
+RNAME="2025-03"
 SR="R"
 
 DESCRIPTION="Eclipse IDE for C/C++"
@@ -18,7 +18,7 @@ SRC_URI="
 "
 
 LICENSE="EPL-1.0"
-SLOT="4.31"
+SLOT="4.35"
 KEYWORDS="-* ~amd64"
 IUSE=""
 
