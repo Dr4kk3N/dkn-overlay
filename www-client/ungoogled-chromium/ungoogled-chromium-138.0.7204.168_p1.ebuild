@@ -23,9 +23,11 @@ inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/ungoogled-software/ungoogled-chromium"
-PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
 LITE_TARBALL=1
+PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
+PATCH_V="${PV%%\.*}-1"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz
+	https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PATCH_V}/chromium-patches-${PATCH_V}.tar.bz2
 	ppc64? (
 		https://gitlab.raptorengineering.com/raptor-engineering-public/chromium/openpower-patches/-/archive/${PPC64_HASH}/openpower-patches-${PPC64_HASH}.tar.bz2 -> chromium-openpower-${PPC64_HASH:0:10}.tar.bz2
 	)
@@ -35,9 +37,9 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
-IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
+IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
 	!system-ffmpeg? ( proprietary-codecs? ( bindist ) )
 	!system-openh264? ( bindist )
@@ -55,24 +57,20 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="76f98dc4eb94681cd0d585854928127233354b08"
+#UGC_COMMIT_ID="27acc7538bce26a8a2531e7aa0ba5b6b156254f9"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="b4f8d96284c854cbe6448d2e30ee5a30ce3f0b82"
+CROMITE_COMMIT_ID="bd85e1d8092b493c5aa87292c98065aba3087112"
 
 # CHROMIUM_COMMITS=(
-# 	-da443d7bd3777a5dd0587ecff1fbad1722b106b5
-# 	-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e
-# 	-49b23faa16ad14e96601aea8772c7279fcbd6b44
-# 	-6db9674ad4375d40db7df622652287ccdae82f24
-# 	-fd011815c455976b15e31966f826628b4f9f61d4
-# 	-234e68c6b6cf66bec7f367c3be40ff19b5100cc5
-# 	-be0c460cbca7b0c927e44a529b8489c6d50ea463
-# 	-4308d83bdf54a2f99329708308a358f930000c63
-# 	ba427d080df41b82e0e121326e9dd8e1853ea7bc
+# 	b85c9c11c561d4b45a7d3083a4e63e65f9ffeff3 #138+
+# 	4a007f6c1a2f601a88262255c802e5b20edfd2a7 #138+
+# 	4c736420952f355f18bdc4f4ea2d16e4514fa034 #138+
+# 	2a82a46692e9ec825138a8cdecc758e29449f67d #138+
+# 	48b64da89b3ecb7ccb576a334b19b3066dd2b793 #138+
 # )
 
 UGC_PV="${PV/_p/-}"
@@ -151,7 +149,7 @@ COMMON_X_DEPEND="
 
 COMMON_SNAPSHOT_DEPEND="
 	system-icu? ( >=dev-libs/icu-73.0:= )
-	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20230125.2 )
+	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20250512.0 )
 	system-brotli? ( >=app-arch/brotli-9999 )
 	system-crc32c? ( dev-libs/crc32c )
 	system-double-conversion? ( dev-libs/double-conversion )
@@ -237,15 +235,11 @@ COMMON_DEPEND="
 	!headless? (
 		>=app-accessibility/at-spi2-core-2.46.0:2
 		media-libs/mesa:=[X?,wayland?]
-		cups? ( >=net-print/cups-1.3.11:= )
 		virtual/udev
 		x11-libs/cairo:=
 		x11-libs/gdk-pixbuf:2
 		x11-libs/pango:=
-		qt5? (
-			dev-qt/qtcore:5
-			dev-qt/qtwidgets:5
-		)
+		cups? ( >=net-print/cups-1.3.11:= )
 		qt6? ( dev-qt/qtbase:6[gui,widgets] )
 		X? ( ${COMMON_X_DEPEND} )
 	)
@@ -257,7 +251,6 @@ RDEPEND="${COMMON_DEPEND}
 			x11-libs/gtk+:3[X?,wayland?]
 			gui-libs/gtk:4[X?,wayland?]
 		)
-		qt5? ( dev-qt/qtgui:5[X?,wayland?] )
 		qt6? ( dev-qt/qtbase:6[X?,wayland?] )
 	)
 	virtual/ttf-fonts
@@ -284,10 +277,9 @@ BDEPEND="
 	')
 	>=app-arch/gzip-1.7
 	!headless? (
-		qt5? ( dev-qt/qtcore:5 )
 		qt6? ( dev-qt/qtbase:6 )
 	)
-	>=dev-build/gn-0.2217
+	>=dev-build/gn-0.2235
 	app-alternatives/ninja
 	dev-lang/perl
 	>=dev-util/gperf-3.2
@@ -389,17 +381,10 @@ pkg_pretend() {
 		ewarn "Not all patches are applied, let me know if others should be considered too"
 		ewarn
 	fi
-	if use system-abseil-cpp; then
-		ewarn
-		ewarn "Chromium code is not very friendly to system abseil-cpp, see #218"
-		ewarn "If you know how to fix this, feel free to submit a PR"
-		ewarn
-		[[ -z "${NODIE}" ]] && die "The build will fail!"
-	fi
 	pre_build_checks
 
 	if use headless; then
-		local headless_unused_flags=("cups" "kerberos" "pulseaudio" "qt5" "qt6" "vaapi" "wayland")
+		local headless_unused_flags=("cups" "kerberos" "pulseaudio" "qt6" "vaapi" "wayland")
 		for myiuse in ${headless_unused_flags[@]}; do
 			use ${myiuse} && ewarn "Ignoring USE=${myiuse}, USE=headless is set."
 		done
@@ -439,6 +424,7 @@ src_unpack() {
 	tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz" -C "${WORKDIR}" || die
 
 	unpack ${UGC_URL#*->}
+	unpack chromium-patches-${PATCH_V}.tar.bz2
 	# Warned you!
 
 	if use cromite; then
@@ -454,7 +440,7 @@ src_prepare() {
 	# Calling this here supports resumption via FEATURES=keepwork
 	python_setup
 
-	cp -f "${FILESDIR}/compiler-137.patch" "${T}/compiler.patch"
+	cp -f ${WORKDIR}/chromium-patches-${PATCH_V}/*-compiler.patch "${T}/compiler.patch"
 	if ! use custom-cflags; then #See #25 #92
 		sed -i '/default_stack_frames/Q' "${T}/compiler.patch" || die
 	fi
@@ -468,9 +454,8 @@ src_prepare() {
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
-		"${FILESDIR}/chromium-136-drop-nodejs-ver-check.patch"
 		"${FILESDIR}/chromium-137-openh264-include-path.patch"
-		"${FILESDIR}/chromium-137-pdfium-system-libpng.patch"
+		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
@@ -481,29 +466,29 @@ src_prepare() {
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-132-optional-lens.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
-		"${FILESDIR}/chromium-135-crabby.patch"
-		"${FILESDIR}/chromium-136-fontations.patch"
-		"${FILESDIR}/chromium-137-no-rust.patch"
+		"${FILESDIR}/chromium-137-fix-for-kde.patch"
+		"${FILESDIR}/chromium-138-fontations.patch"
+		"${FILESDIR}/chromium-138-no-rust.patch"
+		"${FILESDIR}/chromium-138-crabby.patch"
+		"${FILESDIR}/chromium-138-gcc.patch"
+		"${FILESDIR}/chromium-134-stdatomic.patch"
+		"${FILESDIR}/chromium-137-constexpr.patch"
+		"${FILESDIR}/font-gc-asan.patch"
 	)
 
-	shopt -s globstar nullglob
-	# 130: moved the PPC64 patches into the chromium-patches repo
-	local patch
-	for patch in "${WORKDIR}/chromium-patches-${PATCH_V}"/**/*.patch; do
-			if [[ ${patch} == *"ppc64le"* ]]; then
-					use ppc64 && PATCHES+=( "${patch}" )
-			else
-					PATCHES+=( "${patch}" )
-			fi
-	done
-	shopt -u globstar nullglob
+	#shopt -s globstar nullglob
+	## 130: moved the PPC64 patches into the chromium-patches repo
+	#local patch
+	#for patch in "${WORKDIR}/chromium-patches-${PATCH_V}"/**/*.patch; do
+	#		if [[ ${patch} == *"ppc64le"* ]]; then
+	#				use ppc64 && PATCHES+=( "${patch}" )
+	#		else
+	#				PATCHES+=( "${patch}" )
+	#		fi
+	#done
+	#shopt -u globstar nullglob
 
-	# We can't use the bundled compiler builtins with the system toolchain
-	# `grep` is a development convenience to ensure we fail early when google changes something.
-	local builtins_match="if (is_clang && !is_nacl && !is_cronet_build) {"
-	grep -q "${builtins_match}" build/config/compiler/BUILD.gn || die "Failed to disable bundled compiler builtins"
-	sed -i -e "/${builtins_match}/,+2d" build/config/compiler/BUILD.gn
-
+	# Strictly speaking this doesn't need to be gated (no bundled toolchain for ppc64); it keeps the logic together
 	if use ppc64; then
 		local patchset_dir="${WORKDIR}/openpower-patches-${PPC64_HASH}/patches"
 		# patch causes build errors on 4K page systems (https://bugs.gentoo.org/show_bug.cgi?id=940304)
@@ -528,20 +513,6 @@ src_prepare() {
 	ewarn "Fontations Rust font stack is disabled"
 	ewarn "Using media-libs/libavif instead of CrabbyAvif"
 	ewarn
-
-	if ! use clang ; then
-		PATCHES+=(
-			"${FILESDIR}/chromium-137-gcc.patch"
-		)
-	fi
-
-	if ! use libcxx ; then
-		PATCHES+=(
-			"${FILESDIR}/chromium-137-libstdc++.patch"
-			"${FILESDIR}/chromium-134-stdatomic.patch"
-			"${FILESDIR}/font-gc-asan.patch"
-		)
-	fi
 
 	if [ ! -z "${CHROMIUM_COMMITS[*]}" ]; then
 		for i in "${CHROMIUM_COMMITS[@]}"; do
@@ -598,6 +569,18 @@ src_prepare() {
 		ewarn "You need to expose \"av_stream_get_first_dts\" in ffmpeg via user patch"
 	fi
 
+	if use system-av1; then
+		PATCHES+=(
+			"${FILESDIR}/chromium-system-av1.patch"
+		)
+	fi
+
+	if use system-libvpx; then
+		PATCHES+=(
+			"${FILESDIR}/chromium-system-libvpx.patch"
+		)
+	fi
+
 	if use system-openjpeg ; then
 		PATCHES+=(
 			"${FILESDIR}/chromium-system-openjpeg-r4.patch"
@@ -633,7 +616,6 @@ src_prepare() {
 			"${BR_PA_PATH}/Enable-StrictOriginIsolation-and-SitePerProcess.patch"
 			"${BR_PA_PATH}/Disable-requests-for-single-word-Omnibar-searches.patch"
 			"${BR_PA_PATH}/Reduce-HTTP-headers-in-DoH-requests-to-bare-minimum.patch"
-			"${BR_PA_PATH}/Hardening-against-incognito-mode-detection.patch"
 			"${BR_PA_PATH}/Client-hints-overrides.patch"
 			"${BR_PA_PATH}/Disable-idle-detection.patch"
 			"${BR_PA_PATH}/Disable-TLS-resumption.patch"
@@ -683,15 +665,15 @@ src_prepare() {
 
 	fi
 
-	if [[ ${LLVM_SLOT} == "19" ]]; then
-		# Upstream now hard depend on a feature that was added in LLVM 20.1, but we don't want to stabilise that yet.
-		# Do the temp file shuffle in case someone is using something other than `gawk`
-		{
-			awk '/config\("clang_warning_suppression"\) \{/	{ print $0 " }"; sub(/clang/, "xclang"); print; next }
-				{ print }' build/config/compiler/BUILD.gn > "${T}/build.gn" && \
-				mv "${T}/build.gn" build/config/compiler/BUILD.gn
-		} || die "Unable to disable warning suppression"
-	fi
+	# if [[ ${LLVM_SLOT} == "19" ]]; then
+	# 	# Upstream now hard depend on a feature that was added in LLVM 20.1, but we don't want to stabilise that yet.
+	# 	# Do the temp file shuffle in case someone is using something other than `gawk`
+	# 	{
+	# 		awk '/config\("clang_warning_suppression"\) \{/	{ print $0 " }"; sub(/clang/, "xclang"); print; next }
+	# 			{ print }' build/config/compiler/BUILD.gn > "${T}/build.gn" && \
+	# 			mv "${T}/build.gn" build/config/compiler/BUILD.gn
+	# 	} || die "Unable to disable warning suppression"
+	# fi
 
 	# Not included in -lite tarballs, but we should check for it anyway.
 	if [[ -f third_party/node/linux/node-linux-x64/bin/node ]]; then
@@ -717,8 +699,9 @@ src_prepare() {
 
 	if use system-abseil-cpp; then
 		eapply_wrapper "${FILESDIR}/chromium-system-abseil.patch"
+		eapply_wrapper "${FILESDIR}/chromium-138-system-abseil.patch"
 		cp -f /usr/include/absl/base/options.h third_party/abseil-cpp/absl/base/options.h
-		sed -i '/^#define ABSL_OPTION_USE_STD_OPTIONAL.*$/{s++#define ABSL_OPTION_USE_STD_OPTIONAL 0+;h};${x;/./{x;q0};x;q1}' \
+		sed -i '/^#define ABSL_OPTION_USE_STD_ORDERING.*$/{s++#define ABSL_OPTION_USE_STD_ORDERING 1+;h};${x;/./{x;q0};x;q1}' \
 			third_party/abseil-cpp/absl/base/options.h || die
 	fi
 
@@ -885,7 +868,11 @@ src_prepare() {
 		third_party/ced
 		third_party/cld_3
 		third_party/closure_compiler
-		third_party/compiler-rt # Since M137 atomic is required; we could probably unbundle this as a target of opportunity.
+	)
+	use libcxx && keeplibs+=(
+		third_party/compiler-rt
+	)
+	keeplibs+=(
 		third_party/content_analysis_sdk
 		third_party/cpuinfo
 		third_party/crabbyavif
@@ -930,8 +917,8 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/wasmparser
 		third_party/devtools-frontend/src/front_end/third_party/web-vitals
 		third_party/devtools-frontend/src/third_party
-		third_party/distributed_point_functions
 		third_party/dom_distiller_js
+		third_party/dragonbox
 		third_party/eigen3
 		third_party/emoji-segmenter
 		third_party/farmhash
@@ -1083,7 +1070,6 @@ src_prepare() {
 		third_party/tensorflow_models
 		third_party/tensorflow-text
 		third_party/tflite
-		third_party/tflite/src/third_party/eigen3
 		third_party/tflite/src/third_party/fft2d
 		third_party/tflite/src/third_party/xla/third_party/tsl
 		third_party/tflite/src/third_party/xla/xla/tsl/framework
@@ -1103,7 +1089,6 @@ src_prepare() {
 		third_party/webrtc/modules/third_party/fft
 		third_party/webrtc/modules/third_party/g711
 		third_party/webrtc/modules/third_party/g722
-		third_party/webrtc/rtc_base/third_party/base64
 		third_party/webrtc/rtc_base/third_party/sigslot
 		third_party/widevine
 	)
@@ -1359,6 +1344,7 @@ src_configure() {
 		absl_base
 		absl_cleanup
 		absl_container
+		absl_crc
 		absl_debugging
 		absl_flags
 		absl_functional
@@ -1470,8 +1456,6 @@ src_configure() {
 	# Chromium builds provided by Linux distros) should disable the testing config
 	myconf_gn+=" disable_fieldtrial_testing_config=true"
 
-	myconf_gn+=" use_gold=false"
-
 	# The sysroot is the oldest debian image that chromium supports, we don't need it
 	myconf_gn+=" use_sysroot=false"
 
@@ -1480,6 +1464,7 @@ src_configure() {
 		myconf_gn+=" use_custom_libcxx=true"
 	else
 		myconf_gn+=" use_custom_libcxx=false"
+		myconf_gn+=" use_llvm_libatomic=false"
 		append-cppflags -U_GLIBCXX_ASSERTIONS #See #318
 	fi
 
@@ -1510,7 +1495,6 @@ src_configure() {
 	myconf_gn+=" build_with_tflite_lib=false"
 	myconf_gn+=" enable_mdns=false"
 	myconf_gn+=" enable_mse_mpeg2ts_stream_parser=$(usex proprietary-codecs true false)"
-	myconf_gn+=" enable_reading_list=false"
 	myconf_gn+=" enable_remoting=false"
 	myconf_gn+=" enable_reporting=false"
 	myconf_gn+=" enable_service_discovery=false"
@@ -1532,6 +1516,10 @@ src_configure() {
 	myconf_gn+=" enable_chromium_prelude=false"
 	myconf_gn+=" enable_updater=false"
 	myconf_gn+=" enable_update_notifications=false"
+	myconf_gn+=" enable_video_effects=false"
+	myconf_gn+=" enable_constraints=false"
+	myconf_gn+=" rtc_rusty_base64=false"
+	myconf_gn+=" v8_enable_temporal_support=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"
@@ -1671,7 +1659,7 @@ src_configure() {
 	else
 		myconf_gn+=" use_system_minigbm=true"
 		myconf_gn+=" use_xkbcommon=true"
-		if use qt5 || use qt6; then
+		if use qt6; then
 			local cbuild_libdir=$(get_libdir)
 			if tc-is-cross-compiler; then
 				# Hack to workaround get_libdir not being able to handle CBUILD, bug #794181
@@ -1679,21 +1667,10 @@ src_configure() {
 				cbuild_libdir=${cbuild_libdir:2}
 				cbuild_libdir=${cbuild_libdir/% }
 			fi
-			if use qt5; then
-				if tc-is-cross-compiler; then
-					myconf_gn+=" moc_qt5_path=\"${EPREFIX}/${cbuild_libdir}/qt5/bin\""
-				else
-					myconf_gn+=" moc_qt5_path=\"$(qt5_get_bindir)\""
-				fi
-			fi
-			if use qt6; then
-				myconf_gn+=" moc_qt6_path=\"${EPREFIX}/usr/${cbuild_libdir}/qt6/libexec\""
-			fi
-
-			myconf_gn+=" use_qt=true"
-			myconf_gn+=" use_qt6=$(usex qt6 true false)"
+			myconf_gn+=" use_qt6=true"
+			myconf_gn+=" moc_qt6_path=\"${EPREFIX}/usr/${cbuild_libdir}/qt6/libexec\""
 		else
-			myconf_gn+=" use_qt=false"
+			myconf_gn+=" use_qt6=false"
 		fi
 		myconf_gn+=" ozone_platform_x11=$(usex X true false)"
 		myconf_gn+=" ozone_platform_wayland=$(usex wayland true false)"
@@ -1925,10 +1902,39 @@ pkg_postinst() {
 
 	if ! use headless; then
 		if use vaapi; then
-			elog "VA-API is disabled by default at runtime. You have to enable it"
-			elog "by adding --enable-features=VaapiVideoDecoder and "
-			elog "--disable-features=UseChromeOSDirectVideoDecoder to CHROMIUM_FLAGS"
-			elog "in /etc/chromium/default."
+			elog "Hardware-accelerated video decoding configuration:"
+			elog
+			elog "Chromium supports multiple backends for hardware acceleration. To enable one,"
+			elog "   Add to CHROMIUM_FLAGS in /etc/chromium/default:"
+			elog
+			elog "1. VA-API with OpenGL (recommended for most users):"
+			elog "   --enable-features=AcceleratedVideoDecodeLinuxGL"
+			elog "   VaapiVideoDecoder may need to be added as well, but try without first."
+			elog
+			if use wayland; then
+				elog "2. Enhanced Wayland/EGL performance:"
+				elog "   --enable-features=AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL"
+				elog
+			fi
+			if use X; then
+				elog "$(usex wayland "3" "2"). VA-API with Vulkan:"
+				elog "   --enable-features=VaapiVideoDecoder,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE"
+				elog
+				if use wayland; then
+					elog "   NOTE: Vulkan acceleration requires X11 and will not work under Wayland sessions."
+					elog "   Use OpenGL-based acceleration instead when running under Wayland."
+					elog
+				fi
+			fi
+			elog "Additional options:"
+			elog "  To enable hardware-accelerated encoding (if supported)"
+			elog "  add 'AcceleratedVideoEncoder' to your feature list"
+			elog "  VaapiIgnoreDriverChecks bypasses driver compatibility checks"
+			elog "  (may be needed for newer/unsupported hardware)"
+			elog
+		else
+			elog "This Chromium build was compiled without VA-API support, which provides"
+			elog "hardware-accelerated video decoding."
 		fi
 		if use screencast; then
 			elog "Screencast is disabled by default at runtime. Either enable it"
@@ -1947,12 +1953,6 @@ pkg_postinst() {
 		if use widevine; then
 			elog "widevine requires binary plugins, which are distributed separately"
 			elog "Make sure you have www-plugins/chrome-binary-plugins installed"
-		fi
-		if use qt5 && use qt6; then
-			elog "Chromium automatically selects Qt5 or Qt6 based on your desktop"
-			elog "environment. To override you need to pass --qt-version=5 or"
-			elog "--qt-version=6, e.g. by adding it to CHROMIUM_FLAGS in"
-			elog "/etc/chromium/default."
 		fi
 	fi
 }

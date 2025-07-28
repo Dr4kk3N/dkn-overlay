@@ -5,14 +5,13 @@ HOMEPAGE="https://dart.dev/"
 IUSE=""
 SRC_URI="  
   amd64? ( https://storage.googleapis.com/dart-archive/channels/stable/release/${PV}/sdk/dartsdk-linux-x64-release.zip -> ${P}.amd64.zip )
-  x86? ( https://storage.googleapis.com/dart-archive/channels/stable/release/${PV}/sdk/dartsdk-linux-ia32-release.zip -> ${P}.x86.zip )
   arm? ( https://storage.googleapis.com/dart-archive/channels/stable/release/${PV}/sdk/dartsdk-linux-arm-release.zip -> ${P}.arm.zip )
   arm64? ( https://storage.googleapis.com/dart-archive/channels/stable/release/${PV}/sdk/dartsdk-linux-arm64-release.zip -> ${P}.arm64.zip )
   riscv? ( https://storage.googleapis.com/dart-archive/channels/stable/release/${PV}/sdk/dartsdk-linux-riscv64-release.zip -> ${P}.riscv.zip )
 " 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm ~arm64 ~riscv"
+KEYWORDS="~amd64 ~arm ~arm64 ~riscv"
 RDEPEND="app-arch/unzip"
 DEPEND=""
 S="${WORKDIR}/dart-sdk"
