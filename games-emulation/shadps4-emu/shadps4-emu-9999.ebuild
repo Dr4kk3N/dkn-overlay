@@ -22,11 +22,14 @@ then
 			  'externals/date' \
 			  'externals/dear_imgui' \
 			  'externals/discord-rpc' \
+			  'externals/epoll-shim' \
 			  'externals/ext-boost' \
+			  'externals/ext-libusb' \
 			  'externals/ffmpeg-core' \
 			  'externals/fmt' \
 			  'externals/glslang' \
 			  'externals/half' \
+			  'externals/hwinfo' \
 			  'externals/libpng' \
 			  'externals/magic_enum' \
 			  'externals/pugixml' \
