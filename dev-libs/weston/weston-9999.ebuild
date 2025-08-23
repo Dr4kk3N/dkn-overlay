@@ -73,8 +73,8 @@ RDEPEND="
 	)
 	systemd? ( sys-apps/systemd )
 	vnc? (
-		=dev-libs/aml-0.3*
-		=gui-libs/neatvnc-0.8*
+		dev-libs/aml
+		gui-libs/neatvnc
 		sys-libs/pam
 	)
 	vulkan? (

@@ -47,7 +47,7 @@ src_configure() {
 
 src_compile() {
 	emake -f Makefile.libretro
-#        #libretro-core_src_compile
+#	libretro-core_src_compile
 }
 
 src_install() {
