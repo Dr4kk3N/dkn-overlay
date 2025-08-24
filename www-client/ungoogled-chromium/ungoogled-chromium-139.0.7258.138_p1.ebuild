@@ -25,7 +25,7 @@ DESCRIPTION="Modifications to Chromium for removing Google integration and enhan
 HOMEPAGE="https://github.com/ungoogled-software/ungoogled-chromium"
 LITE_TARBALL=1
 PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
-PATCH_V="${PV%%\.*}-1"
+PATCH_V="${PV%%\.*}"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz
 	https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PATCH_V}/chromium-patches-${PATCH_V}.tar.bz2
 	ppc64? (
@@ -57,21 +57,19 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="27acc7538bce26a8a2531e7aa0ba5b6b156254f9"
+#UGC_COMMIT_ID="803eb8c3f510bc70534910636acfb812b6bb9e0d"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="bd85e1d8092b493c5aa87292c98065aba3087112"
+CROMITE_COMMIT_ID="8b0ce0bcfdca08fb2ebb937d31c80d68488343f8"
 
-# CHROMIUM_COMMITS=(
-# 	b85c9c11c561d4b45a7d3083a4e63e65f9ffeff3 #138+
-# 	4a007f6c1a2f601a88262255c802e5b20edfd2a7 #138+
-# 	4c736420952f355f18bdc4f4ea2d16e4514fa034 #138+
-# 	2a82a46692e9ec825138a8cdecc758e29449f67d #138+
-# 	48b64da89b3ecb7ccb576a334b19b3066dd2b793 #138+
-# )
+declare -A CHROMIUM_COMMITS=(
+	["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
+	# ["33af9dc7d2801995990d1bb36ef1d98e3f80ca18"]="." #133+
+	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
+)
 
 UGC_PV="${PV/_p/-}"
 UGC_PF="${PN}-${UGC_PV}"
@@ -96,34 +94,37 @@ if [ ! -z "${UGC_PR_COMMITS[*]}" ]; then
 fi
 
 if [ ! -z "${CHROMIUM_COMMITS[*]}" ]; then
-	for i in "${CHROMIUM_COMMITS[@]}"; do
-	# for i in "${!CHROMIUM_COMMITS[@]}"; do
-		# if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
-		# #TODO: is it safe to use this mirror?
-		# SRC_URI+="https://github.com/webrtc-mirror/webrtc/commit/${i/-}.patch?full_index=true -> webrtc-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
-		# SRC_URI+="https://github.com/google/angle/commit/${i/-}.patch?full_index=true -> angle-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
-		# SRC_URI+="https://github.com/google/quiche/commit/${i/-}.patch?full_index=true -> quiche-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
-		# SRC_URI+="https://github.com/google/dawn/commit/${i/-}.patch?full_index=true -> dawn-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
-		# SRC_URI+="https://github.com/google/ink/commit/${i/-}.patch?full_index=true -> ink-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
-		# SRC_URI+="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/commit/${i/-}.patch?full_index=true -> vulkan-utility-libraries-${i/-}.patch
-		# "
-		# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
-		# SRC_URI+="https://github.com/google/ruy/commit/${i/-}.patch?full_index=true -> ruy-${i/-}.patch
-		# "
-		# else
+	# for i in "${CHROMIUM_COMMITS[@]}"; do
+	for i in "${!CHROMIUM_COMMITS[@]}"; do
+		if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
+		#TODO: is it safe to use this mirror?
+		SRC_URI+="https://github.com/webrtc-mirror/webrtc/commit/${i/-}.patch?full_index=true -> webrtc-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
+		SRC_URI+="https://github.com/google/angle/commit/${i/-}.patch?full_index=true -> angle-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
+		SRC_URI+="https://github.com/google/quiche/commit/${i/-}.patch?full_index=true -> quiche-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
+		SRC_URI+="https://github.com/google/dawn/commit/${i/-}.patch?full_index=true -> dawn-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ perfetto ]]; then
+		SRC_URI+="https://github.com/google/perfetto/commit/${i/-}.patch?full_index=true -> perfetto-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
+		SRC_URI+="https://github.com/google/ink/commit/${i/-}.patch?full_index=true -> ink-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
+		SRC_URI+="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/commit/${i/-}.patch?full_index=true -> vulkan-utility-libraries-${i/-}.patch
+		"
+		elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
+		SRC_URI+="https://github.com/google/ruy/commit/${i/-}.patch?full_index=true -> ruy-${i/-}.patch
+		"
+		else
 		SRC_URI+="https://github.com/chromium/chromium/commit/${i/-}.patch?full_index=true -> chromium-${i/-}.patch
 		"
-		# fi
+		fi
 	done
 fi
 
@@ -454,7 +455,6 @@ src_prepare() {
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
-		"${FILESDIR}/chromium-137-openh264-include-path.patch"
 		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
@@ -464,16 +464,15 @@ src_prepare() {
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
 		"${FILESDIR}/chromium-132-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
-		"${FILESDIR}/chromium-132-optional-lens.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
 		"${FILESDIR}/chromium-137-fix-for-kde.patch"
-		"${FILESDIR}/chromium-138-fontations.patch"
-		"${FILESDIR}/chromium-138-no-rust.patch"
-		"${FILESDIR}/chromium-138-crabby.patch"
-		"${FILESDIR}/chromium-138-gcc.patch"
 		"${FILESDIR}/chromium-134-stdatomic.patch"
 		"${FILESDIR}/chromium-137-constexpr.patch"
 		"${FILESDIR}/font-gc-asan.patch"
+		"${FILESDIR}/chromium-139-no-rust.patch"
+		"${FILESDIR}/chromium-139-fontations.patch"
+		"${FILESDIR}/chromium-139-gcc.patch"
+		"${FILESDIR}/chromium-139-crabby.patch"
 	)
 
 	#shopt -s globstar nullglob
@@ -515,26 +514,28 @@ src_prepare() {
 	ewarn
 
 	if [ ! -z "${CHROMIUM_COMMITS[*]}" ]; then
-		for i in "${CHROMIUM_COMMITS[@]}"; do
-		# for i in "${!CHROMIUM_COMMITS[@]}"; do
-			# if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
-			# 	patch_prefix="webrtc"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
-			# 	patch_prefix="angle"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
-			# 	patch_prefix="quiche"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
-			# 	patch_prefix="dawn"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
-			# 	patch_prefix="ink"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
-			# 	patch_prefix="vulkan-utility-libraries"
-			# elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
-			# 	patch_prefix="ruy"
-			# else
+		# for i in "${CHROMIUM_COMMITS[@]}"; do
+		for i in "${!CHROMIUM_COMMITS[@]}"; do
+			if [[ ${CHROMIUM_COMMITS[$i]} =~ webrtc ]]; then
+				patch_prefix="webrtc"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ angle ]]; then
+				patch_prefix="angle"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ quiche ]]; then
+				patch_prefix="quiche"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ dawn ]]; then
+				patch_prefix="dawn"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ perfetto ]]; then
+				patch_prefix="perfetto"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ ink ]]; then
+				patch_prefix="ink"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ vulkan-utility-libraries ]]; then
+				patch_prefix="vulkan-utility-libraries"
+			elif [[ ${CHROMIUM_COMMITS[$i]} =~ ruy ]]; then
+				patch_prefix="ruy"
+			else
 				patch_prefix="chromium"
-			# fi
-			# pushd "${CHROMIUM_COMMITS[$i]}" > /dev/null || die
+			fi
+			pushd "${CHROMIUM_COMMITS[$i]}" > /dev/null || die
 			if [[ $i = -*  ]]; then
 				einfo "Reverting ${patch_prefix}-${i/-}.patch"
 				git_wrapper apply -R --exclude="*unittest.cc" --exclude="DEPS" \
@@ -544,7 +545,7 @@ src_prepare() {
 				git_wrapper apply --exclude="*unittest.cc" --exclude="DEPS" \
 					-p1 < "${DISTDIR}/${patch_prefix}-${i/-}.patch"
 			fi
-			# popd > /dev/null || die
+			popd > /dev/null || die
 		done
 	fi
 
@@ -562,7 +563,7 @@ src_prepare() {
 
 	if use system-ffmpeg; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-135-opus.patch"
+			"${FILESDIR}/chromium-139-opus.patch"
 			"${FILESDIR}/chromium-135-hevc.patch"
 		)
 		sed -i "\!AVFMT_FLAG_NOH264PARSE!d" media/filters/ffmpeg_glue.cc || die
@@ -812,7 +813,6 @@ src_prepare() {
 		base/third_party/xdg_user_dirs
 		buildtools/third_party/libc++
 		buildtools/third_party/libc++abi
-		chrome/third_party/mozilla_security_manager
 	)
 	use cromite && keeplibs+=(
 		cromite_flags/third_party
@@ -996,9 +996,9 @@ src_prepare() {
 		third_party/mako
 		third_party/markupsafe
 		third_party/material_color_utilities
-		third_party/mesa
 		third_party/metrics_proto
 		third_party/minigbm
+		third_party/ml_dtypes
 		third_party/modp_b64
 		third_party/nasm
 		third_party/nearby
@@ -1036,6 +1036,7 @@ src_prepare() {
 		third_party/pyjson5
 		third_party/pyyaml
 		third_party/rapidhash
+		third_party/readability
 		third_party/rnnoise
 		third_party/ruy
 		third_party/s2cellid
@@ -1074,6 +1075,7 @@ src_prepare() {
 		third_party/tflite/src/third_party/xla/third_party/tsl
 		third_party/tflite/src/third_party/xla/xla/tsl/framework
 		third_party/tflite/src/third_party/xla/xla/tsl/lib/random
+		third_party/tflite/src/third_party/xla/xla/tsl/platform
 		third_party/tflite/src/third_party/xla/xla/tsl/protobuf
 		third_party/tflite/src/third_party/xla/xla/tsl/util
 		third_party/ukey2
@@ -1211,9 +1213,7 @@ src_prepare() {
 		done
 	fi
 
-	if use cromite ; then
-		keeplibs+=( third_party/ungoogled )
-	fi
+	keeplibs+=( third_party/ungoogled )
 
 	# Remove most bundled libraries. Some are still needed.
 	einfo "Unbundling third-party libraries ..."
@@ -1324,9 +1324,6 @@ src_configure() {
 	# Component build isn't generally intended for use by end users. It's mostly useful
 	# for development and debugging.
 	myconf_gn+=" is_component_build=false"
-
-	# Disable nacl, we can't build without pnacl (http://crbug.com/269560).
-	myconf_gn+=" enable_nacl=false"
 
 	local gn_system_libraries=(
 		flac
