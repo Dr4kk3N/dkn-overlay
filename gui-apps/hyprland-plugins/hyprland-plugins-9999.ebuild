@@ -22,7 +22,8 @@ fi
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+borders-plus-plus csgo-vulkan-fix +hyprbars hyprexpo hyprtrails hyprwinwrap X"
+IUSE="+borders-plus-plus csgo-vulkan-fix hyprfocus hyprscrolling xtra-dispatchers +hyprbars hyprexpo hyprtrails hyprwinwrap X"
+
 REQUIRED_USE="|| ( borders-plus-plus csgo-vulkan-fix hyprbars )"
 
 RDEPEND="gui-wm/hyprland"
@@ -34,8 +35,7 @@ BDEPEND="~gui-wm/hyprland-${PV}
 "
 
 src_compile() {
-	emake -C "${WORKDIR}/hyprland-source" protocols
-	export HYPRLAND_HEADERS="${WORKDIR}/hyprland-source"
+	export HYPRLAND_HEADERS="${WORKDIR}/hyprland-plugins-9999"
 
 	if use borders-plus-plus; then
 		emake -C "${S}/borders-plus-plus" all
@@ -44,6 +44,18 @@ src_compile() {
 	if use csgo-vulkan-fix; then
 		emake -C "${S}/csgo-vulkan-fix" all
 	fi
+
+	if use hyprfocus; then
+                emake -C "${S}/hyprfocus" all
+        fi
+
+	if use hyprscrolling; then
+                emake -C "${S}/hyprscrolling" all
+        fi
+
+	if use xtra-dispatchers; then
+                emake -C "${S}/xtra-dispatchers" all
+        fi
 
 	if use hyprbars; then
 		emake -C "${S}/hyprbars" all
@@ -72,6 +84,18 @@ src_install() {
 	if use csgo-vulkan-fix; then
 		doins "${S}/csgo-vulkan-fix/csgo-vulkan-fix.so"
 	fi
+
+	if use hyprfocus; then
+                doins "${S}/hyprfocus/hyprfocus.so"
+        fi
+
+	if use hyprscrolling; then
+                doins "${S}/hyprscrolling/hyprscrolling.so"
+        fi
+
+	if use xtra-dispatchers; then
+                doins "${S}/xtra-dispatchers/xtra-dispatchers.so"
+        fi
 
 	if use hyprbars; then
 		doins "${S}/hyprbars/hyprbars.so"
