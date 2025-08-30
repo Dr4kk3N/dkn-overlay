@@ -11,7 +11,7 @@ HOMEPAGE="https://github.com/WayfireWM/wayfire"
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/WayfireWM/${PN}.git"
-	SLOT="0/0.10"
+	SLOT="0/0.11"
 else
 	SRC_URI="https://github.com/WayfireWM/${PN}/releases/download/v${PV}/${P}.tar.xz"
 	KEYWORDS="~amd64 ~arm64 ~riscv"
@@ -19,7 +19,7 @@ else
 fi
 
 LICENSE="MIT"
-IUSE="+dbus +gles3 test X"
+IUSE="+dbus +gles3 openmp test X"
 RESTRICT="!test? ( test )"
 
 # bundled wlroots has the following dependency string according to included headers.
@@ -37,6 +37,8 @@ CDEPEND="
 	media-libs/glm
 	media-libs/libglvnd
 	media-libs/libjpeg-turbo:=
+	media-libs/vulkan-loader
+	virtual/libudev:=
 	media-libs/libpng:=
 	x11-libs/cairo
 	x11-libs/libxkbcommon
@@ -57,7 +59,21 @@ DEPEND="
 BDEPEND="
 	dev-util/wayland-scanner
 	virtual/pkgconfig
+	openmp? (
+		|| (
+			sys-devel/gcc[openmp]
+			llvm-core/clang-runtime[openmp]
+		)
+	)
 "
+
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
+
+pkg_setup() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
 
 src_prepare() {
 	default
@@ -74,6 +90,7 @@ src_configure() {
 		$(meson_feature test tests)
 		$(meson_feature X xwayland)
 		$(meson_use gles3 enable_gles32)
+		$(meson_use openmp enable_openmp)
 		-Duse_system_wfconfig=enabled
 		-Duse_system_wlroots=enabled
 	)
@@ -95,4 +112,6 @@ src_install() {
 
 	insinto "/etc"
 	doins "${FILESDIR}"/wayfire.env
+
+	strip-lto-bytecode
 }

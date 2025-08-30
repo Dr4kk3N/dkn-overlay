@@ -18,8 +18,8 @@ DEPEND="dev-qt/qtcore:5
 	dev-qt/qtgui:5
 	dev-qt/qtmultimedia:5
 	>=media-libs/munt-mt32emu-2.6.0
-	alsa? ( media-libs/alsa-lib )
-	pulseaudio? ( media-sound/pulseaudio )"
+	alsa? ( media-libs/alsa-lib )"
+
 RDEPEND="${DEPEND}"
 S="${WORKDIR}/munt-${MY_P}/mt32emu_qt"
 
