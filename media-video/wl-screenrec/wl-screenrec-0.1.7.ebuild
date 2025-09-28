@@ -106,7 +106,7 @@ CRATES="
 	windows_x86_64_msvc@0.52.6
 "
 
-LLVM_COMPAT=( {16..19} )
+LLVM_COMPAT=( {16..20} )
 RUST_NEEDS_LLVM=1
 
 inherit cargo shell-completion llvm-r1
