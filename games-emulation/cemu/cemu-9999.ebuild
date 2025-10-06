@@ -3,7 +3,7 @@
 
 EAPI=8
 
-LLVM_COMPAT=( {15..19} )
+LLVM_COMPAT=( {15..20} )
 LLVM_OPTIONAL=1
 
 inherit cmake llvm-r1 desktop xdg
