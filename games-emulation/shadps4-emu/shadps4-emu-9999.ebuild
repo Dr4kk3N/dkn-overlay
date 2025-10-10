@@ -4,7 +4,7 @@
 EAPI=8
 
 QTMIN=6.7.1
-LLVM_COMPAT=( {17..19} )
+LLVM_COMPAT=( {17..20} )
 LLVM_OPTIONAL=1
 
 inherit cmake desktop xdg fcaps flag-o-matic llvm-r1 toolchain-funcs
