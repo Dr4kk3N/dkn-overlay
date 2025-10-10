@@ -1,0 +1,17 @@
+diff --git a/input/bsv/bsvmovie.c b/input/bsv/bsvmovie.c
+index c2b0bd818f..e147f53b43 100644
+--- a/input/bsv/bsvmovie.c
++++ b/input/bsv/bsvmovie.c
+@@ -382,11 +382,7 @@ bool bsv_movie_load_checkpoint(bsv_movie_t *handle, uint8_t compression, uint8_t
+ #ifdef HAVE_ZLIB
+       case REPLAY_CHECKPOINT2_COMPRESSION_ZLIB:
+          {
+-#ifdef EMSCRIPTEN
+             uLongf uncompressed_size_zlib = encoded_size;
+-#else
+-            uint32_t uncompressed_size_zlib = encoded_size;
+-#endif
+             encoded_data = calloc(encoded_size, sizeof(uint8_t));
+             if (uncompress(encoded_data, &uncompressed_size_zlib, compressed_data, compressed_encoded_size) != Z_OK)
+             {
+
