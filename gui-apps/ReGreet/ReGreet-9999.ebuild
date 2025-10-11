@@ -96,7 +96,7 @@ src_install() {
 	dodoc "${WORKDIR}/${P}/regreet.sample.toml"
 
 	# Create README.gentoo doc file
-	readme.gentoo_create_doc
+	#readme.gentoo_create_doc
 
 	elog "ReGreet sample config file available on: /usr/share/doc/${P}/regreet.sample.toml.bz2"
 	elog "To use decompress it to /etc/greetd/regreet.toml"
@@ -110,5 +110,5 @@ src_post_install () {
 	fi
 
 	# Print README.gentoo file in the elog
-	readme.gentoo_print_elog
+	#readme.gentoo_print_elog
 }
