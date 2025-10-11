@@ -1,4 +1,4 @@
-# Copyright 2020-2024 Gentoo Authors
+# Copyright 2020-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: kernel-install.eclass
@@ -82,7 +82,7 @@ _IDEPEND_BASE="
 LICENSE="GPL-2"
 if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 	IUSE+=" generic-uki modules-compress"
-	# https://github.com/AndrewAmmerlaan/dist-kernel-log-to-licenses
+	# https://github.com/Nowa-Ammerlaan/dist-kernel-log-to-licenses
 	# This script can help with generating the array below, keep in mind
 	# that it is not a fully automatic solution, i.e. use flags will
 	# still have to handled manually.
@@ -162,9 +162,10 @@ if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 		["sys-apps/rng-tools"]="GPL-2"
 		["sys-apps/sed"]="GPL-3+"
 		["sys-apps/shadow"]="BSD GPL-2"
-		["sys-apps/systemd[boot(-),cryptsetup,pkcs11,policykit,tpm,ukify(-)]"]="GPL-2 LGPL-2.1 MIT public-domain"
+		[">=sys-apps/systemd-257[boot(-),cryptsetup,pkcs11,policykit,tpm,ukify(-)]"]="GPL-2 LGPL-2.1 MIT public-domain"
 		["sys-apps/util-linux"]="GPL-2 GPL-3 LGPL-2.1 BSD-4 MIT public-domain"
 		["sys-auth/polkit"]="LGPL-2"
+		["sys-boot/plymouth[drm,systemd(+),udev]"]="GPL-2+"
 		["sys-block/nbd"]="GPL-2"
 		["sys-devel/gcc"]="GPL-3+ LGPL-3+ || ( GPL-3+ libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.3+"
 		["sys-fs/btrfs-progs"]="GPL-2"
@@ -190,6 +191,7 @@ if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 		["sys-libs/readline"]="GPL-3+"
 		["sys-libs/zlib"]="ZLIB"
 		["sys-process/procps"]="GPL-2+ LGPL-2+ LGPL-2.1+"
+		["x11-libs/libdrm"]="MIT"
 		["amd64? ( sys-firmware/intel-microcode )"]="amd64? ( intel-ucode )"
 		["x86? ( sys-firmware/intel-microcode )"]="x86? ( intel-ucode )"
 	)
@@ -202,6 +204,7 @@ if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 	"
 	IDEPEND="
 		generic-uki? (
+			app-crypt/sbsigntools
 			>=sys-kernel/installkernel-14[-dracut(-),-ugrd(-),-ukify(-)]
 		)
 		!generic-uki? (
@@ -260,10 +263,15 @@ kernel-install_can_update_symlink() {
 	# strip KV_LOCALVERSION, we want to update the old kernels not using
 	# KV_LOCALVERSION suffix and the new kernels using it
 	symlink_ver=${symlink_ver%${KV_LOCALVERSION}}
+	symlink_ver=${symlink_ver/-p/_p}
+	# strip -p* revision
+	local symlink_ver_no_rev=${symlink_ver%_p[0-9]*}
+	local rev=${symlink_ver#${symlink_ver_no_rev}}
+	rev=${rev#_p}
 
-	# if ${symlink_ver} contains anything but numbers (e.g. an extra
-	# suffix), it's not our kernel, so leave it alone
-	[[ -n ${symlink_ver//[0-9.]/} ]] && return 1
+	# if ${symlink_ver} contained anything but numbers and revision (e.g.
+	# an extra suffix), it's not our kernel, so leave it alone
+	[[ -n ${symlink_ver_no_rev//[0-9.]/} || -n ${rev//[0-9]/} ]] && return 1
 
 	local symlink_pkg=${CATEGORY}/${PN}-${symlink_ver}
 	# if the current target is either being replaced, or still
@@ -475,7 +483,11 @@ kernel-install_test() {
 	esac
 
 	if [[ ${KERNEL_IUSE_MODULES_SIGN} ]]; then
-		use modules-sign && qemu_extra_append+=" module.sig_enforce=1"
+		# If KERNEL_IUSE_MODULES_SIGN, but no IUSE=modules-sign,
+		# then this is gentoo-kernel-bin test phase with signed mods.
+		if ! in_iuse modules-sign || use modules-sign; then
+			qemu_extra_append+=" module.sig_enforce=1"
+		fi
 	fi
 
 	cat > run.sh <<-EOF || die
@@ -605,6 +617,15 @@ kernel-install_pkg_preinst() {
 	[[ ! -d ${kernel_dir} ]] &&
 		die "Kernel directory ${kernel_dir} not installed!"
 
+	# We moved this in order to omit it from the binpkg, move it back
+	if [[ -r "${T}/signing_key.pem" ]]; then
+		# cp instead of mv to set owner to root in one go
+		(
+			umask 066 &&
+				cp "${T}/signing_key.pem" "${kernel_dir}/certs/signing_key.pem"
+		) || die
+	fi
+
 	# perform the version check for release ebuilds only
 	if [[ ${PV} != *9999 ]]; then
 		local expected_ver=$(dist-kernel_PV_to_KV "${PV}")
@@ -649,13 +670,54 @@ kernel-install_extract_from_uki() {
 	local extract_type=${1}
 	local uki=${2}
 	local out=${3}
+	local out_temp=${T}/${extract_type}-section-dumped
 
 	# objcopy overwrites input if there is no output, dump the output in T.
 	# We unfortunately cannot use /dev/null here
 	$(tc-getOBJCOPY) "${uki}" "${T}/dump.efi" \
-		--dump-section ".${extract_type}=${out}" ||
-		die "Failed to extract ${extract_type}"
-	chmod 644 "${out}" || die
+		--dump-section ".${extract_type}=${out_temp}" ||
+			die "Failed to extract ${extract_type}"
+
+	# Sanity checks for kernel images
+	if [[ -n ${SECUREBOOT_SIGN_CERT} && ${extract_type} == linux ]] &&
+		{ ! in_iuse secureboot || use secureboot ;}
+	then
+		# Check if the signature on the UKI is valid
+		sbverify --cert "${SECUREBOOT_SIGN_CERT}" "${uki}" ||
+			die "ERROR: UKI signature is invalid"
+
+		# Check if the signature on the kernel image is valid
+		local sbverify_err=$(
+			sbverify --cert "${SECUREBOOT_SIGN_CERT}" "${out_temp}" 2>&1 >/dev/null
+		)
+
+		# Check if there was a padding warning
+		if [[ ${sbverify_err} == "warning: data remaining"*": gaps between PE/COFF sections?"* ]]
+		then
+			# https://github.com/systemd/systemd/issues/35851
+			local proper_size=${sbverify_err#"warning: data remaining["}
+			proper_size=${proper_size%" vs"*}
+			# Strip the padding
+			head "${out_temp}" --bytes "${proper_size}" \
+				>"${out_temp}_trimmed" || die
+			# Check if the signature verifies now
+			sbverify_err=$(
+				sbverify --cert "${SECUREBOOT_SIGN_CERT}" "${out_temp}_trimmed" 2>&1 >/dev/null
+			)
+			[[ -z ${sbverify_err} ]] && out_temp=${out_temp}_trimmed
+		fi
+
+		# Something has gone wrong, stop here to prevent installing a kernel
+		# with an invalid signature or a completely broken kernel image.
+		if [[ -n ${sbverify_err} ]]; then
+			eerror "${sbverify_err}"
+			die "ERROR: Kernel image signature is invalid"
+		else
+			einfo "Signature verification OK"
+		fi
+	fi
+
+	install -m 644 "${out_temp}" "${out}" || die
 }
 
 # @FUNCTION: kernel-install_install_all
@@ -671,10 +733,19 @@ kernel-install_install_all() {
 	local dir_ver=${1}
 	local kernel_dir=${EROOT}/usr/src/linux-${dir_ver}
 	local relfile=${kernel_dir}/include/config/kernel.release
+	local kernel_cert=${kernel_dir}/certs/signing_key.x509
 	local image_path=$(dist-kernel_get_image_path)
 	local image_dir=${image_path%/*}
 	local module_ver
 	module_ver=$(<"${relfile}") || die
+
+	if [[ ! -r ${SECUREBOOT_SIGN_CERT} && -s ${kernel_cert} ]]; then
+		openssl x509 \
+			-inform DER -in "${kernel_cert}" \
+			-outform PEM -out "${T}/cert.pem" ||
+				die "Failed to convert kernel certificate to PEM format"
+			export SECUREBOOT_SIGN_CERT=${T}/cert.pem
+	fi
 
 	if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 		if use generic-uki; then
@@ -714,9 +785,7 @@ kernel-install_pkg_postinst() {
 	dist-kernel_compressed_module_cleanup \
 		"${EROOT}/lib/modules/${KV_FULL}"
 
-	if [[ -z ${ROOT} ]]; then
-		kernel-install_install_all "${KV_FULL}"
-	fi
+	kernel-install_install_all "${KV_FULL}"
 
 	if [[ ${KERNEL_IUSE_GENERIC_UKI} ]] && use generic-uki; then
 		ewarn "The prebuilt initramfs and unified kernel image are highly experimental!"
@@ -738,22 +807,23 @@ kernel-install_pkg_postinst() {
 kernel-install_pkg_postrm() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	if [[ -z ${ROOT} && ! ${KERNEL_IUSE_GENERIC_UKI} ]]; then
-		local kernel_dir=${EROOT}/usr/src/linux-${KV_FULL}
-		local image_path=$(dist-kernel_get_image_path)
+	local kernel_dir=${EROOT}/usr/src/linux-${KV_FULL}
+	local image_path=$(dist-kernel_get_image_path)
+	if [[ ! ${KERNEL_IUSE_GENERIC_UKI} && -d ${kernel_dir} ]]; then
 		ebegin "Removing initramfs"
 		rm -f "${kernel_dir}/${image_path%/*}"/{initrd,uki.efi} &&
 			find "${kernel_dir}" -depth -type d -empty -delete
 		eend ${?}
 	fi
+
+	# Clean up dead symlinks
+	find -L "${EROOT}/lib/modules/${KV_FULL}" -type l -delete
 }
 
 # @FUNCTION: kernel-install_pkg_config
 # @DESCRIPTION:
 # Rebuild the initramfs and reinstall the kernel.
 kernel-install_pkg_config() {
-	[[ -z ${ROOT} ]] || die "ROOT!=/ not supported currently"
-
 	if [[ -z ${KV_FULL} ]]; then
 		KV_FULL=${PV}${KV_LOCALVERSION}
 	fi
