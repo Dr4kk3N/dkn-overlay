@@ -6,7 +6,7 @@ EAPI=8
 inherit edo multilib-minimal flag-o-matic toolchain-funcs
 
 # Make sure that this matches the number of components in ${PV}
-WXRELEASE="$(ver_cut 1-2)-gtk3"			# 3.2-gtk3
+WXRELEASE="$(ver_cut 1-2)-gtk3"			# 3.3-gtk3
 
 DESCRIPTION="GTK version of wxWidgets, a cross-platform C++ GUI toolkit"
 HOMEPAGE="https://wxwidgets.org/"
@@ -77,7 +77,10 @@ PATCHES=(
 multilib_src_configure() {
 	# defang automagic dependencies, bug #927952
 	use wayland || append-cflags -DGENTOO_GTK_HIDE_WAYLAND -DGENTOO_GTK_HIDE_X11
-	use gui || aappend-cflags -DGENTOO_GTK_HIDE_WAYLAND -DGENTOO_GTK_HIDE_X11
+	use gui || append-cflags -DGENTOO_GTK_HIDE_WAYLAND -DGENTOO_GTK_HIDE_X11
+
+	# bug #952961
+	tc-is-lto && filter-flags -fno-semantic-interposition
 
 	# Workaround for bug #915154
 	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
@@ -86,10 +89,10 @@ multilib_src_configure() {
 	local myeconfargs=(
 		--with-zlib=sys
 		--with-expat=sys
-		--disable-compat30
-		--disable-compat32
+		--enable-compat30
+		--enable-compat32
 		--enable-xrc
-		--disable-symver
+		#--disable-symver
 		$(use_with sdl)
 		$(use_with lzma liblzma)
 		# Currently defaults to curl, could change.  Watch the VDB!
@@ -198,13 +201,13 @@ multilib_src_install_all() {
 	rm "${ED}"/usr/bin/wx-config || die
 	rm "${ED}"/usr/bin/wxrc || die
 	# wxwin.m4 is owned by eselect-wxwidgets
-	mv "${ED}"/usr/share/aclocal/wxwin.m4 "${ED}"/usr/share/aclocal/wxwin32-gtk3.m4 || die
+	mv "${ED}"/usr/share/aclocal/wxwin.m4 "${ED}"/usr/share/aclocal/wxwin33-gtk3.m4 || die
 
 	# version bakefile presets
 	pushd "${ED}"/usr/share/bakefile/presets >/dev/null || die
 	local f
 	for f in wx*; do
-		mv "${f}" "${f/wx/wx32gtk3}" || die
+		mv "${f}" "${f/wx/wx33gtk3}" || die
 	done
 	popd >/dev/null || die
 }
