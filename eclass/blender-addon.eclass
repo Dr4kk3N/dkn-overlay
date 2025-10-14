@@ -23,7 +23,7 @@ esac
 if [[ ! ${_BLENDER_ADDON_ECLASS} ]]; then
 _BLENDER_ADDON_ECLASS=1
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{10..13} )
 
 inherit git-r3 vcs-clean python-single-r1 cg-blender-scripts-dir
 
@@ -47,7 +47,7 @@ _GENTOO_BLENDER_ADDONS_HOME=()
 # @INTERNAL
 # @DESCRIPTION:
 # All possible implementations of blender
-_BLENDER_ALL_IMPLS=( 2_93 3_{0..6} 4_{0..2} )
+_BLENDER_ALL_IMPLS=( 2_93 3_{0..6} 4_{0..5} 5_0 )
 readonly _BLENDER_ALL_IMPLS
 
 # @ECLASS_VARIABLE: _BLENDER_ALL_IMPLS
@@ -128,7 +128,7 @@ blender-addon_src_install() {
 	fi
 
 	for (( i = ${#_GENTOO_BLENDER_ADDONS_HOME[@]} - 1; i >= 0; i-- )); do
-		python_optimize
+		python_optimize "${ED}"
 		insinto ${_GENTOO_BLENDER_ADDONS_HOME[i]}/addons/${PN}
 		diropts -g users -m0775
 		doins -r "${ADDON_SOURCE_SUBDIR}"/*
@@ -148,7 +148,7 @@ blender-addon_pkg_postinst() {
 	elog "Each blender slot will use this single directory for the addons."
 	elog "Please, set this value to PreferencesFilePaths.scripts_directory"
 	elog "More info you can find at page "
-	elog "https://docs.blender.org/manual/en/3.4/editors/preferences/file_paths.html#data"
+	elog "https://docs.blender.org/manual/en/4.4/editors/preferences/file_paths.html#data"
 }
 
 # @FUNCTION: blender-addon_pkg_postrm
