@@ -28,7 +28,6 @@ QA_PREBUILT="
 	opt/${PN}/plugins/android-ndk/resources/lldb/lib/*
 	opt/${PN}/plugins/android-ndk/resources/lldb/lib/python3.10/lib-dynload/*
 	opt/${PN}/plugins/android-ndk/resources/lldb/lib64/*
-	opt/${PN}/plugins/c-clangd-plugin/bin/clang/linux/x64/bin/*
 	opt/${PN}/plugins/design-tools/resources/layoutlib/data/linux/lib64/*
 	opt/${PN}/plugins/webp/lib/libwebp/linux/*
 "
@@ -86,9 +85,9 @@ RDEPEND="
 
 DEPEND=${RDEPEND}
 
-PATCHES=(
-	"${FILESDIR}/${PN}-jdk.patch"
-)
+#PATCHES=(
+#	"${FILESDIR}/${PN}-jdk.patch"
+#)
 
 src_prepare() {
 	default
@@ -111,7 +110,8 @@ src_install() {
 	insinto "${dir}"
 	doins -r *
 
-	fperms 755 "${dir}"/bin/{fsnotifier,restarter,studio,format.sh,game-tools.sh,inspect.sh,ltedit.sh,profiler.sh,studio.sh}
+	fperms 755 "${dir}"/bin/{fsnotifier,restarter,studio,format.sh}
+	fperms 755 "${dir}"/bin/{game-tools.sh,inspect.sh,ltedit.sh,profiler.sh,studio.sh}
 	fperms -R 755 "${dir}"/bin/{helpers,lldb}
 	fperms -R 755 "${dir}"/jbr/bin
 	fperms 755 "${dir}"/jbr/lib/{jexec,jspawnhelper}
@@ -122,7 +122,6 @@ src_install() {
 	fperms -R 755 "${dir}"/plugins/android/resources/trace_processor_daemon
 	fperms -R 755 "${dir}"/plugins/android/resources/transport/{arm64-v8a,armeabi-v7a,x86,x86_64}
 	fperms -R 755 "${dir}"/plugins/android-ndk/resources/lldb/{android,bin,lib,shared}
-	fperms 755 "${dir}"/plugins/c-clangd/bin/clang/linux/x64/bin/clangd
 
 	newicon "bin/studio.png" "${PN}.png"
 
@@ -138,8 +137,9 @@ src_install() {
 
 	# https://developer.android.com/studio/command-line/variables
 	newenvd - 99android-studio-canary <<-EOF
+		# Disables it, as it seems no longer needed
 		# Configuration file android-studio-canary
-		STUDIO_JDK_CANARY="${dir}/jbr"
+		# STUDIO_JDK_CANARY="${dir}/jbr"
 	EOF
 }
 
