@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,17 +57,17 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="803eb8c3f510bc70534910636acfb812b6bb9e0d"
+UGC_COMMIT_ID="11b9b4f0eb6efa7e98f032dec2294c9a169c49b8"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="8b0ce0bcfdca08fb2ebb937d31c80d68488343f8"
+CROMITE_COMMIT_ID="a679a6763b80caf6bf9abce73851930ac8e49470"
 
 declare -A CHROMIUM_COMMITS=(
-	["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
-	# ["33af9dc7d2801995990d1bb36ef1d98e3f80ca18"]="." #133+
+	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
+	["02e8e8253b1dbb622f0db7faddafc5bbb11036e1"]="." #142+
 	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
 )
 
@@ -293,7 +293,7 @@ BDEPEND="
 		pgo? ( >llvm-core/clang-19.0.0_pre20240518 >llvm-core/lld-19.0.0_pre20240518	)
 		!pgo? ( llvm-core/clang llvm-core/lld )
 	)
-	cfi? ( llvm-core/clang-runtime[sanitize] )
+	cfi? ( llvm-runtimes/clang-runtime[sanitize] )
 "
 
 if ! has chromium_pkg_die ${EBUILD_DEATH_HOOKS}; then
@@ -437,6 +437,60 @@ src_unpack() {
 	fi
 }
 
+remove_compiler_builtins() {
+	# We can't use the bundled compiler builtins with the system toolchain
+	# We used to `grep` then `sed`, but it was indirect. Combining the two into a single
+	# `awk` command is more efficient and lets us document the logic more clearly.
+
+	local pattern='    configs += [ "//build/config/clang:compiler_builtins" ]'
+	local target='build/config/compiler/BUILD.gn'
+
+	# Create a secure temporary file to store the output.
+	local tmpfile
+	tmpfile=$(mktemp) || die "Failed to create temporary file."
+
+	if awk -v pat="${pattern}" '
+	BEGIN {
+		match_found = 0
+	}
+
+	# If the delete countdown is active, decrement it and skip to the next line.
+	d > 0 { d--; next }
+
+	# If the current line matches the pattern...
+	$0 == pat {
+		match_found = 1   # ...set our flag to true.
+		d = 2             # Set delete counter for this line and the next two.
+		prev = ""         # Clear the buffered previous line so it is not printed.
+		next
+	}
+
+	# For any other line, print the buffered previous line.
+	NR > 1 { print prev }
+
+	# Buffer the current line to be printed on the next cycle.
+	{ prev = $0 }
+
+	END {
+		# Print the last line if it was not part of a deleted block.
+		if (d == 0) { print prev }
+
+		# If the pattern was never found, exit with a failure code.
+		if (match_found == 0) {
+		exit 1
+		}
+	}
+	' "${target}" > "${tmpfile}"; then
+		# AWK SUCCEEDED (exit code 0): The pattern was found and edited.
+		# This is to avoid gawk's `-i inplace` option which users complain about.
+		mv "${tmpfile}" "${target}"
+	else
+		# AWK FAILED (exit code 1): The pattern was not found.
+		rm -f "${tmpfile}"
+		die "Awk patch failed: Pattern not found in ${target}."
+	fi
+}
+
 src_prepare() {
 	# Calling this here supports resumption via FEATURES=keepwork
 	python_setup
@@ -454,25 +508,24 @@ src_prepare() {
 		"${FILESDIR}/chromium-111-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
-		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
 		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
+		"${FILESDIR}/chromium-142-cssstylesheet.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
-		"${FILESDIR}/chromium-123-qrcode.patch"
+		"${FILESDIR}/chromium-141-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
 		"${FILESDIR}/chromium-127-cargo_crate.patch"
-		"${FILESDIR}/chromium-128-gtk-fix-prefers-color-scheme-query.patch"
+		"${FILESDIR}/chromium-140-gtk-fix-prefers-color-scheme-query.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
-		"${FILESDIR}/chromium-132-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
-		"${FILESDIR}/chromium-137-fix-for-kde.patch"
+		"${FILESDIR}/chromium-141-fix-for-kde.patch"
 		"${FILESDIR}/chromium-134-stdatomic.patch"
 		"${FILESDIR}/chromium-137-constexpr.patch"
 		"${FILESDIR}/font-gc-asan.patch"
-		"${FILESDIR}/chromium-139-no-rust.patch"
-		"${FILESDIR}/chromium-139-fontations.patch"
-		"${FILESDIR}/chromium-139-gcc.patch"
-		"${FILESDIR}/chromium-139-crabby.patch"
+		"${FILESDIR}/chromium-141-crabby.patch"
+		"${FILESDIR}/chromium-141-no-rust.patch"
+		"${FILESDIR}/chromium-141-fontations.patch"
+		"${FILESDIR}/chromium-141-gcc.patch"
 	)
 
 	#shopt -s globstar nullglob
@@ -486,6 +539,8 @@ src_prepare() {
 	#		fi
 	#done
 	#shopt -u globstar nullglob
+
+	remove_compiler_builtins
 
 	# Strictly speaking this doesn't need to be gated (no bundled toolchain for ppc64); it keeps the logic together
 	if use ppc64; then
@@ -510,6 +565,7 @@ src_prepare() {
 
 	ewarn
 	ewarn "Fontations Rust font stack is disabled"
+	ewarn "Profile importer is disabled"
 	ewarn "Using media-libs/libavif instead of CrabbyAvif"
 	ewarn
 
@@ -551,19 +607,19 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r4.patch"
+			"${FILESDIR}/disable-bluez-r5.patch"
 		)
 	fi
 
 	if use convert-dict ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-ucf-dict-utility-r1.patch"
+			"${FILESDIR}/chromium-ucf-dict-utility-r2.patch"
 		)
 	fi
 
 	if use system-ffmpeg; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-139-opus.patch"
+			"${FILESDIR}/chromium-141-opus-mp3.patch"
 			"${FILESDIR}/chromium-135-hevc.patch"
 		)
 		sed -i "\!AVFMT_FLAG_NOH264PARSE!d" media/filters/ffmpeg_glue.cc || die
@@ -692,6 +748,14 @@ src_prepare() {
 		build/linux/unbundle/replace_gn_files.py || die
 	sed -i '/^.*deps.*third_party\/jsoncpp.*$/{s++public_deps \+= [ "//third_party/jsoncpp" ]+;h};${x;/./{x;q0};x;q1}' \
 		third_party/webrtc/rtc_base/BUILD.gn || die
+
+	cp -f "${FILESDIR}/rust_static_library.gni" build/rust || die
+	cp -f "${FILESDIR}/json_parser.cc" base/json || die
+	cp -f "${FILESDIR}/json_parser.h" base/json || die
+	cp -f "${FILESDIR}/avif_image_decoder.cc" third_party/blink/renderer/platform/image-decoders/avif || die
+	cp -f "${FILESDIR}/avif_image_decoder.h" third_party/blink/renderer/platform/image-decoders/avif || die
+	cp -f "${FILESDIR}/font_format_check.cc" third_party/blink/renderer/platform/fonts/opentype || die
+	cp -f "${FILESDIR}/font_format_check.h" third_party/blink/renderer/platform/fonts/opentype || die
 
 	if use override-data-dir; then
 		sed -i '/"chromium";/{s++"ungoogled-chromium";+;h};${x;/./{x;q0};x;q1}' \
@@ -910,8 +974,7 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/package/lib/esm/third_party/mitt
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/package/lib/esm/third_party/parsel-js
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/package/lib/esm/third_party/rxjs
-		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/mitt
-		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/rxjs
+		third_party/devtools-frontend/src/front_end/third_party/source-map-scopes-codec
 		third_party/devtools-frontend/src/front_end/third_party/third-party-web
 		third_party/devtools-frontend/src/front_end/third_party/vscode.web-custom-data
 		third_party/devtools-frontend/src/front_end/third_party/wasmparser
@@ -924,6 +987,10 @@ src_prepare() {
 		third_party/farmhash
 		third_party/fast_float
 		third_party/fdlibm
+		third_party/federated_compute/src/fcp/base
+		third_party/federated_compute/src/fcp/confidentialcompute
+		third_party/federated_compute/src/fcp/protos/confidentialcompute
+		third_party/federated_compute/src/fcp/protos/federatedcompute
 		third_party/fft2d
 		third_party/flatbuffers
 		third_party/fp16
@@ -1004,6 +1071,8 @@ src_prepare() {
 		third_party/nearby
 		third_party/neon_2_sse
 		third_party/node
+		third_party/oak/chromium/proto
+		third_party/oak/chromium/proto/attestation
 		third_party/omnibox_proto
 		third_party/one_euro_filter
 		third_party/openscreen
@@ -1081,7 +1150,6 @@ src_prepare() {
 		third_party/ukey2
 		third_party/utf
 		third_party/vulkan
-		third_party/wasm_tts_engine
 		third_party/wayland
 		third_party/webdriver
 		third_party/webgpu-cts
@@ -1105,11 +1173,11 @@ src_prepare() {
 		third_party/zlib/google
 		third_party/zxcvbn-cpp
 		url/third_party/mozilla
-		v8/third_party/siphash
-		v8/third_party/utf8-decoder
 		v8/third_party/glibc
 		v8/third_party/inspector_protocol
 		v8/third_party/rapidhash-v8
+		v8/third_party/siphash
+		v8/third_party/utf8-decoder
 		v8/third_party/v8
 		v8/third_party/valgrind
 
@@ -1253,7 +1321,7 @@ src_configure() {
 	fi
 
 	if tc-is-clang; then
-		myconf_gn+=" is_clang=true clang_use_chrome_plugins=false"
+		myconf_gn+=" is_clang=true clang_use_chrome_plugins=false use_clang_modules=false"
 	else
 		myconf_gn+=" is_clang=false"
 	fi
@@ -1299,7 +1367,6 @@ src_configure() {
 
 	# Disable rust for now; it's only used for testing and we don't need the additional bdep
 	myconf_gn+=" enable_rust=false"
-	myconf_gn+=" enable_rust_png=false"
 
 	# GN needs explicit config for Debug/Release as opposed to inferring it from build directory.
 	myconf_gn+=" is_debug=$(usex debug true false)"
@@ -1516,7 +1583,9 @@ src_configure() {
 	myconf_gn+=" enable_video_effects=false"
 	myconf_gn+=" enable_constraints=false"
 	myconf_gn+=" rtc_rusty_base64=false"
+	myconf_gn+=" enable_rust_mojo=false"
 	myconf_gn+=" v8_enable_temporal_support=false"
+	myconf_gn+=" media_use_symphonia=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"
@@ -1972,9 +2041,10 @@ git_wrapper () {
 
 filter_wrapper () {
 	einfo "Applying ${i##*/}"
+	#? fuzz factor of 3 is OK?
 	if [ ! -z "${NODIE}" ]; then
-		filterdiff -p1 "${@:2}" < "$1" | patch -p1
+		filterdiff -p1 "${@:2}" < "$1" | patch -F 3 -p1
 	else
-		filterdiff -p1 "${@:2}" < "$1" | patch -p1 || die
+		filterdiff -p1 "${@:2}" < "$1" | patch -F 3 -p1 || die
 	fi
 }
