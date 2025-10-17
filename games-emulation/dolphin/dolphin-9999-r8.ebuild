@@ -21,6 +21,7 @@ if [[ ${PV} == *9999 ]]; then
 		Externals/zlib-ng/zlib-ng
 		Externals/minizip-ng/minizip-ng
 		Externals/rcheevos/rcheevos
+		Externals/SFML/SFML
 		#Externals/xxhash/xxHash
 	)
 else
@@ -33,6 +34,7 @@ else
 	ZLIB_NG_COMMIT=ce01b1e41da298334f8214389cc9369540a7560f
 	MINIZIP_NG_COMMIT=3eed562ef0ea3516db30d1c8ecb0e1b486d8cb70
 	RCHEEVOS_COMMIT=d54cf8f1059cebc90a6f5ecdf03df69259f2205
+	SFML_COMMIT=016bea9491ccafc3529019fe1d403885a8b3a6ae
 	#XXHASH_COMMIT=bbb27a5efb85b92a0486cf361a8635715a53f6ba
 	SRC_URI="
 		https://github.com/dolphin-emu/dolphin/archive/${EGIT_COMMIT}.tar.gz
@@ -162,6 +164,7 @@ declare -A KEEP_BUNDLED=(
 	[Vulkan-Headers]="|| ( Apache-2.0 MIT )"
 	[VulkanMemoryAllocator]=MIT
 	[rcheevos]=MIT
+	[SFML]=ZLIB
 	# [xxhash]=BSD-2
 )
 
@@ -261,7 +264,7 @@ src_configure() {
 		-DUSE_SYSTEM_SPNG=ON
 		-DUSE_SYSTEM_CUBEB=ON
 		-DUSE_SYSTEM_LIBUSB=ON
-		-DUSE_SYSTEM_SFML=ON
+		-DUSE_SYSTEM_SFML=OFF
 		-DUSE_SYSTEM_MBEDTLS=ON
 		-DUSE_SYSTEM_CURL=ON
 		-DUSE_SYSTEM_ICONV=ON
