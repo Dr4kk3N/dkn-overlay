@@ -1,49 +1,38 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # shellcheck disable=SC2034
 
 EAPI=8
 
-USE_PHP="php8-1"
-
 inherit bash-completion-r1 xdg-utils
 
 DESCRIPTION="Phoronix's comprehensive, cross-platform testing and benchmark suite"
-HOMEPAGE="http://www.phoronix-test-suite.com"
+HOMEPAGE="https://www.phoronix-test-suite.com"
+
+if [[ ${PV} == *9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/${PN}/${PN}.git"
+else
+	SRC_URI="https://github.com/${PN}/${PN}/releases/download/v${PV}/${P}.tar.gz -> ${P}.gh.tar.gz"
+	KEYWORDS="~amd64"
+
+	S="${WORKDIR}/${PN}"
+fi
 
 LICENSE="GPL-3"
 SLOT="0"
 
-if [[ ${PV} == "9999" ]] ; then
-	EGIT_REPO_URI="https://github.com/${PN}/${PN}.git"
-	EGIT3_STORE_DIR="${T}"
-	inherit git-r3
-	SRC_URI=""
-	KEYWORDS=""
-else
-	major_version="$(ver_cut 1-3)"
-	minor_version="$(ver_cut 4-5)"
-	MY_PV="${major_version}"
-	MY_P="${PN}-${MY_PV}"
-	KEYWORDS="~amd64 ~x86"
-	if [ -n "${minor_version}" ]; then
-		MY_PV="${MY_PV}${minor_version/pre/m}"
-		MY_P="${MY_P}${minor_version/pre/m}"
-	fi
-	SRC_URI="https://github.com/phoronix-test-suite/${PN}/archive/v${MY_PV}.tar.gz -> ${MY_P}.tar.gz"
-	S="${WORKDIR}/${MY_P}"
-	unset -v minor_version major_version
-fi
-
 IUSE="sdl"
 
-DEPEND=""
 RDEPEND="${DEPEND}
-		app-arch/p7zip
+		|| (
+			>=app-arch/7zip-24.09[symlink(+)]
+			app-arch/p7zip
+		)
 		media-libs/libpng
-		>=dev-lang/php-8.1[cli,curl,gd,sqlite,posix,pcntl,sockets,ssl,truetype,xml,zip,zlib]
-		dev-php/fpdf
+		>=dev-lang/php-5.3[cli,curl,gd,posix,pcntl,simplexml,sockets,ssl,truetype,xml,zip,zlib]
+		www-servers/apache
 		x11-base/xorg-server
 		sdl? (
 			media-libs/libsdl
@@ -62,11 +51,11 @@ check_php_config()
 	for slot in $(eselect --brief php list cli); do
 		local php_dir="/etc/php/cli-${slot}"
 
-		if [[ -f "${EROOT%/}${php_dir}/php.ini" ]]; then
+		if [[ -f "${EROOT%}/${php_dir}/php.ini" ]]; then
 			dodir "${php_dir}"
-			cp -f "${EROOT%/}${php_dir}/php.ini" "${ED%/}${php_dir}/php.ini" \
+			cp -f "${EROOT%}/${php_dir}/php.ini" "${ED%}/${php_dir}/php.ini" \
 					|| die "cp failed: copy php.ini file"
-			sed -i -e 's|^allow_url_fopen .*|allow_url_fopen = On|g' "${ED%/}${php_dir}/php.ini" \
+			sed -i -e 's|^allow_url_fopen .*|allow_url_fopen = On|g' "${ED%}/${php_dir}/php.ini" \
 					|| die "sed failed: modify php.ini file"
 		elif [[ "$(eselect php show cli)" == "${slot}" ]]; then
 			ewarn "${slot} does not have a php.ini file."
@@ -87,20 +76,21 @@ get_optional_dependencies()
 	(($# == 1)) || die "${FUNCNAME[0]}(): invalid number of arguments: ${#} (1)"
 
 	local -a array_package_names
-	local field_value ifield package_generic_name optional_packages_xmlline package_names installable_packages=""
+	local field_value ifield package_generic_name optional_packages_xmlline packages installable_packages=""
 	local package_close_regexp="</Package>" \
 		  package_generic_name_regexp="^.*<GenericName>|</GenericName>.*$" \
 		  package_names_regexp="^.*<PackageName>|</PackageName>.*$"
+		  reg='s@(^[[:blank:]]+|[[:blank:]]+$)$@@g'
 
 	line=0
 	while IFS=$'\n' read -r optional_packages_xmlline; do
 		if [[ "${optional_packages_xmlline}" =~ ${package_generic_name_regexp} ]]; then
 			package_generic_name="$(echo "${optional_packages_xmlline}" | sed -r "s@${package_generic_name_regexp}@@g")"
 		elif [[ "${optional_packages_xmlline}" =~ ${package_names_regexp} ]]; then
-			package_names="$(echo "${optional_packages_xmlline}" | sed -r -e "s@${package_names_regexp}@@g" -e 's@(^[[:blank:]]+|[[:blank:]]+$)$@@g' )"
+			packages="$(echo "${optional_packages_xmlline}" | sed -r -e "s@${package_names_regexp}@@g" -e "${reg}" )"
 			ifield=0
 			# shellcheck disable=SC2206
-			array_package_names=( ${package_names} )
+			array_package_names=( ${packages} )
 			for (( ifield=0 ; ifield < ${#array_package_names[@]} ; ++ifield )); do
 				field_value="${array_package_names[ifield]}"
 				[[ ${field_value} =~ ^.+/.+$ ]]	|| continue	# skip invalid package atoms
@@ -129,7 +119,7 @@ src_install() {
 	# Store the contents of this file - since it will be installed / deleted before we need it.
 	GENTOO_OPTIONAL_PKGS_XML="$(cat "${S}/pts-core/external-test-dependencies/xml/gentoo-packages.xml")"
 	newbashcomp pts-core/static/bash_completion "${PN}"
-	DESTDIR="${D}" "${S}/install-sh" "${EPREFIX%/}/usr"
+	DESTDIR="${D}" "${S}/install-sh" "${EPREFIX%}/usr"
 
 	# Fix the cli-php config for downloading to work.
 	check_php_config
@@ -138,8 +128,13 @@ src_install() {
 pkg_postinst() {
 	xdg_icon_cache_update
 	xdg_mimeinfo_database_update
+	xdg_desktop_database_update
 
 	ewarn "${PN} has the following optional package dependencies:"
 	get_optional_dependencies "${GENTOO_OPTIONAL_PKGS_XML}"
 	unset -v GENTOO_OPTIONAL_PKGS_XML
+}
+
+pkg_postrm() {
+	xdg_desktop_database_update
 }

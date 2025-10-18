@@ -170,7 +170,7 @@ src_install() {
         doins -r "${BUILD_DIR}"/.
         fperms +x /opt/shadps4/shadps4
 	insopts -m0755
-	dosym "/opt/shadps4/shadps4" "/usr/bin/shadps4"
+	dosym "/opt/shadps4/shadps4" "/opt/bin/shadps4"
 
 	use !test || rm "${ED}"/opt/${PN}/*_test || die
 }
