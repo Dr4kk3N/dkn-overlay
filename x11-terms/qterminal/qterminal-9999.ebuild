@@ -26,6 +26,7 @@ DEPEND="
 	>=dev-qt/qtbase-6.6:6=[dbus,gui,widgets,X]
 	kde-plasma/layer-shell-qt:6
 	x11-libs/libX11
+	media-libs/libcanberra
 	~x11-libs/qtermwidget-${PV}:=
 "
 RDEPEND="${DEPEND}"
