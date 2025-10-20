@@ -10,10 +10,10 @@ HOMEPAGE="https://zdoom.org"
 
 if ver_test -eq "9999"; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/coelckers/${PN}.git"
+	EGIT_REPO_URI="https://github.com/UZDoom/${PN}.git"
 	KEYWORDS=""
 else
-	SRC_URI="https://github.com/coelckers/${PN}/archive/g${PV}.tar.gz -> ${P}.tar.gz"
+	SRC_URI="https://github.com/${PN}/archive/g${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~arm64"
 fi
 
@@ -37,9 +37,9 @@ if ver_test -ne "9999"; then
 	S="${WORKDIR}/${PN}-g${PV}"
 fi
 
-PATCHES=(
-	"${FILESDIR}/${P}-Introduce-the-BUILD_NONFREE-option.patch"
-)
+#PATCHES=(
+#	"${FILESDIR}/${P}-Introduce-the-BUILD_NONFREE-option.patch"
+#)
 
 src_unpack() {
 	if ver_test -eq "9999"; then
@@ -87,7 +87,7 @@ src_configure() {
 
 src_install() {
 	newicon src/posix/zdoom.xpm "${PN}.xpm"
-	make_desktop_entry "${PN}" "GZDoom" "${PN}" "Game;ActionGame"
+	make_desktop_entry "${PN}" "UZDoom" "${PN}" "Game;ActionGame"
 	cmake_src_install
 }
 
@@ -96,10 +96,10 @@ pkg_postinst() {
 
 	if ! use non-free ; then
 		ewarn
-		ewarn "GZDoom installed without non-free components."
+		ewarn "UZDoom installed without non-free components."
 		ewarn "Note: The non-free game_support.pk3 file is needed to play"
 		ewarn "      games natively supported by GZDoom."
-		ewarn "A list of games natively supported by GZDoom is available"
+		ewarn "A list of games natively supported by UGZDoom is available"
 		ewarn "on the ZDoom wiki: https://zdoom.org/wiki/IWAD"
 		ewarn
 	fi
