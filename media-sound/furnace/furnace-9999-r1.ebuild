@@ -17,7 +17,7 @@ else
 # version of adpcm. adpcm doesn't seem to update frequently.
 	SRC_URI="
 		https://github.com/tildearrow/furnace/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-        	https://github.com/superctr/adpcm/archive/ef7a217154badc3b99978ac481b268c8aab67bd8.tar.gz -> ${P}-adpcm-ef7a217.tar.gz
+		https://github.com/superctr/adpcm/archive/ef7a217154badc3b99978ac481b268c8aab67bd8.tar.gz -> ${P}-adpcm-ef7a217.tar.gz
 	"
 	KEYWORDS="~amd64 ~x86"
 fi
@@ -35,7 +35,7 @@ RDEPEND="
 	media-libs/portaudio
 	media-libs/mesa
 	media-libs/rtmidi
-	media-sound/pulseaudio
+	media-sound/pipewire
 	x11-themes/hicolor-icon-theme
 	sci-libs/fftw
 	sys-libs/zlib

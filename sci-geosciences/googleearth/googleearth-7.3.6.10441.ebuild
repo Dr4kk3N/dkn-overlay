@@ -21,6 +21,7 @@ QA_PREBUILT="*"
 
 RDEPEND="
 	dev-libs/glib:2
+	=dev-libs/libxml2-2.13.9:2=
 	dev-libs/nspr
 	media-libs/fontconfig
 	media-libs/freetype

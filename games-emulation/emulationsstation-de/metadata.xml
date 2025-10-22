@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pkgmetadata>
+  <use>
+    <flag name="auto_updater">Enable built-in application updater feature.</flag>
+    <flag name="deinit">Deinit renderer,application window and audio when an emulator is launched.</flag>
+    <flag name="debug">Create a debug build.</flag>
+    <flag name="profiling">Create a profiling build.</flag>
+    <flag name="asan">Enable AddressSanitizer.</flag>
+    <flag name="video_hw">Enable experimental ffmpeg video hardware decoding support.</flag>
+  </use>
+</pkgmetadata>
