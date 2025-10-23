@@ -19,7 +19,7 @@ fi
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-IUSE="dark"
+#IUSE="dark"
 RESTRICT="binchecks strip test"
 
 BDEPEND="dev-lang/sassc"
@@ -36,8 +36,8 @@ DOCS=(
 	README.md
 )
 
-src_configure() {
-	local emesonargs=( $(meson_use dark) )
-
-	meson_src_configure
-}
+#src_configure() {
+#	local emesonargs=( $(meson_use dark) )
+#
+#	meson_src_configure
+#}

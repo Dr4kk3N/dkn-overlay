@@ -1,0 +1,13 @@
+diff --git a/externals/glad/CMakeLists.txt b/externals/glad/CMakeLists.txt
+index 0c8e285..d5a3da4 100644
+--- a/externals/glad/CMakeLists.txt
++++ b/externals/glad/CMakeLists.txt
+@@ -7,7 +7,6 @@ add_library(glad
+     include/glad/glad.h
+ )
+ 
+-create_target_directory_groups(glad)
+ target_include_directories(glad PUBLIC "include/")
+ 
+ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+

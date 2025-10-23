@@ -91,6 +91,11 @@ src_unpack() {
 }
 
 src_prepare() {
+
+        kernel-2_src_prepare
+         eapply -p1 "${FILESDIR}/yuzu-dirty_glad.patch"
+         eapply_user
+
 	# temporary fix
 	sed -i -e '/Werror/d' src/CMakeLists.txt || die
 

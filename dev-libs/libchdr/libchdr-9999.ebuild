@@ -15,12 +15,19 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND="sys-libs/zlib:="
+RDEPEND="
+	sys-libs/zlib:=
+	app-arch/zstd:=
+	>=media-libs/plutovg-1.1.0
+	>=media-libs/plutovg-0.0.7"
+
+
 DEPEND="${RDEPEND}"
 
 src_configure() {
 	local mycmakeargs=(
 		-DWITH_SYSTEM_ZLIB=yes
+		-DWITH_SYSTEM_ZSTD=yes
 	)
 
 	cmake_src_configure
