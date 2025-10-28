@@ -92,22 +92,3 @@ Index: premake-core-5.0.0-beta2/modules/gmake2/tests/test_gmake2_ldflags.lua
  
 Index: premake-core-5.0.0-beta2/src/tools/gcc.lua
 ===================================================================
---- premake-core-5.0.0-beta2.orig/src/tools/gcc.lua
-+++ premake-core-5.0.0-beta2/src/tools/gcc.lua
-@@ -477,16 +477,10 @@
- 		architecture = {
- 			x86 = function (cfg)
- 				local r = {}
--				if not table.contains(os.getSystemTags(cfg.system), "darwin") then
--					table.insert (r, "-L/usr/lib32")
--				end
- 				return r
- 			end,
- 			x86_64 = function (cfg)
- 				local r = {}
--				if not table.contains(os.getSystemTags(cfg.system), "darwin") then
--					table.insert (r, "-L/usr/lib64")
--				end
- 				return r
- 			end,
- 		},
