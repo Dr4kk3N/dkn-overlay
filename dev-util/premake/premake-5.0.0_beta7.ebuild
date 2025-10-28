@@ -17,7 +17,7 @@ SLOT="5"
 KEYWORDS="amd64 ~arm64 ppc ~ppc64 x86"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-5.0.0-remove-hardcoded-libpath.patch"
+#	"${FILESDIR}/${PN}-5.0.0-remove-hardcoded-libpath.patch"
 	"${FILESDIR}/${PN}-5.0.0-c99.patch"
 )
 
