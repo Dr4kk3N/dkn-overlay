@@ -19,9 +19,9 @@ SLOT="0"
 DEPEND="dev-libs/glib"
 RDEPEND="${DEPEND}"
 BDEPEND="virtual/pkgconfig"
-PATCHES=(
-	"${FILESDIR}/libglibutil-1.0.67-r3-respect-env.patch"
-)
+#PATCHES=(
+#	"${FILESDIR}/libglibutil-1.0.67-r3-respect-env.patch"
+#)
 
 src_compile() {
 	emake LIBDIR="/usr/$(get_libdir)"

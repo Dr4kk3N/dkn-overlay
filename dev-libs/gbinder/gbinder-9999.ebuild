@@ -27,9 +27,10 @@ RDEPEND="${DEPEND}"
 BDEPEND="virtual/pkgconfig
 	sys-apps/sed"
 
-PATCHES=(
-	"${FILESDIR}/gbinder-1.1.30-r3-respect-env.patch"
-)
+#PATCHES=(
+#	"${FILESDIR}/gbinder-1.1.30-r3-respect-env.patch"
+#)
+
 src_prepare() {
 	default
 	sed -i -e "s|ranlib|$(tc-getRANLIB)|" \

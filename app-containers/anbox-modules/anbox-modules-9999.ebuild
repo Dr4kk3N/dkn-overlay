@@ -8,7 +8,7 @@ inherit linux-mod-r1
 DESCRIPTION="Anbox kernel modules (ashmem and binder) fork"
 HOMEPAGE="https://github.com/choff/anbox-modules"
 
-if [[ "${PV}" == "99999999" ]]; then
+if [[ "${PV}" == "9999" ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/choff/anbox-modules"
 else
@@ -22,7 +22,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 src_compile() {
-	local modlist=( ashmem_linux=updates:ashmem binder_linux=updates:binder )
+	local modlist=( binder_linux=updates:binder )
 	local modargs=( KERNEL_SRC="${KV_OUT_DIR}" )
 
 	linux-mod-r1_src_compile
