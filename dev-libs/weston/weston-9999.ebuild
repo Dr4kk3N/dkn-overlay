@@ -112,7 +112,7 @@ pkg_setup() {
 src_configure() {
 	local emesonargs=(
 		$(meson_use drm backend-drm)
-		-Dbackend-drm-screencast-vaapi=false
+#		-Dbackend-drm-screencast-vaapi=false
 		$(meson_use headless backend-headless)
 		$(meson_use pipewire backend-pipewire)
 		$(meson_use rdp backend-rdp)
