@@ -1,4 +1,4 @@
-# Copyright 2023-2025 Gentoo Authors
+# Copyright 2023-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -95,6 +95,8 @@ src_install() {
 	fperms 4755 "${DESTDIR}"/chrome-sandbox
 
 	dosym "${DESTDIR}/${PN}" /usr/bin/${PN}
+
+	sed -i 's|^Exec=/opt/teams-for-linux/teams-for-linux %U$|Exec=/opt/teams-for-linux/teams-for-linux --ozone-platform-hint=auto %U|' "usr/share/applications/${PN}.desktop"
 	domenu usr/share/applications/${PN}.desktop
 
 	for size in {16,24,32,48,64,96,128,256,512,1024}; do
