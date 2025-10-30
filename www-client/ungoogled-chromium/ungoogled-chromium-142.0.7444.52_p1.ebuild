@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+# KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,18 +57,19 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="11b9b4f0eb6efa7e98f032dec2294c9a169c49b8"
+UGC_COMMIT_ID="98f9cedd97e7cccb52315abc65803f72a0919b73"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="a679a6763b80caf6bf9abce73851930ac8e49470"
+CROMITE_COMMIT_ID="409ac177ee6dd9051fb1f455622b7ab87f3262fa"
 
 declare -A CHROMIUM_COMMITS=(
-	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
-	["02e8e8253b1dbb622f0db7faddafc5bbb11036e1"]="." #142+
+	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
+	["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
 	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
+	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
 )
 
 UGC_PV="${PV/_p/-}"
@@ -505,28 +506,31 @@ src_prepare() {
 		"${FILESDIR}/chromium-cross-compile.patch"
 		"${FILESDIR}/chromium-109-system-openh264.patch"
 		"${FILESDIR}/chromium-109-system-zlib.patch"
-		"${FILESDIR}/chromium-111-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
-		"${FILESDIR}/chromium-142-cssstylesheet.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-141-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
 		"${FILESDIR}/chromium-127-cargo_crate.patch"
-		"${FILESDIR}/chromium-140-gtk-fix-prefers-color-scheme-query.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
-		"${FILESDIR}/restore-x86-r2.patch"
+		"${FILESDIR}/restore-x86-r3.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
 		"${FILESDIR}/chromium-141-fix-for-kde.patch"
 		"${FILESDIR}/chromium-134-stdatomic.patch"
-		"${FILESDIR}/chromium-137-constexpr.patch"
 		"${FILESDIR}/font-gc-asan.patch"
 		"${FILESDIR}/chromium-141-crabby.patch"
-		"${FILESDIR}/chromium-141-no-rust.patch"
-		"${FILESDIR}/chromium-141-fontations.patch"
-		"${FILESDIR}/chromium-141-gcc.patch"
+		"${FILESDIR}/chromium-142-no-rust.patch"
+		"${FILESDIR}/chromium-142-fontations.patch"
+		"${FILESDIR}/chromium-142-gcc.patch"
+		"${FILESDIR}/chromium-142-dawn-commit.patch"
 	)
+
+	# https://issues.chromium.org/issues/442698344
+	# Unreleased fontconfig changed magic numbers and google have rolled to this version
+	if has_version "<=media-libs/fontconfig-2.17.1"; then
+		PATCHES+=( "${FILESDIR}/chromium-142-work-with-old-fontconfig.patch" )
+	fi
 
 	#shopt -s globstar nullglob
 	## 130: moved the PPC64 patches into the chromium-patches repo
@@ -607,7 +611,7 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r5.patch"
+			"${FILESDIR}/disable-bluez-r6.patch"
 		)
 	fi
 
@@ -720,6 +724,9 @@ src_prepare() {
 		sed -i '/chrome\/common\/webui_url_constants.cc/Q' \
 			"${UGC_WD}/patches/extra/ungoogled-chromium/first-run-page.patch" || die
 
+		#! normalise paths in py
+		sed -i 's$os.path.dirname(include_file)$os.path.abspath(os.path.dirname(include_file))$' \
+			build/bromite/gyp/cpp_bromite_include.py || die
 	fi
 
 	# if [[ ${LLVM_SLOT} == "19" ]]; then
@@ -763,8 +770,10 @@ src_prepare() {
 	fi
 
 	if use system-abseil-cpp; then
-		eapply_wrapper "${FILESDIR}/chromium-system-abseil.patch"
-		eapply_wrapper "${FILESDIR}/chromium-138-system-abseil.patch"
+		eapply_wrapper "${FILESDIR}/chromium-142-system-abseil.patch"
+		#! not sure about this one :-/ vvvvvvvvvvvvvvvv Any better solution?
+		eapply_wrapper "${FILESDIR}/chromium-141-system-abseil-cord.patch"
+		#! not sure about this one :-/ ^^^^^^^^^^^^^^^^ Any better solution?
 		cp -f /usr/include/absl/base/options.h third_party/abseil-cpp/absl/base/options.h
 		sed -i '/^#define ABSL_OPTION_USE_STD_ORDERING.*$/{s++#define ABSL_OPTION_USE_STD_ORDERING 1+;h};${x;/./{x;q0};x;q1}' \
 			third_party/abseil-cpp/absl/base/options.h || die
@@ -883,7 +892,6 @@ src_prepare() {
 	)
 	keeplibs+=(
 		net/third_party/mozilla_security_manager
-		net/third_party/nss
 		net/third_party/quic
 		net/third_party/uri_template
 		third_party/abseil-cpp/absl/base
@@ -987,6 +995,7 @@ src_prepare() {
 		third_party/farmhash
 		third_party/fast_float
 		third_party/fdlibm
+		third_party/federated_compute/chromium/fcp/confidentialcompute
 		third_party/federated_compute/src/fcp/base
 		third_party/federated_compute/src/fcp/confidentialcompute
 		third_party/federated_compute/src/fcp/protos/confidentialcompute
@@ -1030,6 +1039,7 @@ src_prepare() {
 		third_party/libdrm
 		third_party/libgav1
 		third_party/libjingle
+		third_party/libpfm4
 		third_party/libphonenumber
 		third_party/libsecret
 		third_party/libsrtp
