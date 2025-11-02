@@ -12,16 +12,20 @@ EGO_SUM=(
 	"github.com/davecgh/go-spew v1.1.1/go.mod"
 	"github.com/fatih/color v1.16.0"
 	"github.com/fatih/color v1.16.0/go.mod"
-	"github.com/go-logr/logr v1.4.2"
-	"github.com/go-logr/logr v1.4.2/go.mod"
+	"github.com/go-logr/logr v1.4.3"
+	"github.com/go-logr/logr v1.4.3/go.mod"
 	"github.com/go-logr/zapr v1.3.0"
 	"github.com/go-logr/zapr v1.3.0/go.mod"
+	"github.com/gorilla/websocket v1.5.3"
+	"github.com/gorilla/websocket v1.5.3/go.mod"
 	"github.com/hashicorp/go-cleanhttp v0.5.2"
 	"github.com/hashicorp/go-cleanhttp v0.5.2/go.mod"
 	"github.com/hashicorp/go-hclog v1.6.3"
 	"github.com/hashicorp/go-hclog v1.6.3/go.mod"
-	"github.com/hashicorp/go-retryablehttp v0.7.7"
-	"github.com/hashicorp/go-retryablehttp v0.7.7/go.mod"
+	"github.com/hashicorp/go-retryablehttp v0.7.8"
+	"github.com/hashicorp/go-retryablehttp v0.7.8/go.mod"
+	"github.com/hashicorp/golang-lru/v2 v2.0.7"
+	"github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod"
 	"github.com/mattn/go-colorable v0.1.13"
 	"github.com/mattn/go-colorable v0.1.13/go.mod"
 	"github.com/mattn/go-isatty v0.0.20"
@@ -36,10 +40,10 @@ EGO_SUM=(
 	"go.uber.org/multierr v1.11.0/go.mod"
 	"go.uber.org/zap v1.27.0"
 	"go.uber.org/zap v1.27.0/go.mod"
-	"golang.org/x/net v0.37.0"
-	"golang.org/x/net v0.37.0/go.mod"
-	"golang.org/x/sys v0.31.0"
-	"golang.org/x/sys v0.31.0/go.mod"
+	"golang.org/x/net v0.43.0"
+	"golang.org/x/net v0.43.0/go.mod"
+	"golang.org/x/sys v0.35.0"
+	"golang.org/x/sys v0.35.0/go.mod"
 	"gopkg.in/yaml.v3 v3.0.1"
 	"gopkg.in/yaml.v3 v3.0.1/go.mod"
 )
@@ -50,6 +54,7 @@ HOMEPAGE="https://github.com/gopher64/gopher64-netplay-server"
 SRC_URI="https://github.com/gopher64/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	${EGO_SUM_SRC_URI}
 "
+RESTRICT="mirror"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -58,7 +63,7 @@ KEYWORDS="~amd64"
 DOCS=( README.md )
 
 src_compile() {
-	env CGO_ENABLED=0 go build -a -o "${PN}"
+	env CGO_ENABLED=0 go build -a -o "${PN}" || die
 }
 
 src_install() {
