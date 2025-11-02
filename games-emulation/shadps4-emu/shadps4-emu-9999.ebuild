@@ -16,20 +16,20 @@ if [[ ${PV} == *9999 ]]
 then
 	EGIT_REPO_URI="https://github.com/shadps4-emu/shadPS4.git"
 	EGIT_SUBMODULES=( 'externals/LibAtrac9' \
-			  'externals/cryptopp' \
-			  'externals/cryptopp-cmake' \
-			  'externals/cryptoppwin' \
+			  'externals/MoltenVK' \
 			  'externals/date' \
 			  'externals/dear_imgui' \
 			  'externals/discord-rpc' \
 			  'externals/epoll-shim' \
 			  'externals/ext-boost' \
 			  'externals/ext-libusb' \
+			  'externals/ext-wepoll' \
 			  'externals/ffmpeg-core' \
 			  'externals/fmt' \
 			  'externals/glslang' \
 			  'externals/half' \
 			  'externals/hwinfo' \
+			  'externals/json' \
 			  'externals/libpng' \
 			  'externals/magic_enum' \
 			  'externals/pugixml' \
@@ -40,7 +40,6 @@ then
 			  'externals/tracy' \
 			  'externals/vma' \
 			  'externals/vulkan-headers' \
-			  'externals/winpthreads' \
 			  'externals/xbyak' \
 			  'externals/xxhash' \
 			  'externals/zlib-ng' \
