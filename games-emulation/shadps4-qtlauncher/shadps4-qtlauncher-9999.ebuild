@@ -7,55 +7,30 @@ QTMIN=6.7.1
 LLVM_COMPAT=( {18..20} )
 LLVM_OPTIONAL=1
 
-inherit cmake desktop xdg flag-o-matic llvm-r1 toolchain-funcs
+inherit cmake desktop xdg fcaps flag-o-matic llvm-r1 toolchain-funcs
 
-DESCRIPTION="An early PlayStation 4 emulator written in C++."
-HOMEPAGE="https://github.com/shadps4-emu/shadPS4"
+DESCRIPTION="Official launcher for shadPS4."
+HOMEPAGE="https://github.com/shadps4-emu/shadps4-qtlauncher"
 
 if [[ ${PV} == *9999 ]]
 then
-	EGIT_REPO_URI="https://github.com/shadps4-emu/shadPS4.git"
-	EGIT_SUBMODULES=( 'externals/LibAtrac9' \
-			  'externals/MoltenVK' \
-			  'externals/date' \
-			  'externals/dear_imgui' \
-			  'externals/discord-rpc' \
-			  'externals/epoll-shim' \
-			  'externals/ext-boost' \
-			  'externals/ext-libusb' \
-			  'externals/ext-wepoll' \
-			  'externals/ffmpeg-core' \
+	EGIT_REPO_URI="https://github.com/shadps4-emu/shadps4-qtlauncher.git"
+	EGIT_SUBMODULES=( 'externals/MoltenVK' \
 			  'externals/fmt' \
-			  'externals/glslang' \
-			  'externals/half' \
-			  'externals/hwinfo' \
 			  'externals/json' \
-			  'externals/libpng' \
-			  'externals/magic_enum' \
 			  'externals/pugixml' \
-			  'externals/robin-map' \
 			  'externals/sdl3' \
-			  'externals/sirit' \
 			  'externals/toml11' \
-			  'externals/tracy' \
-			  'externals/vma' \
-			  'externals/vulkan-headers' \
-			  'externals/xbyak' \
-			  'externals/xxhash' \
-			  'externals/zlib-ng' \
-			  'externals/zydis' \
-			  'externals/zydis/dependencies/zycore' \
-			  'externals/zlib-ng/zlibstatic-ngd' \
-			  'externals/sirit/externals/SPIRV-Headers'
+			  'externals/volk' \
+			  'externals/vulkan-headers'
 			)
 	inherit git-r3
 else
 	EGIT_COMMIT=86911747bf64324cfd438afc08f6f6a0a9f7ff41
-	ZYDIS_COMMIT=5a68f639e4f01604cc7bfc8d313f583a8137e3d3
 	SRC_URI="
-		https://github.com/shadps4-emu/shadPS4/archive/${EGIT_COMMIT}.tar.gz
+		https://github.com/shadps4-emu/shadps4-qtlauncher/archive/${EGIT_COMMIT}.tar.gz
 			-> ${P}.tar.gz
-		https://github.com/zyantific/zydis/archive/${ZYDIS_COMMIT}.tar.gz
+		)
 	"
 	S=${WORKDIR}/${PN}-${EGIT_COMMIT}
 	KEYWORDS="~amd64 ~arm64"
@@ -63,13 +38,15 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+llvm alsa discord pulseaudio sndio vulkan wayland test debug"
+IUSE="+llvm alsa pulseaudio sndio vulkan wayland test debug"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="
 	llvm? ( ${LLVM_REQUIRED_USE} )
 "
 
 COMMON_DEPEND="
+	>=dev-qt/qtbase-${QTMIN}:6[concurrent,widgets]
+	games-emulation/shadps4-emu
 	app-arch/lz4:=
 	app-arch/xz-utils
 	app-arch/zstd:=
@@ -101,6 +78,7 @@ DEPEND="
 	x11-base/xorg-proto
 "
 BDEPEND="
+	dev-qt/qttools:6[linguist]
 	llvm-core/clang:*
 	wayland? (
 		dev-util/wayland-scanner
@@ -134,6 +112,7 @@ src_configure() {
 		-DBUILD_SHARED_LIBS=OFF # to remove after unbundling
 		#-DSDL_SHARED=ON
 		-DUSE_LINKED_FFMPEG=yes
+		-DENABLE_QT_GUI=yes
 		-DCMAKE_C_COMPILER=clang
 		-DCMAKE_CXX_COMPILER=clang++
 		-DUSE_VULKAN=$(usex vulkan)
@@ -147,25 +126,29 @@ src_configure() {
 
 src_install() {
 
+	domenu "${FILESDIR}"/shadps4.desktop
+	doicon -s 128 "${FILESDIR}"/shadps4.png
+	#doicon -s 48 images/shadps4.ico
+
 	#insinto /usr/lib/${PN}
 	# doins -r "${BUILD_DIR}"/bin/.
 	#fperms +x /usr/lib/${PN}/shadps4
 
-	exeinto "/opt/shadps4"
+	exeinto "/opt/shadps4-qtlauncher"
 
-	insinto /opt/shadps4
+	insinto /opt/shadps4-qtlauncher
         doins -r "${BUILD_DIR}"/.
-        fperms +x /opt/shadps4/shadps4
+        fperms +x /opt/shadps4-qtlauncher/shadPS4QtLauncher
 	insopts -m0755
-	dosym "/opt/shadps4/shadps4" "/opt/bin/shadps4"
+	dosym "/opt/shadps4-qtlauncher/shadPS4QtLauncher" "/opt/bin/shadPS4QtLauncher"
 
 	use !test || rm "${ED}"/opt/${PN}/*_test || die
 }
 
-#pkg_postinst() {
-#        
-#}
+pkg_postinst() {
+	xdg_icon_cache_update
+}
 
-#pkg_postrm() {
-#        
-#}
+pkg_postrm() {
+	xdg_icon_cache_update
+}

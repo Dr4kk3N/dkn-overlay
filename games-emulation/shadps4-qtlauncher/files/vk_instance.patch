@@ -1,0 +1,19 @@
+diff --git a/src/video_core/renderer_vulkan/vk_instance.cpp b/src/video_core/renderer_vulkan/vk_instance.cpp
+index 52143907..7d5ff6ed 100644
+--- a/src/video_core/renderer_vulkan/vk_instance.cpp
++++ b/src/video_core/renderer_vulkan/vk_instance.cpp
+@@ -304,13 +304,13 @@ bool Instance::CreateDevice() {
+             .shaderDrawParameters = true,
+         },
+         vk::PhysicalDeviceVulkan12Features{
++            .samplerMirrorClampToEdge = vk12_features.samplerMirrorClampToEdge,
+             .shaderFloat16 = vk12_features.shaderFloat16,
+             .scalarBlockLayout = vk12_features.scalarBlockLayout,
+             .uniformBufferStandardLayout = vk12_features.uniformBufferStandardLayout,
+             .separateDepthStencilLayouts = vk12_features.separateDepthStencilLayouts,
+             .hostQueryReset = vk12_features.hostQueryReset,
+             .timelineSemaphore = vk12_features.timelineSemaphore,
+-            .samplerMirrorClampToEdge = vk12_features.samplerMirrorClampToEdge,
+         },
+         vk::PhysicalDeviceMaintenance4FeaturesKHR{
+             .maintenance4 = true,
