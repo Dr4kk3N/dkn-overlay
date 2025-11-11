@@ -88,7 +88,6 @@ DEPEND="${RDEPEND}
 BDEPEND="virtual/pkgconfig"
 
 PATCHES=( "${FILESDIR}/${PN}-configure-params.patch"
-	  "${FILESDIR}/${PN}-bsvmovie.patch"
 	)
 
 src_configure() {
