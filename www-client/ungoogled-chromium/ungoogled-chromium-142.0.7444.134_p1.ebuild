@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-# KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,18 +57,18 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="98f9cedd97e7cccb52315abc65803f72a0919b73"
+#UGC_COMMIT_ID="98f9cedd97e7cccb52315abc65803f72a0919b73"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="409ac177ee6dd9051fb1f455622b7ab87f3262fa"
+CROMITE_COMMIT_ID="851be9370b90564ca9522f0531d661ca276f73b9"
 
 declare -A CHROMIUM_COMMITS=(
 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
 	["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
-	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
+	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="." 
 	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
 )
 
@@ -621,6 +621,12 @@ src_prepare() {
 		)
 	fi
 
+	if ! use libcxx ; then
+		PATCHES+=(
+			"${FILESDIR}/fix-wayland-oncecallback-copy.patch"
+		)
+	fi
+
 	if use system-ffmpeg; then
 		PATCHES+=(
 			"${FILESDIR}/chromium-141-opus-mp3.patch"
@@ -761,6 +767,8 @@ src_prepare() {
 	cp -f "${FILESDIR}/json_parser.h" base/json || die
 	cp -f "${FILESDIR}/avif_image_decoder.cc" third_party/blink/renderer/platform/image-decoders/avif || die
 	cp -f "${FILESDIR}/avif_image_decoder.h" third_party/blink/renderer/platform/image-decoders/avif || die
+	cp -f "${FILESDIR}/png_image_decoder.cc" third_party/blink/renderer/platform/image-decoders/png || die
+	cp -f "${FILESDIR}/png_image_decoder.h" third_party/blink/renderer/platform/image-decoders/png || die
 	cp -f "${FILESDIR}/font_format_check.cc" third_party/blink/renderer/platform/fonts/opentype || die
 	cp -f "${FILESDIR}/font_format_check.h" third_party/blink/renderer/platform/fonts/opentype || die
 

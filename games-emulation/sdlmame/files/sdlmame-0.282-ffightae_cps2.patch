@@ -1,0 +1,53 @@
+diff --git a/src/mame/capcom/cps2.cpp b/src/mame/capcom/cps2.cpp
+index b0a3527..c8d59fd 100644
+--- a/src/mame/capcom/cps2.cpp
++++ b/src/mame/capcom/cps2.cpp
+@@ -11699,6 +11699,28 @@ ROM_START( sfa3ud )
+ 	ROM_LOAD( "phoenix.key",  0x000000, 0x000014, CRC(2cf772b0) SHA1(eff33c65a4f3862c231f9e4d6fefa7b34398dbf2) )
+ ROM_END
+ 
++ROM_START( ffightae_cps2 )
++	ROM_REGION( CODE_SIZE, "maincpu", 0 )      /* 68000 code */
++	ROM_LOAD16_WORD_SWAP( "ff-23m.8h", 0x000000, 0x80000, CRC(b598d599) SHA1(f4e5ebc3c1900fbfb004f8e6532ffb8593622fe5) )
++	ROM_LOAD16_WORD_SWAP( "ff-22m.7h", 0x080000, 0x80000, CRC(3615cfb9) SHA1(f83ebdb084505b3c35513f40666ad828846339d2) )
++	ROM_REGION16_BE( CODE_SIZE, "user1", 0 )
++	ROM_FILL( 0x000000, 0x100000, 0x00 )
++	ROM_REGION( 0x2000000, "gfx", 0 )
++	ROM_LOAD64_WORD( "ff-5m.7a",   0x0000000, 0x400000, CRC(3f4028c5) SHA1(4a4cf19422f4f0fc66ce18ea082320c5adb59750) )
++	ROM_LOAD64_WORD( "ff-7m.9a",   0x0000002, 0x400000, CRC(be3858b0) SHA1(ec9e1be10bba4c3b8bf35fca821cd7f4025dfb4a) )
++	ROM_LOAD64_WORD( "ff-1m.3a",   0x0000004, 0x400000, CRC(ed622314) SHA1(f7155a41d4fdbcdd4e626b86de18c391125298e3) )
++	ROM_LOAD64_WORD( "ff-3m.5a",   0x0000006, 0x400000, CRC(d65b53e9) SHA1(6df4aa177a38407814a35a3560da4e9c301b3fa0) )
++	ROM_REGION( QSOUND_SIZE, "audiocpu", 0 ) /* 64k for the audio CPU (+banks) */
++	ROM_LOAD( "sz3.01",   0x00000, 0x08000, CRC(7ee68d38) SHA1(d533226911c23be34aa9df7d7ee37a0b2cf407ab) )
++	ROM_CONTINUE(         0x10000, 0x18000 )
++	ROM_LOAD( "sz3.02",   0x28000, 0x20000, CRC(72445dc4) SHA1(14fca7596ac45ba655016eef5b6120f9f9671c23) )
++	ROM_REGION( 0x800000, "qsound", 0 ) /* QSound samples */
++	ROM_LOAD16_WORD_SWAP( "sz3.11m",   0x000000, 0x400000, CRC(71af8d5a) SHA1(8e9dfcd1d44f792cff4b13f8b8f73aa8f9b0a2ec) )
++	ROM_LOAD16_WORD_SWAP( "sz3.12m",   0x400000, 0x400000, CRC(f392b13a) SHA1(fa04ce0370144a49bd1d5acd873eef87b0dc9d15) )
++	ROM_REGION( 0x20, "key", 0 )
++	ROM_LOAD( "phoenix.key",  0x000000, 0x000014, CRC(2cf772b0) SHA1(eff33c65a4f3862c231f9e4d6fefa7b34398dbf2) )
++ROM_END
++
+ ROM_START( spf2xjd )
+ 	ROM_REGION(CODE_SIZE, "maincpu", 0 ) // 68000 code
+ 	ROM_LOAD16_WORD_SWAP( "pzfjd.03a", 0x000000, 0x80000, CRC(5e85ed08) SHA1(8242030daf24d8058368d2e7bfe8199db62966c3) )
+@@ -12894,6 +12916,7 @@ GAME( 1997, vhunt2d,    vhunt2,   dead_cps2,     cps2_2p6b, cps2_state, init_cps
+ GAME( 1997, vsav2d,     vsav2,    dead_cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "bootleg", "Vampire Savior 2: The Lord of Vampire (Japan 970913 Phoenix Edition) (bootleg)",             MACHINE_SUPPORTS_SAVE )
+ GAME( 1998, mvscud,     mvsc,     dead_cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "bootleg", "Marvel Vs. Capcom: Clash of Super Heroes (USA 980123 Phoenix Edition) (bootleg)",            MACHINE_SUPPORTS_SAVE )
+ GAME( 1998, sfa3ud,     sfa3,     dead_cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "bootleg", "Street Fighter Alpha 3 (USA 980904 Phoenix Edition) (bootleg)",                              MACHINE_SUPPORTS_SAVE )
++GAME( 1998, ffightae_cps2,  0,    dead_cps2, cps2_3p3b, cps2_state, init_cps2,     ROT0,   "bootleg", "Final Fight Anniversary Edition CPS2", MACHINE_SUPPORTS_SAVE )
+ GAME( 1998, sfz3jr2d,   sfa3,     dead_cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "bootleg", "Street Fighter Zero 3 (Japan 980629 Phoenix Edition) (bootleg)",                             MACHINE_SUPPORTS_SAVE )
+ GAME( 1999, gigawingd,  gigawing, dead_cps2,     cps2_2p2b, cps2_state, init_cps2,     ROT0,   "bootleg", "Giga Wing (USA 990222 Phoenix Edition) (bootleg)",                                           MACHINE_SUPPORTS_SAVE )
+ GAME( 1999, gigawingjd, gigawing, dead_cps2,     cps2_2p2b, cps2_state, init_cps2,     ROT0,   "bootleg", "Giga Wing (Japan 990223 Phoenix Edition) (bootleg)",                                         MACHINE_SUPPORTS_SAVE )
+diff --git a/src/mame/mame.lst b/src/mame/mame.lst
+index 058cf92..836eaa3 100644
+--- a/src/mame/mame.lst
++++ b/src/mame/mame.lst
+@@ -15869,6 +15869,7 @@ sfa3h
+ sfa3hr1
+ sfa3u
+ sfa3ud
++ffightae_cps2
+ sfa3ur1
+ sfa3us
+ sfad

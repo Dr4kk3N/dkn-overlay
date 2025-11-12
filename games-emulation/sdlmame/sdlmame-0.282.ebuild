@@ -55,6 +55,8 @@ pkg_setup() {
 }
 
 src_prepare() {
+	eapply -p1 "${FILESDIR}"/sdlmame-0.282-ffightae_cps2.patch
+        eapply_user
 	default
 	# Disable using bundled libraries
 	enable_feature USE_SYSTEM_LIB_UTF8PROC

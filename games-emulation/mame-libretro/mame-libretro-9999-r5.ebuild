@@ -39,6 +39,11 @@ pkg_setup() {
 		check-reqs_pkg_setup
 }
 
+src_prepare() {
+	eapply -p1 "${FILESDIR}"/sdlmame-0.282-ffightae_cps2.patch
+	eapply_user
+}
+
 src_configure() {
 	myemakeargs=(
 	PTR64=1
