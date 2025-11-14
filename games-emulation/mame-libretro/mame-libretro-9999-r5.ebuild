@@ -3,8 +3,9 @@
 
 EAPI=7
 
+LIBRETRO_CORE_NAME="mame"
 LIBRETRO_REPO_NAME="libretro/mame"
-inherit check-reqs #libretro-core
+inherit check-reqs libretro-core
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -31,31 +32,40 @@ CHECKREQS_MEMORY="8G" # Debug build requires more
 CHECKREQS_DISK_BUILD="25G" # Debug build requires more
 
 pkg_pretend() {
-		einfo "Checking for sufficient disk space to build ${PN} with debugging CFLAGS"
-		check-reqs_pkg_pretend
+	einfo "Checking for sufficient disk space to build ${PN} with debugging CFLAGS"
+	check-reqs_pkg_pretend
 }
 
 pkg_setup() {
-		check-reqs_pkg_setup
+	check-reqs_pkg_setup
 }
 
 src_prepare() {
 	eapply -p1 "${FILESDIR}"/sdlmame-0.282-ffightae_cps2.patch
 	eapply_user
+	libretro-core_src_prepare
 }
 
-src_configure() {
-	myemakeargs=(
-	PTR64=1
-	)
-}
+#src_configure() {
+#	myemakeargs=(
+#	PTR64=1
+#	)
+#}
+
+#src_compile() {
+#	emake -f Makefile.libretro
+#}
 
 src_compile() {
-	emake -f Makefile.libretro
-#	libretro-core_src_compile
+		myemakeargs=(
+			PTR64=1
+			NEW_GIT_VERSION=$(PV)
+		)
+		libretro-core_src_compile
 }
 
 src_install() {
-	insinto "/usr/lib64/libretro"
-	doins "/usr/lib64/libretro"
+#	insinto "/usr/lib64/libretro"
+#	doins "/usr/lib64/libretro"
+	libretro-core_src_install
 }
