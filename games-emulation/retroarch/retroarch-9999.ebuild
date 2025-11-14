@@ -18,7 +18,7 @@ fi
 
 LICENSE="GPL-3+"
 SLOT="0"
-IUSE="alsa +cdrom cg cpu_flags_x86_sse2 dbus drm egl ffmpeg flac gles2 gles3 gles3_1 gles3_2 jack kms libass libusb libcaca +network openal +opengl +opengl_core osmesa parport pulseaudio qt5 sdl sdl2 sixel ssl systemd tinyalsa +truetype +udev usb hid v4l vulkan wayland X xrandr xinerama xv +zlib"
+IUSE="alsa +cdrom cg cpu_flags_x86_sse2 dbus drm egl ffmpeg flac gles2 gles3 gles3_1 gles3_2 jack kms libass libusb libcaca +network openal +opengl +opengl_core parport pulseaudio qt5 sdl sdl2 sixel ssl systemd tinyalsa +truetype +udev usb hid v4l vulkan wayland X xrandr xinerama xv +zlib"
 
 REQUIRED_USE="
 	|| ( alsa jack pulseaudio )
@@ -36,7 +36,6 @@ REQUIRED_USE="
 	libass? ( ffmpeg )
 	libusb? ( hid )
 	opengl_core? ( opengl )
-	osmesa? ( opengl )
 	ssl? ( network )
 	xinerama? ( X )
 	xrandr? ( X )
@@ -53,7 +52,6 @@ RDEPEND="
 	libcaca? ( media-libs/libcaca )
 	openal? ( media-libs/openal )
 	opengl? ( media-libs/mesa[opengl] )
-	osmesa? ( media-libs/mesa[osmesa] )
 	pulseaudio? ( media-libs/libpulse )
 	qt5? (
 		dev-qt/qtconcurrent:5
@@ -87,7 +85,8 @@ DEPEND="${RDEPEND}
 	vulkan? ( dev-util/vulkan-headers )"
 BDEPEND="virtual/pkgconfig"
 
-PATCHES=( "${FILESDIR}/${PN}-configure-params.patch" )
+PATCHES=( "${FILESDIR}/${PN}-configure-params.patch"
+	)
 
 src_configure() {
 	if use cg; then
@@ -131,7 +130,6 @@ src_configure() {
 		"$(use_enable openal al)" \
 		"$(use_enable opengl)" \
 		"$(use_enable opengl_core)" \
-		"$(use_enable osmesa)" \
 		"$(use_enable parport)" \
 		"$(use_enable pulseaudio pulse)" \
 		"$(use_enable qt5 qt)" \
