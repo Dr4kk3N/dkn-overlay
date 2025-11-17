@@ -4,7 +4,7 @@
 EAPI=8
 
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{11..13} )
+PYTHON_COMPAT=( python3_{11..14} )
 PYTHON_REQ_USE='threads(+)'
 
 inherit distutils-r1 pypi
@@ -39,7 +39,7 @@ RDEPEND="${PYTHON_DEPS}
 	dev-python/altgraph[${PYTHON_USEDEP}]
 	>=dev-python/pefile-2022.5.30[${PYTHON_USEDEP}]
 	>=dev-python/macholib-1.8[${PYTHON_USEDEP}]
-	>=dev-python/pyinstaller-hooks-contrib-2021.4[${PYTHON_USEDEP}]
+	>=dev-python/pyinstaller-hooks-contrib-2025.8[${PYTHON_USEDEP}]
 	>=dev-python/packaging-22.0[${PYTHON_USEDEP}]
 "
 DEPEND="${RDEPEND}
