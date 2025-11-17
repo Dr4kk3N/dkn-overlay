@@ -5,6 +5,8 @@ EAPI=8
 
 PYTHON_COMPAT=( python3_{10..13} )
 
+DISTUTILS_USE_PEP517="setuptools"
+
 inherit distutils-r1
 
 if [[ ${PV} != *9999* ]]; then
