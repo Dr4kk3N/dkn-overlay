@@ -59,7 +59,7 @@ src_prepare() {
 src_compile() {
 		myemakeargs=(
 			PTR64=1
-			NEW_GIT_VERSION=$(PV)
+#			NEW_GIT_VERSION=$(PV)
 		)
 		libretro-core_src_compile
 }

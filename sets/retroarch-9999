@@ -1,3 +1,4 @@
+# Main prog & assets
 =games-emulation/retroarch-9999
 =games-emulation/retroarch-assets-9999
 =games-emulation/retroarch-joypad-autoconfig-9999
@@ -7,9 +8,9 @@
 =games-emulation/libretro-database-9999
 =games-emulation/libretro-slang-shaders-9999
 
-
 # Cores
 =games-emulation/crocods-libretro-9999-r3
+=games-emulation/dolphin-libretro-9999
 =games-emulation/bsnes-mercury-performance-libretro-9999-r3
 =games-emulation/genesis_plus_gx-libretro-9999
 =games-emulation/genesis_plus_gx_wide-libretro-9999
