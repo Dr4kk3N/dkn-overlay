@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,18 +57,18 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="98f9cedd97e7cccb52315abc65803f72a0919b73"
+#UGC_COMMIT_ID="367118d1039b2cff1c003afb4da6c531fc18e55c"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="851be9370b90564ca9522f0531d661ca276f73b9"
+CROMITE_COMMIT_ID="2124fd8aa7d29dd6e1b38d5514916881d7566992"
 
 declare -A CHROMIUM_COMMITS=(
 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
 	["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
-	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="." 
+	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
 	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
 )
 
@@ -523,7 +523,6 @@ src_prepare() {
 		"${FILESDIR}/chromium-142-no-rust.patch"
 		"${FILESDIR}/chromium-142-fontations.patch"
 		"${FILESDIR}/chromium-142-gcc.patch"
-		"${FILESDIR}/chromium-142-dawn-commit.patch"
 	)
 
 	# https://issues.chromium.org/issues/442698344
