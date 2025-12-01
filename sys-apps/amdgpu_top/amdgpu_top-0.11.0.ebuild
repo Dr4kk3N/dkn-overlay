@@ -53,6 +53,11 @@ DOCS=(
 	README.md
 )
 
+src_prepare() {
+        eapply "${FILESDIR}/${PN}-add_PS4_GPU.patch"
+        eapply_user
+}
+
 src_compile() {
 	cargo_src_compile
 
