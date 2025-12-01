@@ -1,7 +1,7 @@
 diff --git a/amdgpu/asic.rs b/amdgpu/asic.rs
 index 6c23704..19a801d 100644
---- a/amdgpu/asic.rs
-+++ b/amdgpu/asic.rs
+--- a/../libdrm-amdgpu-sys-rs-7243e32a33e370dc3b22846260ea436c7e67c878/amdgpu/asic.rs
++++ b/../libdrm-amdgpu-sys-rs-7243e32a33e370dc3b22846260ea436c7e67c878/amdgpu/asic.rs
 @@ -100,6 +100,7 @@ pub enum ASIC_NAME {
      CHIP_HAINAN,
      /* GFX7 (Sea Islands) */
