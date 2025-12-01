@@ -1,0 +1,24 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 6706d6e..20c35c5 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -2257,7 +2257,7 @@ checksum = "6a82ae493e598baaea5209805c49bbf2ea7de956d50d7da0da1164f9c6d28543"
+ [[package]]
+ name = "libdrm_amdgpu_sys"
+ version = "0.8.8"
+-source = "git+https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs?rev=8d0029b4cf8f3b995728614f96c03f6e3dcf4f9e#8d0029b4cf8f3b995728614f96c03f6e3dcf4f9e"
++source = "git+https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs?rev=cc2bae8a4f5d269c076e4fdc19e6b6c63d751385"
+ dependencies = [
+  "libc",
+  "libloading",
+diff --git a/crates/libamdgpu_top/Cargo.toml b/crates/libamdgpu_top/Cargo.toml
+index d938aa9..49bc8ba 100644
+--- a/crates/libamdgpu_top/Cargo.toml
++++ b/crates/libamdgpu_top/Cargo.toml
+@@ -15,5 +15,5 @@ libdrm_dynamic_loading = ["libdrm_amdgpu_sys/dynamic_loading"]
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-libdrm_amdgpu_sys = { version = "0.8.8", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs", default-features = false, rev = "8d0029b4cf8f3b995728614f96c03f6e3dcf4f9e" }
++libdrm_amdgpu_sys = { version = "0.8.8", git = "https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs", default-features = false, rev = "cc2bae8a4f5d269c076e4fdc19e6b6c63d751385" }
+ nix = { version = "0", default-features = false, features = [ "ioctl" ] }
