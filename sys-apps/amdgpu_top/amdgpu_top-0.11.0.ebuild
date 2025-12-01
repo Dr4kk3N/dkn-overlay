@@ -54,7 +54,7 @@ DOCS=(
 )
 
 src_prepare() {
-        eapply "${FILESDIR}/${PN}-add_PS4_GPU.patch"
+        eapply "${FILESDIR}/${PN}-mod_PS4_Source.patch"
         eapply_user
 }
 
