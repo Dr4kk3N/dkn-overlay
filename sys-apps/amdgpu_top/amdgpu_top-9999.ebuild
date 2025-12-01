@@ -60,16 +60,13 @@ DOCS=(
 	README.md
 )
 
-src_unpack() {
-	cargo_src_unpack
-}
-
 src_prepare() {
         eapply "${FILESDIR}/${PN}-mod_PS4_Source.patch"
         eapply_user
 }
 
 src_compile() {
+	cargo_src_unpack
 	cargo_src_compile
 
 	if use man; then
