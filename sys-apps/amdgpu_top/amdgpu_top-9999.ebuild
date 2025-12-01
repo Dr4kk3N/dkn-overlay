@@ -9,19 +9,24 @@ CRATES=""
 RUST_MIN_VER="1.85.0"
 
 declare -A GIT_CRATES=(
-#	[libdrm_amdgpu_sys]='https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs;8d0029b4cf8f3b995728614f96c03f6e3dcf4f9e;libdrm-amdgpu-sys-rs-%commit%'
-	[libdrm_amdgpu_sys]='https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs;7243e32a33e370dc3b22846260ea436c7e67c878;libdrm-amdgpu-sys-rs-%commit%'
+	[libdrm_amdgpu_sys]='https://github.com/Dr4kk3N/libdrm-amdgpu-sys-rs;cc2bae8a4f5d269c076e4fdc19e6b6c63d751385;libdrm-amdgpu-sys-rs-%commit%'
 )
 
 inherit desktop cargo
 
 DESCRIPTION="Tool to display AMDGPU usage."
 HOMEPAGE="https://github.com/Umio-Yasuno/amdgpu_top"
-SRC_URI="
-	https://github.com/Umio-Yasuno/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
-	${CARGO_CRATE_URIS}
-	https://github.com/gentoo-crate-dist/${PN}/releases/download/v${PV}/${P}-crates.tar.xz
-"
+
+if [[ ${PV} == 9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/Umio-Yasuno/amdgpu_top.git"
+else
+	SRC_URI="https://github.com/Umio-Yasuno/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
+		${CARGO_CRATE_URIS}
+	        https://github.com/gentoo-crate-dist/${PN}/releases/download/v${PV}/${P}-crates.tar.xz
+	"
+	KEYWORDS="-* ~amd64 ~arm64"
+fi
 
 LICENSE="MIT"
 # Dependent crate licenses
@@ -30,7 +35,6 @@ LICENSE+="
 	Unicode-3.0 ZLIB
 "
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
 
 IUSE="man"
 
