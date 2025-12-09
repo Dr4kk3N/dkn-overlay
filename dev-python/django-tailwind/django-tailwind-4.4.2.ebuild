@@ -3,8 +3,8 @@
 
 EAPI=8
 
-DISTUTILS_USE_PEP517=poetry
-PYTHON_COMPAT=( python3_{11..13} )
+DISTUTILS_USE_PEP517=hatchling
+PYTHON_COMPAT=( python3_{11..14} )
 
 inherit distutils-r1 pypi
 
@@ -21,4 +21,5 @@ KEYWORDS="~amd64"
 RDEPEND="
 	dev-python/django[${PYTHON_USEDEP}]
 	dev-python/django-browser-reload[${PYTHON_USEDEP}]
+	dev-python/pytailwindcss[${PYTHON_USEDEP}]
 "
