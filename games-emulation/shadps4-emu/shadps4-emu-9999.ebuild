@@ -32,9 +32,11 @@ then
 			  'externals/json' \
 			  'externals/libpng' \
 			  'externals/magic_enum' \
+			  'externals/miniz' \
 			  'externals/pugixml' \
 			  'externals/robin-map' \
 			  'externals/sdl3' \
+			  'externals/sdl3_mixer' \
 			  'externals/sirit' \
 			  'externals/toml11' \
 			  'externals/tracy' \
