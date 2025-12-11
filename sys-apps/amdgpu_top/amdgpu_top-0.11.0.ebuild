@@ -17,7 +17,7 @@ inherit desktop cargo
 DESCRIPTION="Tool to display AMDGPU usage."
 HOMEPAGE="https://github.com/Umio-Yasuno/amdgpu_top"
 SRC_URI="
-	https://github.com/Umio-Yasuno/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
+	https://github.com/Dr4kk3N/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
 	${CARGO_CRATE_URIS}
 	https://github.com/gentoo-crate-dist/${PN}/releases/download/v${PV}/${P}-crates.tar.xz
 "
