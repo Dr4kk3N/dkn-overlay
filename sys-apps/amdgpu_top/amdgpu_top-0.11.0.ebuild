@@ -52,10 +52,10 @@ DOCS=(
 	README.md
 )
 
-src_prepare() {
-        eapply "${FILESDIR}/${P}-mod_PS4_Source.patch"
-        eapply_user
-}
+#src_prepare() {
+#        eapply "${FILESDIR}/${P}-mod_PS4_Source.patch"
+#        eapply_user
+#}
 
 src_compile() {
 	cargo_src_compile
