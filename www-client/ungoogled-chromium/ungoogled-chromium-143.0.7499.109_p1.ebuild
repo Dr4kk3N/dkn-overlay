@@ -57,13 +57,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="64f304ded0a285f3dc9bce6b2533f69557933f13"
+UGC_COMMIT_ID="20915c82d9ecc9ff2210157d77374337c0359390"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="2e7927fab99df8b97f53e55469f2687878aec351"
+CROMITE_COMMIT_ID="8e844cf64f8159a72f158eb33e2f09b19f7d115a"
 
 # declare -A CHROMIUM_COMMITS=(
 # 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
@@ -642,6 +642,12 @@ src_prepare() {
 		)
 	fi
 
+	if ! use system-png; then
+		PATCHES+=(
+			"${FILESDIR}/chromium-143-revert-revert-libpng-testiness.patch"
+		)
+	fi
+
 	if use system-libvpx; then
 		PATCHES+=(
 			"${FILESDIR}/chromium-system-libvpx.patch"
@@ -669,6 +675,7 @@ src_prepare() {
 
 		sed -i '/b\/components\/components_strings\.grd/,+10d' "${BR_PA_PATH}/Add-cromite-flags-support.patch" || die
 		sed -i '/b\/chrome\/android\/java\/res\/xml\/privacy_preferences\.xml/,+13d' "${BR_PA_PATH}/Add-cromite-flags-support.patch" || die
+		sed -i '/b\/android_webview\/support_library\/java\/src\/org\/chromium\/support_lib_glue/,+11d' "${BR_PA_PATH}/Client-hints-overrides.patch" || die
 		sed -i '/webapps_strings.grdp" \/>/{s++webapps_strings.grdp" /><part file="cromite_components_strings_grd/placeholder.txt"/>+;h};${x;/./{x;q0};x;q1}' \
 			components/components_strings.grd || die
 
@@ -1896,7 +1903,9 @@ src_install() {
 	#fi
 
 	use enable-driver && doexe out/Release/chromedriver
-	#doexe out/Release/chrome_crashpad_handler
+
+	#* https://github.com/ungoogled-software/ungoogled-chromium/pull/3563
+	doexe out/Release/chrome_crashpad_handler
 
 	ozone_auto_session () {
 		use X && use wayland && ! use headless && echo true || echo false
