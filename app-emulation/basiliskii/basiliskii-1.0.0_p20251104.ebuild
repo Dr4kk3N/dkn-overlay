@@ -7,10 +7,11 @@ inherit autotools desktop
 
 DESCRIPTION="68k Macintosh emulator (updated fork)."
 HOMEPAGE="https://github.com/kanjitalk755/macemu"
-SHA="fe96b90f2cee233b90392458e6bd3980e6c8a053"
+SHA="6864575dc2df3f90572bba36d10c7a6fc2c26f64"
 SRC_URI="https://github.com/kanjitalk755/macemu/archive/${SHA}.tar.gz -> ${P}.tar.gz
 	https://basilisk.cebix.net/images/apple.png -> ${PN}-icon.png"
 
+S="${WORKDIR}/macemu-${SHA}/BasiliskII/src/Unix"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
@@ -23,7 +24,6 @@ DEPEND="dev-libs/glib
 RDEPEND="${DEPEND}"
 
 PATCHES=( "${FILESDIR}/${PN}-fixes.patch" )
-S="${WORKDIR}/macemu-${SHA}/BasiliskII/src/Unix"
 MAKEOPTS+=" -j1"
 
 src_unpack() {
