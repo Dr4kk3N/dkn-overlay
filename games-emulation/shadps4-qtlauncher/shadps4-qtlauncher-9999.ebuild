@@ -86,9 +86,9 @@ BDEPEND="
 	)
 "
 
-#PATCHES=(
-#	"${FILESDIR}"/tile_manager.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/shadps4-qtlauncher-rpath.patch
+)
 
 pkg_setup() {
 	if use llvm && has_version llvm-core/llvm[!debug=]; then

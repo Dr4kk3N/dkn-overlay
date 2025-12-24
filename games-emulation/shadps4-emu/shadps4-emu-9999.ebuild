@@ -80,6 +80,7 @@ COMMON_DEPEND="
 	media-libs/libglvnd
 	media-libs/libpng:=
 	media-libs/libsdl3
+	media-libs/sdl3-mixer
 	media-libs/libwebp:=
 	media-video/ffmpeg:=
 	net-libs/libpcap
@@ -110,13 +111,13 @@ BDEPEND="
 	)
 "
 
-#PATCHES=(
-#	"${FILESDIR}"/tile_manager.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/shadps4-emu-rpath.patch
+)
 
 pkg_setup() {
 	if use llvm && has_version llvm-core/llvm[!debug=]; then
-		ewarn "Mismatch between debug USE flags in games-emulation/shadps4 and llvm-core/llvm"
+		ewarn "Mismatch between debug USE flags in games-emulation/shadps4-emu and llvm-core/llvm"
 		ewarn "detected! This can cause problems."
 	fi
 
