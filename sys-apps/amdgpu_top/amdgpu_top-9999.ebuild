@@ -19,12 +19,12 @@ HOMEPAGE="https://github.com/Umio-Yasuno/amdgpu_top"
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/Umio-Yasuno/amdgpu_top.git
+	EGIT_REPO_URI="https://github.com/Dr4kk3N/amdgpu_top.git
 		${CARGO_CRATE_URIS}
                 https://github.com/gentoo-crate-dist/${PN}/releases/download/v${PV}/${P}-crates.tar.xz
 	"
 else
-	SRC_URI="https://github.com/Umio-Yasuno/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
+	SRC_URI="https://github.com/Dr4kk3N/amdgpu_top/archive/refs/tags/v${PV}.tar.gz -> ${P}.gh.tar.gz
 		${CARGO_CRATE_URIS}
 	        https://github.com/gentoo-crate-dist/${PN}/releases/download/v${PV}/${P}-crates.tar.xz
 	"
@@ -61,7 +61,7 @@ DOCS=(
 )
 
 src_prepare() {
-        eapply "${FILESDIR}/${PN}-mod_PS4_Source.patch"
+        eapply "${FILESDIR}/${P}-mod_PS4_Source.patch"
         eapply_user
 }
 
