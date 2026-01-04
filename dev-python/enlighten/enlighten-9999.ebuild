@@ -25,6 +25,7 @@ RESTRICT="!test? ( test )"
 
 DOCS="README.md"
 
-RDEPEND=">=dev-python/blessed-1.22.0[${PYTHON_USEDEP}]"
+RDEPEND=">=dev-python/blessed-1.22.0[${PYTHON_USEDEP}]
+	 >=dev-python/prefixed-0.9.0[${PYTHON_USEDEP}]"
 
 distutils_enable_tests pytest
