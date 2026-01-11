@@ -27,17 +27,17 @@ LITE_TARBALL=1
 PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
 PATCH_V="${PV%%\.*}"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz
-	https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PATCH_V}/chromium-patches-${PATCH_V}.tar.bz2
 	ppc64? (
 		https://gitlab.raptorengineering.com/raptor-engineering-public/chromium/openpower-patches/-/archive/${PPC64_HASH}/openpower-patches-${PPC64_HASH}.tar.bz2 -> chromium-openpower-${PPC64_HASH:0:10}.tar.bz2
 	)
 "
+# https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PATCH_V}/chromium-patches-${PATCH_V}.tar.bz2
 # Gentoo tarball:
 # https://chromium-tarballs.distfiles.gentoo.org/chromium-${PV/_*}.tar.xz -> chromium-${PV/_*}-gentoo.tar.xz
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+# KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,13 +57,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="20915c82d9ecc9ff2210157d77374337c0359390"
+UGC_COMMIT_ID="e8f5addcffb5a206ea3e2123e172a00c29f67dd6"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="8e844cf64f8159a72f158eb33e2f09b19f7d115a"
+CROMITE_COMMIT_ID="3010fc430e7f3abcc011a9e439ac4ffd0b7d36a6"
 
 # declare -A CHROMIUM_COMMITS=(
 # 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
@@ -292,7 +292,7 @@ BDEPEND="
 	sys-devel/flex
 	virtual/pkgconfig
 	clang? (
-		pgo? ( >llvm-core/clang-19.0.0_pre20240518 >llvm-core/lld-19.0.0_pre20240518	)
+		pgo? ( >=llvm-core/clang-21 >=llvm-core/lld-21	)
 		!pgo? ( llvm-core/clang llvm-core/lld )
 	)
 	cfi? ( llvm-runtimes/clang-runtime[sanitize] )
@@ -427,7 +427,7 @@ src_unpack() {
 	tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz" -C "${WORKDIR}" || die
 
 	unpack ${UGC_URL#*->}
-	unpack chromium-patches-${PATCH_V}.tar.bz2
+	# unpack chromium-patches-${PATCH_V}.tar.bz2
 	# Warned you!
 
 	if use cromite; then
@@ -497,7 +497,8 @@ src_prepare() {
 	# Calling this here supports resumption via FEATURES=keepwork
 	python_setup
 
-	cp -f ${WORKDIR}/chromium-patches-${PATCH_V}/*-compiler.patch "${T}/compiler.patch"
+	# cp -f ${WORKDIR}/chromium-patches-${PATCH_V}/*-compiler.patch "${T}/compiler.patch"
+	cp -f ${FILESDIR}/chromium-144-compiler.patch "${T}/compiler.patch"
 	if ! use custom-cflags; then #See #25 #92
 		sed -i '/default_stack_frames/Q' "${T}/compiler.patch" || die
 	fi
@@ -509,7 +510,7 @@ src_prepare() {
 		"${FILESDIR}/chromium-109-system-zlib.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
-		"${FILESDIR}/chromium-143-revert-libpng-testiness.patch"
+		"${FILESDIR}/chromium-144-revert-libpng-testiness.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-141-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
@@ -521,9 +522,9 @@ src_prepare() {
 		"${FILESDIR}/chromium-134-stdatomic.patch"
 		"${FILESDIR}/font-gc-asan.patch"
 		"${FILESDIR}/chromium-141-crabby.patch"
-		"${FILESDIR}/chromium-143-no-rust.patch"
-		"${FILESDIR}/chromium-143-fontations.patch"
-		"${FILESDIR}/chromium-143-gcc.patch"
+		"${FILESDIR}/chromium-144-no-rust.patch"
+		"${FILESDIR}/chromium-144-fontations.patch"
+		"${FILESDIR}/chromium-144-gcc.patch"
 	)
 
 	# https://issues.chromium.org/issues/442698344
@@ -569,7 +570,6 @@ src_prepare() {
 
 	ewarn
 	ewarn "Fontations Rust font stack is disabled"
-	ewarn "Profile importer is disabled"
 	ewarn "Using media-libs/libavif instead of CrabbyAvif"
 	ewarn
 
@@ -785,7 +785,7 @@ src_prepare() {
 	fi
 
 	if use system-abseil-cpp; then
-		eapply_wrapper "${FILESDIR}/chromium-143-system-abseil.patch"
+		eapply_wrapper "${FILESDIR}/chromium-144-system-abseil.patch"
 		#! not sure about this one :-/ vvvvvvvvvvvvvvvv Any better solution?
 		eapply_wrapper "${FILESDIR}/chromium-141-system-abseil-cord.patch"
 		#! not sure about this one :-/ ^^^^^^^^^^^^^^^^ Any better solution?
@@ -1122,6 +1122,7 @@ src_prepare() {
 		third_party/pdfium/third_party/libtiff
 		third_party/perfetto
 		third_party/perfetto/protos/third_party/chromium
+		third_party/perfetto/protos/third_party/pprof
 		third_party/perfetto/protos/third_party/simpleperf
 		third_party/pffft
 		third_party/ply
@@ -1615,6 +1616,7 @@ src_configure() {
 	myconf_gn+=" rtc_rusty_base64=false"
 	myconf_gn+=" v8_enable_temporal_support=false"
 	myconf_gn+=" media_use_symphonia=false"
+	myconf_gn+=" pdf_enable_rust_png=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"

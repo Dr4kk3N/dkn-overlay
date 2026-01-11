@@ -48,6 +48,7 @@ then
 			  'externals/zydis' \
 			  'externals/zydis/dependencies/zycore' \
 			  'externals/zlib-ng/zlibstatic-ngd' \
+			  'externals/aacdec/fdk-aac' \
 			  'externals/sirit/externals/SPIRV-Headers'
 			)
 	inherit git-r3
