@@ -1,5 +1,10 @@
-diff --git a/src/citra_qt/dumping/option_set_dialog.cpp b/src/citra_qt/dumping/option_set_dialog.cpp
-index f6d6e4af7..f166973cf 100644
+From: Pavel Sobolev <contact@paveloom.dev>
+Subject: [PATCH] Rename `AV_OPT_TYPE_CHANNEL_LAYOUT` to `AV_OPT_TYPE_CHLAYOUT`.
+
+This makes it compile with FFmpeg 7.
+
+Signed-off-by: Pavel Sobolev <contact@paveloom.dev>
+
 --- a/src/citra_qt/dumping/option_set_dialog.cpp
 +++ b/src/citra_qt/dumping/option_set_dialog.cpp
 @@ -27,7 +27,7 @@ static const std::unordered_map<AVOptionType, const char*> TypeNameMap{{
@@ -20,8 +25,6 @@ index f6d6e4af7..f166973cf 100644
  }};
  
  /// Get the preset values of an option. returns {display value, real value}
-diff --git a/src/core/dumping/ffmpeg_backend.cpp b/src/core/dumping/ffmpeg_backend.cpp
-index b38116ed3..75f6236c1 100644
 --- a/src/core/dumping/ffmpeg_backend.cpp
 +++ b/src/core/dumping/ffmpeg_backend.cpp
 @@ -956,7 +956,7 @@ std::string FormatDefaultValue(const AVOption* option,
