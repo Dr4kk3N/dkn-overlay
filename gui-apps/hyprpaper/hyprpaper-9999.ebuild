@@ -28,6 +28,7 @@ DEPEND="
 	x11-libs/cairo
 	x11-libs/pango
 	dev-libs/hyprgraphics
+	dev-libs/hyprtoolkit
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
