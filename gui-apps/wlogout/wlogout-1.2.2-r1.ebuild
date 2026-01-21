@@ -6,7 +6,7 @@ EAPI=8
 inherit meson
 
 DESCRIPTION="A wayland based logout menu"
-HOMEPAGE="https://github.com/ArtsyMacaw/wlogout"
+HOMEPAGE="https://github.com/ArtsyMacaw/wlogout/"
 
 if [[ "${PV}" = 9999 ]]; then
 	inherit git-r3
