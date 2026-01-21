@@ -1,4 +1,4 @@
-# Copyright 2023-2024 Gentoo Authors
+# Copyright 2023-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -27,6 +27,7 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
+	>=dev-libs/hyprland-protocols-0.6.0
 	dev-libs/wayland-protocols
 "
 
@@ -36,5 +37,5 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}/hypridle-0.1.5-fix-CFLAGS-CXXFLAGS.patch"
+	"${FILESDIR}/${PN}-0.1.5-fix-CFLAGS-CXXFLAGS.patch"
 )
