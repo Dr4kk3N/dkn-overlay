@@ -1,4 +1,4 @@
-# Copyright 2023-2024 Gentoo Authors
+# Copyright 2023-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -20,19 +20,20 @@ LICENSE="BSD"
 SLOT="0"
 
 RDEPEND="
-	>=dev-libs/hyprlang-0.4.0
-	>=gui-libs/hyprutils-0.2.0:=
+	dev-cpp/sdbus-c++:0/2
 	dev-libs/date
 	dev-libs/glib:2
+	dev-libs/hyprgraphics
+	>=dev-libs/hyprlang-0.6.0
 	dev-libs/wayland
+	>=dev-util/hyprwayland-scanner-0.4.4
+	>=gui-libs/hyprutils-0.8.0:=
 	media-libs/libglvnd
-	media-libs/libjpeg-turbo:=
-	media-libs/libwebp:=
 	media-libs/mesa[opengl]
 	sys-libs/pam
 	x11-libs/cairo
-	x11-libs/libxkbcommon
 	x11-libs/libdrm
+	x11-libs/libxkbcommon
 	x11-libs/pango
 "
 DEPEND="
@@ -46,5 +47,5 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}/hyprlock-0.4.1-fix-CFLAGS-CXXFLAGS.patch"
+	"${FILESDIR}/${PN}-0.4.1-fix-CFLAGS-CXXFLAGS.patch"
 )
