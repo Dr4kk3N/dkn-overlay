@@ -24,8 +24,12 @@ RDEPEND="
 	)
 "
 
-multilib_src_prepare() {
-        rm -rf "${WORKDIR}/data/icons/hicolor/scalable/actions/settings-symbolic.svg" || die
+src_prepare() {
+        default
+
+        einfo "removing duplicate icon..."
+        rm -r "${WORKDIR}/dotfiles-sidebar-9999/data/icons/hicolor/scalable/actions/settings-symbolic.svg" || die
+        sed -i '18d' "${WORKDIR}/dotfiles-sidebar-9999/data/icons/meson.build" || die
 }
 
 multilib_src_configure() {
