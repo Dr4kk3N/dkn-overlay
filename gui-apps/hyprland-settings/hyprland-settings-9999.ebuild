@@ -5,7 +5,7 @@ EAPI=8
 
 PYTHON_COMPAT=( python3_{10..13} )
 
-inherit meson linux-info git-r3
+inherit meson xdg-utils linux-info git-r3
 
 DESCRIPTION="Frontend for the CLI hyprctl."
 HOMEPAGE="https://github.com/mylinuxforwork/hyprland-settings"
@@ -33,3 +33,14 @@ multilib_src_configure() {
 	)
 	meson_src_configure
 }
+
+pkg_postinst() {
+	xdg_desktop_database_update
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_desktop_database_update
+	xdg_icon_cache_update
+}
+

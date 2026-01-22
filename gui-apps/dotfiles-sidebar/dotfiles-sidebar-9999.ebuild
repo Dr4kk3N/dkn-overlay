@@ -5,7 +5,7 @@ EAPI=8
 
 PYTHON_COMPAT=( python3_{10..13} )
 
-inherit meson linux-info git-r3
+inherit meson xdg-utils linux-info git-r3
 
 DESCRIPTION="The sidebar for the ML4W Dotfiles for Hyprland. Gives quick access to important settings and features."
 HOMEPAGE="https://github.com/mylinuxforwork/dotfiles-sidebar"
@@ -24,6 +24,10 @@ RDEPEND="
 	)
 "
 
+multilib_src_prepare() {
+        rm -rf "${WORKDIR}/data/icons/hicolor/scalable/actions/settings-symbolic.svg" || die
+}
+
 multilib_src_configure() {
 	local emesonargs=()
 	emesonargs+=(
@@ -33,3 +37,14 @@ multilib_src_configure() {
 	)
 	meson_src_configure
 }
+
+pkg_postinst() {
+	xdg_desktop_database_update
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_desktop_database_update
+	xdg_icon_cache_update
+}
+
