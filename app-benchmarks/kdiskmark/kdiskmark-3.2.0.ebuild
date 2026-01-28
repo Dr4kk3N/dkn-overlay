@@ -15,7 +15,7 @@ KEYWORDS="~amd64"
 
 COMMON_DEPEND="
 	dev-qt/qtbase:6[dbus,gui,network,widgets]
-	sys-auth/polkit-qt[qt6]
+	sys-auth/polkit-qt
 "
 DEPEND="
 	${COMMON_DEPEND}
