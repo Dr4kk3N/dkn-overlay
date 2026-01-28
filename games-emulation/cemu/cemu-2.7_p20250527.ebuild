@@ -3,7 +3,10 @@
 
 EAPI=8
 
-inherit cmake desktop xdg
+LLVM_COMPAT=( {15..20} )
+LLVM_OPTIONAL=1
+
+inherit cmake llvm-r1 desktop xdg
 
 DESCRIPTION="Wii U emulator."
 HOMEPAGE="https://cemu.info/ https://github.com/cemu-project/Cemu"
@@ -18,7 +21,11 @@ SRC_URI="https://github.com/cemu-project/${MY_PN}/archive/${SHA}.tar.gz -> ${P}.
 LICENSE="MPL-2.0 ISC"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="+cubeb discord +sdl +vulkan"
+IUSE="+cubeb discord +sdl +vulkan llvm"
+
+REQUIRED_USE="
+        llvm? ( ${LLVM_REQUIRED_USE} )
+"
 
 DEPEND="app-arch/zarchive
 	app-arch/zstd
@@ -37,6 +44,7 @@ DEPEND="app-arch/zarchive
 	net-misc/curl
 	sys-libs/zlib
 	vulkan? ( dev-util/vulkan-headers )
+	llvm? ( $(llvm_gen_dep 'llvm-core/llvm:${LLVM_SLOT}=') )
 	x11-libs/gtk+:3[wayland]
 	x11-libs/libX11
 	x11-libs/wxGTK:3.2-gtk3[opengl]
@@ -50,6 +58,10 @@ PATCHES=(
 	"${FILESDIR}/${PN}-0002-remove-default-from-system-g.patch"
 )
 
+pkg_setup() {
+        use llvm && llvm-r1_pkg_setup
+}
+
 src_prepare() {
 	sed -re \
 		's/^target_link_libraries\(CemuBin.*/target_link_libraries(CemuBin PRIVATE wayland-client/' \
@@ -62,8 +74,16 @@ src_prepare() {
 }
 
 src_configure() {
-	local mycmakeargs=(
+	if use llvm; then
+                mycmakeargs+=(
+                        -DCMAKE_C_COMPILER=/usr/bin/clang
+                        -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+                )
+        fi
+
+	local mycmakeargs+=(
 		-DBUILD_SHARED_LIBS=OFF
+		-DCMAKE_BUILD_TYPE=release
 		"-DENABLE_CUBEB=$(usex cubeb)"
 		"-DENABLE_DISCORD_RPC=$(usex discord)"
 		-DENABLE_OPENGL=ON

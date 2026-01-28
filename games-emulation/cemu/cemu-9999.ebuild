@@ -46,7 +46,7 @@ DEPEND="app-arch/zarchive
 	cubeb? ( media-libs/cubeb )
 	dev-libs/boost
 	dev-libs/glib
-	>=dev-libs/libfmt-9.1.0:=
+	>=dev-libs/libfmt-12.1.0:=
 	dev-libs/libzip
 	dev-libs/openssl
 	dev-libs/pugixml
@@ -61,7 +61,7 @@ DEPEND="app-arch/zarchive
 	llvm? ( $(llvm_gen_dep 'llvm-core/llvm:${LLVM_SLOT}=') )
 	x11-libs/gtk+:3[wayland]
 	x11-libs/libX11
-	x11-libs/wxGTK:3.3-gtk3
+	x11-libs/wxGTK:3.3-gtk3[opengl]
 	virtual/libusb"
 RDEPEND="${DEPEND}"
 BDEPEND="media-libs/glm"
@@ -93,11 +93,9 @@ src_configure() {
 		)
 	fi
 
-	local mycmakeargs=(
+	local mycmakeargs+=(
 		-DBUILD_SHARED_LIBS=OFF
 		-DCMAKE_BUILD_TYPE=release
-		-DCMAKE_C_COMPILER=/usr/bin/clang
-                -DCMAKE_CXX_COMPILER=/usr/bin/clang++
 		-DENABLE_CUBEB=$(usex cubeb)
 		-DENABLE_DISCORD_RPC=$(usex discord)
 		-DENABLE_OPENGL=ON
@@ -105,8 +103,9 @@ src_configure() {
 		-DENABLE_VCPKG=OFF
 		-DENABLE_VULKAN=$(usex vulkan)
 		-DENABLE_WXWIDGETS=ON
-		-DwxWidgets_CONFIG_EXECUTABLE=/usr/$(get_libdir)/wx/config/gtk3-unicode-3.2-gtk3
+		"-DwxWidgets_CONFIG_EXECUTABLE=/usr/$(get_libdir)/wx/config/gtk3-unicode-3.3"
 		-DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF
+		-DALLOW_EXTERNAL_SPIRV_TOOLS=ON
 		-Wno-dev
 	)
 	cmake_src_configure
