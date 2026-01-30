@@ -107,13 +107,13 @@ RDEPEND="
 	)
 	ffmpeg? ( media-video/ffmpeg:= )
 	gui? (
-		dev-qt/qtbase:6[gui,widgets]
+		dev-qt/qtbase:6[X,gui,widgets]
 		dev-qt/qtsvg:6
 	)
 	llvm? ( $(llvm_gen_dep 'llvm-core/llvm:${LLVM_SLOT}=') )
 	profile? ( dev-util/oprofile )
 	pulseaudio? ( media-libs/libpulse )
-	sdl? ( media-libs/libsdl2 )
+	sdl? ( >=media-libs/libsdl3-3.2.20 )
 	systemd? ( sys-apps/systemd:0= )
 	upnp? ( net-libs/miniupnpc:= )
 "
@@ -170,7 +170,9 @@ declare -A KEEP_BUNDLED=(
 
 PATCHES=(
 #	"${FILESDIR}"/dolphin-2407-libfmt-11-fix.patch
-	"${FILESDIR}"/dolphin-2407-minizip.patch
+#	"${FILESDIR}"/dolphin-2407-minizip.patch
+	"${FILESDIR}"/dolphin-2509-retroachievents-test.patch
+	"${FILESDIR}"/dolphin-2509-qt-6.10.patch # bug #965410
 )
 
 add_bundled_licenses() {
