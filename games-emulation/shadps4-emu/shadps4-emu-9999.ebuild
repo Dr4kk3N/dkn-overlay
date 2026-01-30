@@ -21,6 +21,7 @@ then
 			  'externals/dear_imgui' \
 			  'externals/discord-rpc' \
 			  'externals/epoll-shim' \
+			  'externals/ext-CLI11' \
 			  'externals/ext-boost' \
 			  'externals/ext-libusb' \
 			  'externals/ext-wepoll' \
