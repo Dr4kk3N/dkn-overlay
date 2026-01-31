@@ -15,13 +15,13 @@ HOMEPAGE="https://github.com/shadps4-emu/shadPS4"
 if [[ ${PV} == *9999 ]]
 then
 	EGIT_REPO_URI="https://github.com/shadps4-emu/shadPS4.git"
-	EGIT_SUBMODULES=( 'externals/LibAtrac9' \
+	EGIT_SUBMODULES=( 'externals/CLI11' \
+			  'externals/LibAtrac9' \
 			  'externals/MoltenVK' \
 			  'externals/date' \
 			  'externals/dear_imgui' \
 			  'externals/discord-rpc' \
 			  'externals/epoll-shim' \
-			  'externals/ext-CLI11' \
 			  'externals/ext-boost' \
 			  'externals/ext-libusb' \
 			  'externals/ext-wepoll' \

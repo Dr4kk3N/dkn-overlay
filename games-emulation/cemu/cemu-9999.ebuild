@@ -86,14 +86,7 @@ src_prepare() {
 }
 
 src_configure() {
-	if use llvm; then
-		mycmakeargs+=(
-			-DCMAKE_C_COMPILER=/usr/bin/clang
-			-DCMAKE_CXX_COMPILER=/usr/bin/clang++
-		)
-	fi
-
-	local mycmakeargs+=(
+	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=OFF
 		-DCMAKE_BUILD_TYPE=release
 		-DENABLE_CUBEB=$(usex cubeb)
@@ -108,6 +101,12 @@ src_configure() {
 		-DALLOW_EXTERNAL_SPIRV_TOOLS=ON
 		-Wno-dev
 	)
+	if use llvm; then
+                mycmakeargs+=(
+                        -DCMAKE_C_COMPILER=/usr/bin/clang
+                        -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+                )
+        fi
 	cmake_src_configure
 }
 
