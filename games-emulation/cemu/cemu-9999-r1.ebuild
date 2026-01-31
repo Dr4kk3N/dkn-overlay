@@ -89,7 +89,7 @@ src_prepare() {
 
 src_configure() {
 	if use clang; then
-		local -x CC=${CHOST}-clang CXX=${CHOST}-clang++ AR=llvm-ar
+		local -x CC=${CHOST}-clang CXX=${CHOST}-clang++ AR=llvm-ar NM=llvm-nm RANLIB=llvm-ranlib
 		strip-unsupported-flags
 	fi
 
