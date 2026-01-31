@@ -88,7 +88,6 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=OFF
-		-DCMAKE_BUILD_TYPE=release
 		-DENABLE_CUBEB=$(usex cubeb)
 		-DENABLE_DISCORD_RPC=$(usex discord)
 		-DENABLE_OPENGL=ON
@@ -111,7 +110,7 @@ src_configure() {
 }
 
 src_install() {
-#	newbin "bin/${MY_PN}_relwithdebinfo" "$MY_PN"
+	newbin "bin/${MY_PN}_relwithdebinfo" "$MY_PN"
 	insinto "/usr/share/${PN}/gameProfiles"
 	doins -r bin/gameProfiles/default/*
 	insinto "/usr/share/${PN}"
