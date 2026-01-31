@@ -1,4 +1,4 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -51,7 +51,7 @@ ADDONS_SRC=(
 	# not packaged in Gentoo, https://github.com/serge-sans-paille/frozen
 	"${ADDONS_URI}/frozen-1.2.0.tar.gz"
 	# not packaged in Gentoo, https://skia.org/
-	"${ADDONS_URI}/skia-m136-28685d899b0a35894743e2cedad4c9f525e90e1e.tar.xz"
+	"${ADDONS_URI}/skia-m142-f4ed99d2443962782cf5f8b4dd27179f131e7cbe.tar.xz"
 
 	"base? (
 		${ADDONS_URI}/ba2930200c9f019c2d93a8c88c651a0f-flow-engine-0.9.4.zip
@@ -91,7 +91,7 @@ KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86 ~amd64-linux"
 LO_EXTS="nlpsolver scripting-beanshell scripting-javascript wiki-publisher"
 
 IUSE="accessibility base bluetooth +branding coinmp +cups custom-cflags +dbus debug eds
-googledrive gstreamer gtk kde ldap +mariadb odk pdfimport postgres qt6 test valgrind vulkan
+googledrive gstreamer +gtk3 gtk4 kde ldap +mariadb odk pdfimport postgres qt6 test valgrind vulkan
 $(printf 'libreoffice_extensions_%s ' ${LO_EXTS})"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -129,7 +129,8 @@ COMMON_DEPEND="${PYTHON_DEPS}
 	>=app-text/libwps-0.4
 	app-text/mythes
 	dev-cpp/abseil-cpp:=
-	>=dev-cpp/clucene-2.3.3.4-r2
+	>=dev-cpp/clucene-2.3.3
+	dev-cpp/fast_float
 	>=dev-cpp/libcmis-0.6.2:0=
 	dev-db/unixODBC
 	dev-lang/perl
@@ -139,7 +140,7 @@ COMMON_DEPEND="${PYTHON_DEPS}
 	dev-libs/icu:=
 	dev-libs/libassuan:=
 	dev-libs/libgpg-error
-	>=dev-libs/liborcus-0.20.0:0/0.20
+	>=dev-libs/liborcus-0.21.0:0/0.21
 	dev-libs/librevenge
 	dev-libs/libxml2:=
 	dev-libs/libxslt
@@ -170,7 +171,7 @@ COMMON_DEPEND="${PYTHON_DEPS}
 	media-libs/zxing-cpp:=
 	net-misc/curl
 	sci-mathematics/lpsolve:=
-	sys-libs/zlib
+	virtual/zlib
 	virtual/opengl
 	x11-libs/cairo
 	x11-libs/libXinerama
@@ -195,11 +196,20 @@ COMMON_DEPEND="${PYTHON_DEPS}
 		media-libs/gstreamer:1.0
 		media-libs/gst-plugins-base:1.0
 	)
-	gtk? (
+	gtk3? (
+		app-accessibility/at-spi2-core:2
 		dev-libs/glib:2
 		gnome-base/dconf
 		media-libs/mesa[egl(+)]
-		gui-libs/gtk[wayland,X]
+		x11-libs/gtk+:3[wayland,X]
+		x11-libs/pango
+	)
+	gtk4? (
+		app-accessibility/at-spi2-core:2
+		dev-libs/glib:2
+		gnome-base/dconf
+		media-libs/mesa[egl(+)]
+		gui-libs/gtk:4[wayland,X]
 		x11-libs/pango
 	)
 	kde? (
@@ -322,8 +332,8 @@ src_unpack() {
 		branch="master"
 		mypv=${MY_PV/.9999}
 		[[ ${mypv} != ${MY_PV} ]] && branch="${PN}-${mypv/./-}"
-		git-r3_fetch "${base_uri}/core" "refs/heads/${branch}"
-		git-r3_checkout "${base_uri}/core"
+		git-r3_fetch "${base_uri}/${PN}/core" "refs/heads/${branch}"
+		git-r3_checkout "${base_uri}/${PN}/core"
 		LOCOREGIT_VERSION=${EGIT_VERSION}
 
 		git-r3_fetch "${base_uri}/${PN}/help" "refs/heads/master"
@@ -548,7 +558,8 @@ src_configure() {
 		$(use_enable debug)
 		$(use_enable eds evolution2)
 		$(use_enable gstreamer gstreamer-1-0)
-		$(use_enable gtk gtk4)
+		$(use_enable gtk3)
+		$(use_enable gtk4)
 		$(use_enable kde kf6)
 		$(use_enable ldap)
 		$(use_enable odk)
@@ -564,9 +575,10 @@ src_configure() {
 		$(use_with java)
 		$(use_with odk doxygen)
 		$(use_with valgrind)
+		--enable-skia-vulkan-validation
 	)
 
-	if use eds || use gtk ; then
+	if use eds || use gtk3 || use gtk4 ; then
 		myeconfargs+=( --enable-dconf --enable-gio )
 	else
 		myeconfargs+=( --disable-dconf --disable-gio )
@@ -623,10 +635,10 @@ src_install() {
 
 	# TODO: still relevant for gtk4?
 	# bug #593514
-	#if use gtk3; then
-	#	dosym libreoffice/program/liblibreofficekitgtk.so \
-	#		/usr/$(get_libdir)/liblibreofficekitgtk.so
-	#fi
+	if use gtk3; then
+		dosym libreoffice/program/liblibreofficekitgtk.so \
+			/usr/$(get_libdir)/liblibreofficekitgtk.so
+	fi
 
 	# bash completion aliases
 	bashcomp_alias \
