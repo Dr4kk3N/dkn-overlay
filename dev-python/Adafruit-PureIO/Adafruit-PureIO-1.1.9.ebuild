@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,9 +6,11 @@ EAPI=8
 PYTHON_COMPAT=( python3_{10..12} )
 DISTUTILS_USE_PEP517=setuptools
 PYPI_NO_NORMALIZE=1
+PYPI_PN=${PN/-/_}
 inherit distutils-r1 pypi
-DESCRIPTION="CircuitPython APIs for non-CircuitPython versions of Python such as CPython on Linux and MicroPython."
-HOMEPAGE="https://github.com/adafruit/Adafruit_Blinka https://pypi.org/project/Adafruit-Blinka/"
+
+DESCRIPTION="Pure python (i.e. no native extensions) access to Linux IO including I2C and SPI. Drop in replacement for smbus and spidev modules."
+HOMEPAGE="https://github.com/adafruit/Adafruit_Python_PureIO https://pypi.org/project/Adafruit-PureIO/"
 
 LICENSE="MIT"
 SLOT="0"
@@ -18,7 +20,6 @@ RESTRICT="!test? ( test )"
 
 DOCS="README.rst"
 
-RDEPEND="dev-python/Adafruit-PureIO[${PYTHON_USEDEP}]"
 BDEPEND="
 	test? (
 		dev-python/pytest[${PYTHON_USEDEP}]
