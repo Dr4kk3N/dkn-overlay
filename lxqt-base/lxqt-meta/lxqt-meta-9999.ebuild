@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -58,7 +58,8 @@ RDEPEND="
 	trash? ( gnome-base/gvfs )
 	wayland? ( lxqt-base/lxqt-wayland-session )
 	window-manager? (
-		kde-plasma/kwin:6
 		kde-plasma/systemsettings:6
+		wayland? ( kde-plasma/kwin:6 )
+		!wayland? ( kde-plasma/kwin-x11:6 )
 	)
 "
