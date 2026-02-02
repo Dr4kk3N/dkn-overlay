@@ -36,8 +36,8 @@ then
 			  'externals/miniz' \
 			  'externals/pugixml' \
 			  'externals/robin-map' \
-			  #'externals/sdl3' \
-			  #'externals/sdl3_mixer' \
+			  'externals/sdl3' \
+			  'externals/sdl3_mixer' \
 			  'externals/sirit' \
 			  'externals/toml11' \
 			  'externals/tracy' \
@@ -50,16 +50,16 @@ then
 			  'externals/zydis/dependencies/zycore' \
 			  'externals/zlib-ng/zlibstatic-ngd' \
 			  'externals/aacdec/fdk-aac' \
-			  #'externals/sdl3_mixer/external/flac' \
-			  #'externals/sdl3_mixer/external/libgme' \
-			  #'externals/sdl3_mixer/external/libxmp' \
-			  #'externals/sdl3_mixer/external/mpg123' \
-			  #'externals/sdl3_mixer/external/ogg' \
-			  #'externals/sdl3_mixer/external/opus' \
-			  #'externals/sdl3_mixer/external/opusfile' \
-			  #'externals/sdl3_mixer/external/tremor' \
-			  #'externals/sdl3_mixer/external/vorbis' \
-			  #'externals/sdl3_mixer/external/wavpack' \
+			  'externals/sdl3_mixer/external/flac' \
+			  'externals/sdl3_mixer/external/libgme' \
+			  'externals/sdl3_mixer/external/libxmp' \
+			  'externals/sdl3_mixer/external/mpg123' \
+			  'externals/sdl3_mixer/external/ogg' \
+			  'externals/sdl3_mixer/external/opus' \
+			  'externals/sdl3_mixer/external/opusfile' \
+			  'externals/sdl3_mixer/external/tremor' \
+			  'externals/sdl3_mixer/external/vorbis' \
+			  'externals/sdl3_mixer/external/wavpack' \
 			  'externals/sirit/externals/SPIRV-Headers'
 			)
 	inherit git-r3
