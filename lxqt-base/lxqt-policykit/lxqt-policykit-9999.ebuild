@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -23,13 +23,13 @@ SLOT="0"
 
 BDEPEND="
 	>=dev-qt/qttools-6.6:6[linguist]
-	>=dev-util/lxqt-build-tools-2.1.0
+	>=dev-util/lxqt-build-tools-2.3.0
 	virtual/pkgconfig
 "
 DEPEND="
 	>=dev-qt/qtbase-6.6:6[gui,widgets]
 	=lxqt-base/liblxqt-${MY_PV}*:=
-	>=sys-auth/polkit-qt-0.200.0
+	>=sys-auth/polkit-qt-0.200.0[qt6]
 "
 RDEPEND="${DEPEND}"
 
