@@ -6,6 +6,7 @@ EAPI=8
 DOTNET_PKG_COMPAT=9.0
 NUGETS="
 argon@0.31.0
+argon@0.32.0
 autofixture.xunit2@4.18.1
 autofixture@4.18.1
 avalonia.angle.windows.natives@2.1.25547.20250602
@@ -56,14 +57,16 @@ commandlineparser@2.9.1
 communitytoolkit.highperformance@8.4.0
 coverlet.collector@6.0.2
 diffengine@16.3.0
+diffengine@16.8.0
 diffplex@1.7.2
-duckdb.nativebinaries@1.3.2
+duckdb.nativebinaries@1.4.0
 dynamicdata@8.3.27
 dynamicdata@8.4.1
 dynamicdata@9.0.4
 dynamicdata@9.3.2
 dynamicdata@9.4.1
 emptyfiles@8.11.1
+emptyfiles@8.15.0
 enumerableasyncprocessor@3.8.4
 excss@4.3.0
 fare@2.1.1
@@ -223,6 +226,7 @@ microsoft.diagnostics.netcore.client@0.2.410101
 microsoft.diagnostics.netcore.client@0.2.510501
 microsoft.diagnostics.runtime@3.1.512801
 microsoft.diagnostics.tracing.traceevent@3.1.21
+microsoft.diasymreader@2.0.0
 microsoft.dotnet.platformabstractions@3.1.6
 microsoft.extensions.ambientmetadata.application@9.8.0
 microsoft.extensions.compliance.abstractions@9.8.0
@@ -266,6 +270,7 @@ microsoft.extensions.dependencyinjection@8.0.0
 microsoft.extensions.dependencyinjection@9.0.0
 microsoft.extensions.dependencyinjection@9.0.7
 microsoft.extensions.dependencyinjection@9.0.8
+microsoft.extensions.dependencymodel@6.0.2
 microsoft.extensions.diagnostics.abstractions@8.0.0
 microsoft.extensions.diagnostics.abstractions@9.0.0
 microsoft.extensions.diagnostics.abstractions@9.0.7
@@ -358,10 +363,12 @@ microsoft.netcore.platforms@5.0.0
 microsoft.netcore.targets@1.1.0
 microsoft.sourcelink.common@8.0.0
 microsoft.sourcelink.github@8.0.0
-microsoft.testing.extensions.trxreport.abstractions@1.8.3
-microsoft.testing.platform.msbuild@1.4.3
-microsoft.testing.platform@1.4.3
-microsoft.testing.platform@1.8.3
+microsoft.testing.extensions.codecoverage@18.1.0
+microsoft.testing.extensions.trxreport.abstractions@2.0.1
+microsoft.testing.extensions.trxreport@2.0.1
+microsoft.testing.platform.msbuild@2.0.1
+microsoft.testing.platform@2.0.0
+microsoft.testing.platform@2.0.1
 microsoft.testplatform.objectmodel@17.10.0
 microsoft.testplatform.objectmodel@17.14.1
 microsoft.testplatform.testhost@17.14.1
@@ -391,24 +398,15 @@ nexusmods.archives.nx@0.6.1
 nexusmods.archives.nx@0.6.4
 nexusmods.hashing.xxhash3.paths@3.0.4
 nexusmods.hashing.xxhash3@3.0.4
-nexusmods.hyperduck@0.24.0
-nexusmods.mnemonicdb.abstractions@0.24.0
-nexusmods.mnemonicdb.sourcegenerator@0.24.0
-nexusmods.mnemonicdb@0.24.0
+nexusmods.hyperduck@0.28.2
+nexusmods.mnemonicdb.abstractions@0.28.2
+nexusmods.mnemonicdb.sourcegenerator@0.28.2
+nexusmods.mnemonicdb@0.28.2
 nexusmods.paths.extensions.nx@0.20.0
 nexusmods.paths.testinghelpers@0.20.0
 nexusmods.paths@0.10.0
 nexusmods.paths@0.19.1
 nexusmods.paths@0.20.0
-nito.asyncex.context@5.1.2
-nito.asyncex.coordination@5.1.2
-nito.asyncex.interop.waithandles@5.1.2
-nito.asyncex.oop@5.1.2
-nito.asyncex.tasks@5.1.2
-nito.asyncex@5.1.2
-nito.cancellation@1.1.2
-nito.collections.deque@1.1.1
-nito.disposables@2.2.1
 nlog.extensions.logging@6.0.3
 nlog@6.0.3
 noggog.csharpext@2.73.2
@@ -542,7 +540,6 @@ system.codedom@9.0.0
 system.codedom@9.0.5
 system.collections.concurrent@4.0.12
 system.collections.concurrent@4.3.0
-system.collections.immutable@1.7.1
 system.collections.immutable@5.0.0
 system.collections.immutable@7.0.0
 system.collections.immutable@8.0.0
@@ -610,6 +607,7 @@ system.linq@4.3.0
 system.management@8.0.0
 system.management@9.0.5
 system.memory@4.5.3
+system.memory@4.5.4
 system.memory@4.5.5
 system.net.http@4.3.0
 system.net.nameresolution@4.3.0
@@ -620,6 +618,7 @@ system.objectmodel@4.0.12
 system.objectmodel@4.3.0
 system.private.uri@4.3.0
 system.reactive@5.0.0
+system.reactive@6.0.0
 system.reactive@6.0.1
 system.reactive@6.0.2
 system.reflection.emit.ilgeneration@4.0.1
@@ -643,7 +642,6 @@ system.reflection@4.1.0
 system.reflection@4.3.0
 system.resources.resourcemanager@4.0.1
 system.resources.resourcemanager@4.3.0
-system.runtime.compilerservices.unsafe@4.4.0
 system.runtime.compilerservices.unsafe@4.5.3
 system.runtime.compilerservices.unsafe@6.0.0
 system.runtime.extensions@4.1.0
@@ -677,12 +675,13 @@ system.text.encoding.codepages@7.0.0
 system.text.encoding.codepages@9.0.7
 system.text.encoding.extensions@4.3.0
 system.text.encoding@4.3.0
+system.text.encodings.web@6.0.1
 system.text.encodings.web@8.0.0
+system.text.json@6.0.11
 system.text.json@8.0.0
 system.text.json@8.0.5
 system.text.regularexpressions@4.3.0
 system.threading.channels@7.0.0
-system.threading.channels@9.0.0
 system.threading.ratelimiting@8.0.0
 system.threading.tasks.dataflow@4.6.0
 system.threading.tasks.extensions@4.3.0
@@ -693,6 +692,7 @@ system.threading.threadpool@4.3.0
 system.threading.timer@4.3.0
 system.threading@4.0.11
 system.threading@4.3.0
+system.valuetuple@4.6.1
 system.windows.extensions@6.0.0
 system.xml.readerwriter@4.3.0
 system.xml.xdocument@4.3.0
@@ -706,20 +706,23 @@ textmatesharp@1.0.70
 tmds.dbus.protocol@0.21.2
 transparentvalueobjects.abstractions@1.1.0
 transparentvalueobjects@1.1.0
-tunit.assertions@0.57.24
-tunit.core@0.57.24
-tunit.engine@0.57.24
-tunit@0.57.24
+tunit.assertions@0.86.5
+tunit.core@0.86.5
+tunit.core@0.87.8
+tunit.engine@0.86.5
+tunit@0.86.5
 validation@2.3.7
 validation@2.4.18
 valvekeyvalue@0.10.0.360
 valvekeyvalue@0.13.1.398
 verify.imagemagick@3.7.3
 verify.sourcegenerators@2.5.0
+verify.tunit@31.4.1
 verify.xunit@30.11.0
 verify@26.5.0
 verify@30.11.0
 verify@30.7.3
+verify@31.4.1
 weave@2.1.0
 xunit.abstractions@2.0.1
 xunit.abstractions@2.0.2
@@ -764,7 +767,8 @@ MY_P="${MY_PN}-${MY_PV}"
 SMAPI_COMMIT="fd73446090cd71f4948f34ba8c428e45aa0a3ebf"
 
 # update whenever bumped
-GAME_HASHES_COMMIT="vD0E6FC9F3A82C2E9"
+# https://github.com/Nexus-Mods/game-hashes/releases
+GAME_HASHES_COMMIT="vc2e27b8bf8632dca"
 
 SRC_URI="
 	https://github.com/Nexus-Mods/NexusMods.App/archive/refs/tags/v${MY_PV}.tar.gz
@@ -776,6 +780,7 @@ SRC_URI="
 	${NUGET_URIS}
 "
 if [[ ${PKGBUMPING} != ${PVR} ]]; then
+	# https://data.nexusmods.com/file/nexus-data/games.json
 	SRC_URI+="
 		https://gitlab.com/api/v4/projects/32909921/packages/generic/${PN}/${PV}/games.json
 			-> ${P}-games.json
@@ -792,7 +797,7 @@ COMMON_DEPEND="
 	app-arch/lz4
 	app-arch/snappy
 	app-arch/zstd
-	sys-libs/zlib
+	virtual/zlib
 "
 RDEPEND="
 	${COMMON_DEPEND}
@@ -819,7 +824,7 @@ DOTNET_PKG_TEST_EXTRA_ARGS=(
 
 pkg_pretend() {
 	CHECKREQS_DISK_BUILD="5G"
-	if has ${FEATURES} test; then
+	if has test ${FEATURES}; then
 		CHECKREQS_DISK_BUILD="32G"
 	fi
 	check-reqs_pkg_pretend
@@ -827,7 +832,7 @@ pkg_pretend() {
 
 pkg_setup() {
 	CHECKREQS_DISK_BUILD="5G"
-	if has ${FEATURES} test; then
+	if has test ${FEATURES}; then
 		CHECKREQS_DISK_BUILD="32G"
 	fi
 	check-reqs_pkg_setup
@@ -852,47 +857,31 @@ src_prepare() {
 	cp "${DISTDIR}/${P}-games.json" \
 		"${S}/src/NexusMods.Networking.NexusWebApi/obj/games.json" || die
 
-	sed -i -e 's/${INSTALL_EXEC}/NexusMods.App/' src/NexusMods.App/com.nexusmods.app.desktop || die
+	sed -e 's/${INSTALL_EXEC}/NexusMods.App/' -i src/NexusMods.App/com.nexusmods.app.desktop || die
 
 	# network sandbox
-	sed -i \
-		-e '/Test_TryGetLastSupportedSMAPIVersion/i    [Trait("RequiresNetworking", "True")]' \
-		tests/Games/NexusMods.Games.StardewValley.Tests/SMAPIGameVersionDiagnosticEmitterTests.cs || die
-	sed -i \
-		-e '/TestDatabase/i    [Trait("RequiresNetworking", "True")]' \
-		tests/NexusMods.DataModel.SchemaVersions.Tests/LegacyDatabaseSupportTests.cs || die
-	sed -i \
-		-e '/TestsFor_0001_ConvertTimestamps/i    [Trait("RequiresNetworking", "True")]' \
-		tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0001_ConvertTimestamps.cs || die
-	sed -i \
-		-e '/TestsFor_0003_FixDuplicates/i    [Trait("RequiresNetworking", "True")]' \
-		tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0003_FixDuplicates.cs || die
-	sed -i \
-		-e '/TestsFor_0004_RemoveGameFiles/i    [Trait("RequiresNetworking", "True")]' \
-		tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0004_RemoveGameFiles.cs || die
+	sed -e '/Test_TryGetLastSupportedSMAPIVersion/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/Games/NexusMods.Games.StardewValley.Tests/SMAPIGameVersionDiagnosticEmitterTests.cs || die
+	sed -e '/TestDatabase/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/NexusMods.DataModel.SchemaVersions.Tests/LegacyDatabaseSupportTests.cs || die
+	sed -e '/TestsFor_0001_ConvertTimestamps/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0001_ConvertTimestamps.cs || die
+	sed -e '/TestsFor_0003_FixDuplicates/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0003_FixDuplicates.cs || die
+	sed -e '/TestsFor_0004_RemoveGameFiles/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/NexusMods.DataModel.SchemaVersions.Tests/MigrationSpecificTests/TestsFor_0004_RemoveGameFiles.cs || die
 
-	# FIXME
-	# Expected LocalMappingCache.TryParseJsonFile(out _, out _) to be True, but found False.
-	#rm tests/Networking/NexusMods.Networking.NexusWebApi.Tests/LocalMappingCacheTests.cs || die
+	sed -e '/Validate_Download_Jobs_Lifetime/i    [Trait("RequiresNetworking", "True")]' \
+		-i tests/NexusMods.Library.Tests/DownloadsService/DownloadsServiceTests.cs || die
 
 	if ! use debug; then
 		# xunit doesnt support conditional unit tests like this
-		sed -i \
-			-e '
+		sed -e '
 			/\[Fact\]/,/Constructor_WithItemsFromDifferentGames_ShouldThrowArgumentException_InDebug/ {
 				s/\[Fact\]/[Fact (Skip = "requires a debug build")]/
 			}
 			' \
-			tests/Networking/NexusMods.Networking.ModUpdates.Tests/PerFeedCacheUpdaterTests.cs || die
-
-		# Assumes debug version
-		sed -i \
-			-e '
-			/\[Fact\]/,/public async Task Test()/ {
-				s/\[Fact\]/[Fact (Skip = "requires a debug build")]/
-			}
-			' \
-			tests/NexusMods.Telemetry.Tests/TrackingDataSenderTests.cs || die
+			-i tests/Networking/NexusMods.Networking.ModUpdates.Tests/PerFeedCacheUpdaterTests.cs || die
 	fi
 
 	default
@@ -903,6 +892,10 @@ src_test() {
 
 	# https://github.com/Nexus-Mods/NexusMods.App/issues/1224#issuecomment-2060696994
 	local -x USER="portage"
+
+	# https://github.com/microsoft/vstest/blob/main/docs/environment-variables.md
+	local -x VSTEST_CONNECTION_TIMEOUT=270
+
 	virtx dotnet-pkg_src_test
 }
 
