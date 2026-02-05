@@ -1,4 +1,4 @@
-# Copyright 2009-2025 Gentoo Authors
+# Copyright 2009-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -57,13 +57,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="e8f5addcffb5a206ea3e2123e172a00c29f67dd6"
+UGC_COMMIT_ID="98a66e4128f9e3e59b28430c9224d258803564f5"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="3010fc430e7f3abcc011a9e439ac4ffd0b7d36a6"
+CROMITE_COMMIT_ID="96b45f3e73f9623a5e7e59cf9eec8ac531475f77"
 
 # declare -A CHROMIUM_COMMITS=(
 # 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
@@ -281,7 +281,7 @@ BDEPEND="
 	!headless? (
 		qt6? ( dev-qt/qtbase:6 )
 	)
-	>=dev-build/gn-0.2235
+	>=dev-build/gn-0.2289
 	app-alternatives/ninja
 	dev-lang/perl
 	>=dev-util/gperf-3.2
@@ -292,7 +292,7 @@ BDEPEND="
 	sys-devel/flex
 	virtual/pkgconfig
 	clang? (
-		pgo? ( >=llvm-core/clang-21 >=llvm-core/lld-21	)
+		pgo? ( >=llvm-core/clang-22.0.0_pre20260106 >=llvm-core/lld-22.0.0_pre20260106	)
 		!pgo? ( llvm-core/clang llvm-core/lld )
 	)
 	cfi? ( llvm-runtimes/clang-runtime[sanitize] )
@@ -508,11 +508,11 @@ src_prepare() {
 		"${FILESDIR}/chromium-cross-compile.patch"
 		"${FILESDIR}/chromium-109-system-openh264.patch"
 		"${FILESDIR}/chromium-109-system-zlib.patch"
-		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
+		"${FILESDIR}/chromium-145-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-138-nodejs-version-check.patch"
 		"${FILESDIR}/chromium-144-revert-libpng-testiness.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
-		"${FILESDIR}/chromium-141-qrcode.patch"
+		"${FILESDIR}/chromium-144-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
 		"${FILESDIR}/chromium-127-cargo_crate.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
@@ -521,10 +521,10 @@ src_prepare() {
 		"${FILESDIR}/chromium-141-fix-for-kde.patch"
 		"${FILESDIR}/chromium-134-stdatomic.patch"
 		"${FILESDIR}/font-gc-asan.patch"
-		"${FILESDIR}/chromium-141-crabby.patch"
-		"${FILESDIR}/chromium-144-no-rust.patch"
-		"${FILESDIR}/chromium-144-fontations.patch"
-		"${FILESDIR}/chromium-144-gcc.patch"
+		"${FILESDIR}/chromium-145-crabby.patch"
+		"${FILESDIR}/chromium-145-no-rust.patch"
+		"${FILESDIR}/chromium-145-fontations.patch"
+		"${FILESDIR}/chromium-145-gcc.patch"
 	)
 
 	# https://issues.chromium.org/issues/442698344
@@ -617,7 +617,7 @@ src_prepare() {
 
 	if use convert-dict ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-ucf-dict-utility-r2.patch"
+			"${FILESDIR}/chromium-ucf-dict-utility-r3.patch"
 		)
 	fi
 
@@ -644,7 +644,7 @@ src_prepare() {
 
 	if ! use system-png; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-143-revert-revert-libpng-testiness.patch"
+			"${FILESDIR}/chromium-144-revert-revert-libpng-testiness.patch"
 		)
 	fi
 
@@ -785,7 +785,7 @@ src_prepare() {
 	fi
 
 	if use system-abseil-cpp; then
-		eapply_wrapper "${FILESDIR}/chromium-144-system-abseil.patch"
+		eapply_wrapper "${FILESDIR}/chromium-145-system-abseil.patch"
 		#! not sure about this one :-/ vvvvvvvvvvvvvvvv Any better solution?
 		eapply_wrapper "${FILESDIR}/chromium-141-system-abseil-cord.patch"
 		#! not sure about this one :-/ ^^^^^^^^^^^^^^^^ Any better solution?
@@ -1190,7 +1190,6 @@ src_prepare() {
 		third_party/webrtc/modules/third_party/fft
 		third_party/webrtc/modules/third_party/g711
 		third_party/webrtc/modules/third_party/g722
-		third_party/webrtc/rtc_base/third_party/sigslot
 		third_party/widevine
 	)
 	use system-woff2 || keeplibs+=(
@@ -1611,12 +1610,15 @@ src_configure() {
 	myconf_gn+=" enable_chromium_prelude=false"
 	myconf_gn+=" enable_updater=false"
 	myconf_gn+=" enable_update_notifications=false"
-	myconf_gn+=" enable_video_effects=false"
 	myconf_gn+=" enable_constraints=false"
 	myconf_gn+=" rtc_rusty_base64=false"
 	myconf_gn+=" v8_enable_temporal_support=false"
 	myconf_gn+=" media_use_symphonia=false"
 	myconf_gn+=" pdf_enable_rust_png=false"
+	myconf_gn+=" skia_use_libpng_encode=true"
+	myconf_gn+=" skia_use_libpng_decode=true"
+	myconf_gn+=" skia_use_rust_png_decode=false"
+	myconf_gn+=" skia_use_rust_png_encode=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"
@@ -1869,19 +1871,69 @@ src_compile() {
 
 	rm -f out/Release/locales/*.pak.info || die
 
-	# Build manpage; bug #684550
-	sed -e 's|@@PACKAGE@@|chromium-browser|g;
-		s|@@MENUNAME@@|Chromium|g;' \
-		chrome/app/resources/manpage.1.in > \
-		out/Release/chromium-browser.1 || die
+	# Generate support files: #684550 #706786 #968958
+	# Use upstream's python installer script to generate support files
+	# This replaces fragile sed commands and handles @@include@@ directives.
+	# It'll also verify that all substitution markers have been resolved, meaning that
+	# future changes to templates that add new variables will be caught during the build.
+	cat > "${T}/generate_support_files.py" <<-EOF || die
+		import sys
+		from pathlib import Path
 
-	# Build desktop file; bug #706786
-	sed -e 's|@@MENUNAME@@|Chromium|g;
-		s|@@USR_BIN_SYMLINK_NAME@@|chromium-browser|g;
-		s|@@PACKAGE@@|chromium-browser|g;
-		s|\(^Exec=\)/usr/bin/|\1|g;' \
-		chrome/installer/linux/common/desktop.template > \
-		out/Release/chromium-browser-chromium.desktop || die
+		# Add upstream installer script to search path
+		sys.path.insert(0, str(Path.cwd() / "chrome/installer/linux/common"))
+		import installer
+
+		# Configure contexts strictly for file generation
+		# Common variables used across templates
+		context = {
+		    "BUGTRACKERURL": "https://github.com/ungoogled-software/ungoogled-chromium/issues",
+		    "DEVELOPER_NAME": "The ungoogled-chromium Authors",
+		    "EXTRA_DESKTOP_ENTRIES": "",
+		    "FULLDESC": "Google Chromium, sans integration with Google",
+		    "HELPURL": "https://ungoogled-software.github.io/ungoogled-chromium-wiki/faq",
+		    "INSTALLDIR": "/usr/$(get_libdir)/chromium-browser",
+		    "MAINTMAIL": "@PF4Public",
+		    "MENUNAME": "ungoogled-chromium",
+		    "PACKAGE": "chromium-browser",
+		    "PRODUCTURL": "https://github.com/ungoogled-software/ungoogled-chromium",
+		    "PROGNAME": "chrome",
+		    "PROJECT_LICENSE": "BSD, LGPL-2, LGPL-2.1, MPL-1.1, MPL-2.0, Apache-2.0, and others",
+		    "SHORTDESC": "Open-source foundation of many web browsers including Google Chrome",
+		    "URI_SCHEME": "x-scheme-handler/chromium",
+		    "USR_BIN_SYMLINK_NAME": "chromium-browser",
+		}
+
+		# Generate Desktop file
+		installer.process_template(
+		    Path("chrome/installer/linux/common/desktop.template"),
+		    Path("out/Release/chromium-browser-chromium.desktop"),
+		    context
+		)
+
+		# Generate Manpage
+		installer.process_template(
+		    Path("chrome/app/resources/manpage.1.in"),
+		    Path("out/Release/chromium-browser.1"),
+		    context
+		)
+
+		# Generate AppData (AppStream)
+		installer.process_template(
+		    Path("chrome/installer/linux/common/appdata.xml.template"),
+		    Path("out/Release/chromium-browser.appdata.xml"),
+		    context
+		)
+
+		# Generate GNOME Default Apps entry
+		installer.process_template(
+		    Path("chrome/installer/linux/common/default-app.template"),
+		    Path("out/Release/chromium-browser.xml"),
+		    context
+		)
+	EOF
+
+	"${EPYTHON}" "${T}/generate_support_files.py" || die "Failed to generate support files"
 
 	# Build vk_swiftshader_icd.json; bug #827861
 	sed -e 's|${ICD_LIBRARY_PATH}|./libvk_swiftshader.so|g' \
@@ -1899,10 +1951,8 @@ src_install() {
 		doexe out/Release/convert_dict
 	fi
 
-	#if use suid; then
-	#	newexe out/Release/chrome_sandbox chrome-sandbox
-	#	fperms 4755 "${CHROMIUM_HOME}/chrome-sandbox"
-	#fi
+	#newexe out/Release/chrome_sandbox chrome-sandbox
+	#fperms 4755 "${CHROMIUM_HOME}/chrome-sandbox"
 
 	use enable-driver && doexe out/Release/chromedriver
 
@@ -1933,7 +1983,7 @@ src_install() {
 
 	pushd out/Release/locales > /dev/null || die
 	chromium_remove_language_paks
-	popd
+	popd > /dev/null || die
 
 	insinto "${CHROMIUM_HOME}"
 	doins out/Release/*.bin
@@ -1980,7 +2030,11 @@ src_install() {
 
 	# Install GNOME default application entry (bug #303100).
 	insinto /usr/share/gnome-control-center/default-apps
-	newins "${FILESDIR}"/chromium-browser.xml chromium-browser.xml
+	doins out/Release/chromium-browser.xml
+
+	# Install AppStream metadata
+	insinto /usr/share/appdata
+	doins out/Release/chromium-browser.appdata.xml
 
 	# Install manpage; bug #684550
 	doman out/Release/chromium-browser.1
