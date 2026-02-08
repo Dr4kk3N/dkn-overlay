@@ -21,7 +21,9 @@ LICENSE="AVASYS"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 
-DEPEND=">=media-gfx/iscan-2.21.0"
+DEPEND="<media-gfx/iscan-3
+	>=media-gfx/iscan-2.21.0
+"
 RDEPEND="${DEPEND}"
 
 QA_PREBUILT="usr/lib64/esci/libesci-interpreter-perfection-v330.so*"

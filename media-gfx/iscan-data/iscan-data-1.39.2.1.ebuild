@@ -7,7 +7,9 @@ inherit udev
 
 DESCRIPTION="Image Scan! for Linux data files"
 HOMEPAGE="http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX"
-SRC_URI="http://support.epson.net/linux/src/scanner/iscan/${PN}_$(ver_rs 3 -).tar.gz"
+SRC_URI="https://github.com/pkmichalak/patch-linux-epson-perfection-v30/blob/main/iscan-data_1.39.2-1.tar.gz"
+#SRC_URI="https://subnix.mywire.org/distfiles/${PN}_$(ver_rs 3 -).tar.gz"
+#SRC_URI="http://support.epson.net/linux/src/scanner/iscan/${PN}_$(ver_rs 3 -).tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 
