@@ -9,17 +9,18 @@ ASMJIT_COMMIT="416f7356967c1f66784dc1580fe157f9406d8bff" # remotes/origin/a32_po
 GLSLANG_COMMIT="fc9889c889561c5882e83819dcaffef5ed45529b" # tags/15.3.0
 WOLFSSL_COMMIT="b077c81eb635392e694ccedbab8b644297ec0285" # tags/5.8.2-stable
 SOUNDTOUCH_COMMIT="3982730833b6daefe77dcfb32b5c282851640c17" # master
-YAMLCPP_COMMIT="456c68f452da09d8ca84b375faa2b1397713eaba" # master
+YAMLCPP_COMMIT="05c44fcd18074836e21e1eda9fc02b3a4a1529b5" # master
 FUSION_COMMIT="008e03eac0ac1d5f85e16f5fcaefdda3fee75cb8" # tags/1.2.11
 VULKANMEMORYALLOCATOR_COMMIT="1d8f600fd424278486eade7ed3e877c99f0846b1" # tags/3.3.0
 GAMEMODE_COMMIT="c54d6d4243b0dd0afcb49f2c9836d432da171a2b" # tags/1.8.2
+PROTOBUF_COMMIT="edaa823d8b36a8656d7b2b9241b7d0bfe50af878"
 
 DESCRIPTION="PS3 emulator/debugger"
 HOMEPAGE="https://rpcs3.net/"
 if [[ ${PV} == "9999" ]]; then
 	EGIT_REPO_URI="https://github.com/RPCS3/rpcs3"
 	EGIT_SUBMODULES=(
-	'asmjit' '3rdparty/glslang' '3rdparty/wolfssl'
+	'asmjit' '3rdparty/glslang' '3rdparty/wolfssl' '3rdparty/protobuf/protobuf'
 	'3rdparty/SoundTouch/soundtouch' '3rdparty/fusion/fusion' '3rdparty/GPUOpen/VulkanMemoryAllocator'
 	'3rdparty/feralinteractive/feralinteractive' '3rdparty/yaml-cpp'
 	)
@@ -37,6 +38,7 @@ else
 		https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/${VULKANMEMORYALLOCATOR_COMMIT}.tar.gz
 			-> ${PN}-VulkanMemoryAllocator-${VULKANMEMORYALLOCATOR_COMMIT}.tar.gz
 		https://github.com/FeralInteractive/gamemode/archive/${GAMEMODE_COMMIT}.tar.gz -> ${PN}-GameMode.tar.gz
+		https://github.com/protocolbuffers/protobuf/archive/${PROTOBUF_COMMIT}.tar.gz -> ${PN}-protobuf.tar.gz
 	"
 	KEYWORDS="~amd64"
 fi
