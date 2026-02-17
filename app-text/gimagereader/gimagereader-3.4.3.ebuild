@@ -36,13 +36,13 @@ DEPEND=">=app-text/tesseract-3.04
 	qt5? (
 		app-text/qtspell[qt5]
 		app-text/poppler:=[qt5]
-		dev-libs/quazip:=[qt5]
+		dev-libs/quazip:=
 		dev-qt/qtimageformats:5
 	)
 	qt6? (
 		app-text/qtspell[qt6]
 		app-text/poppler:=[qt6]
-		dev-libs/quazip:=[qt6]
+		dev-libs/quazip:=
 		dev-qt/qtimageformats:6
 	)
 "
