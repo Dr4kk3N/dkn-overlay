@@ -14,4 +14,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm64"
 
 IDEPEND=">=dev-lang/sassc-3.6.2"
-RDEPEND=">=gui-libs/gtk-4.16.0:4"
+
+RDEPEND="
+	x11-libs/gtk+:3
+	>=gui-libs/gtk-4.16.0:4
+"
