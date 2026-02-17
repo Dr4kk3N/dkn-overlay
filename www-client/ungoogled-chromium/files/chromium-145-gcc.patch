@@ -111,6 +111,19 @@
  
  class StatusBubbleViews;
  class WebContentsCloseHandler;
+--- a/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
++++ b/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
+@@ -309,8 +309,8 @@ void VerticalTabStripRegionView::Animati
+   double width = kCollapsedWidth +
+                  (target_collapse_state_.uncollapsed_width - kCollapsedWidth) *
+                      resize_animation_.GetCurrentValue();
+-  ResizeToWidth((resize_animation_.IsShowing() ? std::floor<double>
+-                                               : std::ceil<double>)(width));
++  ResizeToWidth(resize_animation_.IsShowing() ? std::floor(width)
++                                               : std::ceil(width));
+ }
+ 
+ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
 --- a/chrome/browser/ui/webui/history/browsing_history_handler.cc
 +++ b/chrome/browser/ui/webui/history/browsing_history_handler.cc
 @@ -170,7 +170,7 @@ std::pair<std::string, std::string> SetH
@@ -122,6 +135,16 @@
  }
  
  // Helper function to check if entry is present in local database (local-side
+--- a/components/affiliations/core/browser/lookup_affiliation_response_parser.h
++++ b/components/affiliations/core/browser/lookup_affiliation_response_parser.h
+@@ -7,6 +7,7 @@
+ 
+ #include <stddef.h>
+ 
++#include <map>
+ #include <vector>
+ 
+ #include "components/affiliations/core/browser/affiliation_api.pb.h"
 --- a/components/autofill/core/browser/geo/generate_country_native_names.cc
 +++ b/components/autofill/core/browser/geo/generate_country_native_names.cc
 @@ -84,7 +84,7 @@ void WriteCountryNativeNamesInlFile(
@@ -189,6 +212,26 @@
  #include <string>
  
  #include "base/feature_list.h"
+--- a/components/sharing_message/sharing_message_bridge_impl.h
++++ b/components/sharing_message/sharing_message_bridge_impl.h
+@@ -5,6 +5,7 @@
+ #ifndef COMPONENTS_SHARING_MESSAGE_SHARING_MESSAGE_BRIDGE_IMPL_H_
+ #define COMPONENTS_SHARING_MESSAGE_SHARING_MESSAGE_BRIDGE_IMPL_H_
+ 
++#include <map>
+ #include <memory>
+ 
+ #include "base/timer/timer.h"
+--- a/components/url_pattern_index/url_pattern_index.h
++++ b/components/url_pattern_index/url_pattern_index.h
+@@ -8,6 +8,7 @@
+ #include <stddef.h>
+ #include <stdint.h>
+ 
++#include <map>
+ #include <optional>
+ #include <string_view>
+ #include <vector>
 --- a/components/viz/service/display/surface_aggregator.cc
 +++ b/components/viz/service/display/surface_aggregator.cc
 @@ -2157,7 +2157,7 @@ AggregatedFrame SurfaceAggregator::Aggre
@@ -199,6 +242,16 @@
 +  stats_.emplace(AggregateStatistics{});
  
    ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
+ 
+--- a/components/webauthn/core/browser/passkey_sync_bridge.h
++++ b/components/webauthn/core/browser/passkey_sync_bridge.h
+@@ -5,6 +5,7 @@
+ #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_SYNC_BRIDGE_H_
+ #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_SYNC_BRIDGE_H_
+ 
++#include <map>
+ #include <memory>
+ #include <string>
  
 --- a/content/browser/webid/accounts_fetcher.cc
 +++ b/content/browser/webid/accounts_fetcher.cc
@@ -508,6 +561,25 @@
  
  #if DCHECK_IS_ON()
  #include "base/memory/scoped_refptr.h"
+--- a/third_party/libaddressinput/src/cpp/src/rule.cc
++++ b/third_party/libaddressinput/src/cpp/src/rule.cc
+@@ -17,6 +17,7 @@
+ #include <algorithm>
+ #include <cassert>
+ #include <cstddef>
++#include <cstring>
+ #include <string>
+ #include <utility>
+ 
+@@ -48,7 +49,7 @@ struct NameIdInfo {
+   int id;
+ 
+   static bool less(const NameIdInfo& a, const NameIdInfo& b) {
+-    return strcmp(a.name, b.name) < 0;
++    return std::strcmp(a.name, b.name) < 0;
+   }
+ };
+ 
 --- a/third_party/pdfium/xfa/fde/cfde_texteditengine.cpp
 +++ b/third_party/pdfium/xfa/fde/cfde_texteditengine.cpp
 @@ -19,6 +19,7 @@
@@ -529,6 +601,44 @@
  
    if (add_operation == RecordOperation::kInsertRecord) {
      AddOperationRecord(std::make_unique<DeleteOperation>(this, start_idx, ret));
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
+@@ -17,6 +17,7 @@ limitations under the License.
+ 
+ #include <algorithm>
+ #include <cstdio>
++#include <cstring>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "third_party/zlib/contrib/minizip/ioapi.h"
+@@ -57,7 +58,7 @@ uLong ZipReadOnlyMemFile::ReadFile(voidp
+   if (mem_file->offset_ + size > mem_file->Size()) {
+     size = mem_file->Size() - mem_file->offset_;
+   }
+-  memcpy(buf,
++  std::memcpy(buf,
+          static_cast<const char*>(mem_file->data_.data()) + mem_file->offset_,
+          size);
+   mem_file->offset_ += size;
+--- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc
+@@ -17,6 +17,7 @@ limitations under the License.
+ 
+ #include <algorithm>
+ #include <cstdio>
++#include <cstring>
+ 
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "third_party/zlib/contrib/minizip/ioapi.h"
+@@ -59,7 +60,7 @@ uLong ZipWritableMemFile::ReadFile(voidp
+   if (mem_file->offset_ + size > mem_file->Size()) {
+     size = mem_file->Size() - mem_file->offset_;
+   }
+-  memcpy(buf,
++  std::memcpy(buf,
+          static_cast<const char*>(mem_file->data_.c_str()) + mem_file->offset_,
+          size);
+   mem_file->offset_ += size;
 --- a/third_party/webrtc/call/rtp_config.cc
 +++ b/third_party/webrtc/call/rtp_config.cc
 @@ -258,7 +258,7 @@ RtpStreamConfig RtpConfig::GetStreamConf

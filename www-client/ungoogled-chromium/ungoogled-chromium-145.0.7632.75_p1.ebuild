@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-# KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,20 +57,20 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-UGC_COMMIT_ID="98a66e4128f9e3e59b28430c9224d258803564f5"
+#UGC_COMMIT_ID="230b8485a47396b02489484d24f80d8f75aec6a1"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="96b45f3e73f9623a5e7e59cf9eec8ac531475f77"
+CROMITE_COMMIT_ID="4a33091d47c0260f0760e75da233481b4c2f60a9"
 
-# declare -A CHROMIUM_COMMITS=(
-# 	["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
-# 	["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
-# 	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
-# 	# ["e56b8ce0bafe9df578625be6973be95358b91785"]="third_party/perfetto"
-# )
+declare -A CHROMIUM_COMMITS=(
+	# ["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
+	# ["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
+	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
+	["cd5a0df905a28faa89ff2a4ab44f893f84dc4487"]="net/third_party/quiche/src"
+)
 
 UGC_PV="${PV/_p/-}"
 UGC_PF="${PN}-${UGC_PV}"
@@ -286,7 +286,7 @@ BDEPEND="
 	dev-lang/perl
 	>=dev-util/gperf-3.2
 	dev-vcs/git
-	>=net-libs/nodejs-7.6.0[inspector]
+	>=net-libs/nodejs-24[inspector]
 	sys-apps/hwdata
 	>=sys-devel/bison-2.4.3
 	sys-devel/flex
@@ -980,6 +980,7 @@ src_prepare() {
 		third_party/dawn
 		third_party/dawn/third_party/gn/webgpu-cts
 		third_party/dawn/third_party/khronos
+		third_party/dawn/third_party/renderdoc
 		third_party/dawn/third_party/webgpu-headers
 		third_party/depot_tools
 		third_party/devscripts
@@ -1619,6 +1620,7 @@ src_configure() {
 	myconf_gn+=" skia_use_libpng_decode=true"
 	myconf_gn+=" skia_use_rust_png_decode=false"
 	myconf_gn+=" skia_use_rust_png_encode=false"
+	myconf_gn+=" enable_jxl_decoder=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"
@@ -1889,7 +1891,7 @@ src_compile() {
 		context = {
 		    "BUGTRACKERURL": "https://github.com/ungoogled-software/ungoogled-chromium/issues",
 		    "DEVELOPER_NAME": "The ungoogled-chromium Authors",
-		    "EXTRA_DESKTOP_ENTRIES": "",
+		    "extra_desktop_entries": "",
 		    "FULLDESC": "Google Chromium, sans integration with Google",
 		    "HELPURL": "https://ungoogled-software.github.io/ungoogled-chromium-wiki/faq",
 		    "INSTALLDIR": "/usr/$(get_libdir)/chromium-browser",
@@ -1900,8 +1902,8 @@ src_compile() {
 		    "PROGNAME": "chrome",
 		    "PROJECT_LICENSE": "BSD, LGPL-2, LGPL-2.1, MPL-1.1, MPL-2.0, Apache-2.0, and others",
 		    "SHORTDESC": "Open-source foundation of many web browsers including Google Chrome",
-		    "URI_SCHEME": "x-scheme-handler/chromium",
-		    "USR_BIN_SYMLINK_NAME": "chromium-browser",
+		    "uri_scheme": "x-scheme-handler/chromium",
+		    "usr_bin_symlink_name": "chromium-browser",
 		}
 
 		# Generate Desktop file
