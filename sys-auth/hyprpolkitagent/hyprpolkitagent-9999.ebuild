@@ -6,12 +6,18 @@ EAPI=8
 inherit cmake toolchain-funcs
 
 DESCRIPTION="Polkit authentication agent for Hyprland, written in Qt/QML"
-HOMEPAGE="https://wiki.hyprland.org/Hypr-Ecosystem/hyprpolkitagent"
-SRC_URI="https://github.com/hyprwm/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
+HOMEPAGE="https://wiki.hypr.land/Hypr-Ecosystem/hyprpolkitagent/"
+
+if [[ "${PV}" = *9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/hyprwm/${PN^}.git"
+else
+	SRC_URI="https://github.com/hyprwm/${PN^}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
+	KEYWORDS="~amd64"
+fi
 
 LICENSE="BSD"
-SLOT="0"
-KEYWORDS="~amd64"
+SLOT="0/$(ver_cut 1-2)"
 
 DEPEND="
 	dev-qt/qtbase:6[gui,widgets]

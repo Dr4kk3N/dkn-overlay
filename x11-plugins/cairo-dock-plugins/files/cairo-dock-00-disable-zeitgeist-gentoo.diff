@@ -1,0 +1,39 @@
+--- cairo-dock-plug-ins-3.5.1.orig/CMakeLists.txt	2024-09-21 19:50:00.000000000 +0200
++++ cairo-dock-plug-ins-3.5.1/CMakeLists.txt	2025-02-03 21:52:40.600985618 +0100
+@@ -1056,36 +1056,6 @@
+ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/quick-browser/data/quick-browser.conf.in ${CMAKE_CURRENT_BINARY_DIR}/quick-browser/data/quick-browser.conf)
+ add_subdirectory (quick-browser)
+ 
+-############# RECENT-EVENTS #################
+-message (STATUS "> Recent-Events:")
+-set (with_recent_events no)
+-enable_if_not_defined (enable-recent-events)
+-if (enable-recent-events)
+-	pkg_check_modules (RECENT_EVENTS zeitgeist-2.0)
+-	if (NOT RECENT_EVENTS_FOUND)
+-		message (STATUS "Could not find 'zeitgeist-2.0'; trying with an old version 'zeitgeist-1.0'...")
+-		pkg_check_modules (RECENT_EVENTS zeitgeist-1.0)
+-		set (ZEITGEIST_1_0 1)
+-	endif()
+-	if (NOT RECENT_EVENTS_FOUND)
+-		message (STATUS "Could not find libzeitgeist; Cairo-Dock won't be built with Zeitgeist support.")
+-		message (WARNING "This module is required to compile Recent-Events applet: zeitgeist-x.0")
+-		set (MODULES_MISSING "${MODULES_MISSING} zeitgeist-x.0")
+-	else()
+-		set (GETTEXT_RECENT_EVENTS ${GETTEXT_PLUGINS})
+-		set (VERSION_RECENT_EVENTS "1.0.4")
+-		set (PACKAGE_RECENT_EVENTS "cd-Recent-Events")
+-		if (ZEITGEIST_1_0)
+-			set (with_recent_events "yes (zeitgeist 1.0)")
+-		else()
+-			set (with_recent_events "yes (zeitgeist 2.0)")
+-		endif()
+-		set (recent_eventsdatadir "${pluginsdatadir}/Recent-Events")
+-		configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Recent-Events/data/Recent-Events.conf.in ${CMAKE_CURRENT_BINARY_DIR}/Recent-Events/data/Recent-Events.conf)
+-		add_subdirectory ("Recent-Events")
+-	endif()
+-endif()
+-
+ ############# REMOTE_CONTROL #################
+ message (STATUS "> Remote Control:")
+ set (GETTEXT_REMOTE_CONTROL ${GETTEXT_PLUGINS})
