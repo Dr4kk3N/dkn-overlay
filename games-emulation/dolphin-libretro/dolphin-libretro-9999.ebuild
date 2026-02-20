@@ -6,12 +6,13 @@ EAPI=8
 LIBRETRO_REPO_NAME="libretro/dolphin"
 LIBRETRO_CORE_NAME="dolphin"
 
-inherit cmake
+inherit cmake git-r3
 # TODO no EAPI-8 #966155, copy in relevant code
 # inherit libretro-core
 
 DESCRIPTION="A Gamecube/Wii emulator core for libretro"
 HOMEPAGE="https://github.com/libretro/dolphin"
+EGIT_REPO_URI="https://github.com/libretro/dolphin"
 KEYWORDS=""
 IUSE="+opengl vulkan +X test"
 RESTRICT="!test? ( test )"
