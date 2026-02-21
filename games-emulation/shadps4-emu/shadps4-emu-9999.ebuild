@@ -18,6 +18,7 @@ then
 	EGIT_SUBMODULES=( 'externals/CLI11' \
 			  'externals/LibAtrac9' \
 			  'externals/MoltenVK' \
+			  'externals/cpp-httplib' \
 			  'externals/date' \
 			  'externals/dear_imgui' \
 			  'externals/discord-rpc' \
@@ -34,6 +35,7 @@ then
 			  'externals/libpng' \
 			  'externals/magic_enum' \
 			  'externals/miniz' \
+			  'externals/openal-soft' \
 			  'externals/pugixml' \
 			  'externals/robin-map' \
 			  'externals/sdl3' \
@@ -47,9 +49,9 @@ then
 			  'externals/xxhash' \
 			  'externals/zlib-ng' \
 			  'externals/zydis' \
+			  'externals/aacdec/fdk-aac' \
 			  'externals/zydis/dependencies/zycore' \
 			  'externals/zlib-ng/zlibstatic-ngd' \
-			  'externals/aacdec/fdk-aac' \
 			  'externals/sdl3_mixer/external/flac' \
 			  'externals/sdl3_mixer/external/libgme' \
 			  'externals/sdl3_mixer/external/libxmp' \
