@@ -57,13 +57,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="230b8485a47396b02489484d24f80d8f75aec6a1"
+#UGC_COMMIT_ID="54de4017eec02650d43c2bf37af70d41d1d66e93"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="4a33091d47c0260f0760e75da233481b4c2f60a9"
+CROMITE_COMMIT_ID="f964e2a760ce1217bd1893a70ce0c7d4d7fe4fa1"
 
 declare -A CHROMIUM_COMMITS=(
 	# ["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
@@ -150,7 +150,7 @@ COMMON_X_DEPEND="
 "
 
 COMMON_SNAPSHOT_DEPEND="
-	system-icu? ( >=dev-libs/icu-73.0:= )
+	system-icu? ( <dev-libs/icu-78:= )
 	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20250512.0 )
 	system-brotli? ( >=app-arch/brotli-9999 )
 	system-crc32c? ( dev-libs/crc32c )
