@@ -91,7 +91,7 @@ KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86 ~amd64-linux"
 LO_EXTS="nlpsolver scripting-beanshell scripting-javascript wiki-publisher"
 
 IUSE="accessibility base bluetooth +branding coinmp +cups custom-cflags +dbus debug eds
-googledrive gstreamer +gtk3 gtk4 kde ldap +mariadb odk pdfimport postgres qt6 test valgrind vulkan
+googledrive gstreamer gtk kde ldap +mariadb odk pdfimport postgres qt6 test valgrind vulkan
 $(printf 'libreoffice_extensions_%s ' ${LO_EXTS})"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -196,20 +196,11 @@ COMMON_DEPEND="${PYTHON_DEPS}
 		media-libs/gstreamer:1.0
 		media-libs/gst-plugins-base:1.0
 	)
-	gtk3? (
-		app-accessibility/at-spi2-core:2
+	gtk? (
 		dev-libs/glib:2
 		gnome-base/dconf
 		media-libs/mesa[egl(+)]
-		x11-libs/gtk+:3[wayland,X]
-		x11-libs/pango
-	)
-	gtk4? (
-		app-accessibility/at-spi2-core:2
-		dev-libs/glib:2
-		gnome-base/dconf
-		media-libs/mesa[egl(+)]
-		gui-libs/gtk:4[wayland,X]
+		gui-libs/gtk[wayland,X]
 		x11-libs/pango
 	)
 	kde? (
@@ -294,6 +285,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-6.1-nomancompress.patch"
 	"${FILESDIR}/${PN}-24.2-qtdetect.patch"
 	"${FILESDIR}/${PN}-25.2-cflags.patch"
+	"${FILESDIR}/${PN}-25.2.7.2-poppler-26.02.patch"
 )
 
 _check_reqs() {
@@ -558,8 +550,7 @@ src_configure() {
 		$(use_enable debug)
 		$(use_enable eds evolution2)
 		$(use_enable gstreamer gstreamer-1-0)
-		$(use_enable gtk3)
-		$(use_enable gtk4)
+		$(use_enable gtk gtk4)
 		$(use_enable kde kf6)
 		$(use_enable ldap)
 		$(use_enable odk)
@@ -578,7 +569,7 @@ src_configure() {
 		--enable-skia-vulkan-validation
 	)
 
-	if use eds || use gtk3 || use gtk4 ; then
+	if use eds || use gtk ; then
 		myeconfargs+=( --enable-dconf --enable-gio )
 	else
 		myeconfargs+=( --disable-dconf --disable-gio )
@@ -635,10 +626,10 @@ src_install() {
 
 	# TODO: still relevant for gtk4?
 	# bug #593514
-	if use gtk3; then
-		dosym libreoffice/program/liblibreofficekitgtk.so \
-			/usr/$(get_libdir)/liblibreofficekitgtk.so
-	fi
+	#if use gtk3; then
+	#	dosym libreoffice/program/liblibreofficekitgtk.so \
+	#		/usr/$(get_libdir)/liblibreofficekitgtk.so
+	#fi
 
 	# bash completion aliases
 	bashcomp_alias \
