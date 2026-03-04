@@ -57,17 +57,16 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="54de4017eec02650d43c2bf37af70d41d1d66e93"
+#UGC_COMMIT_ID="3ef1b41ede373eb9d5eca3eb91f28be78b1a1412"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="f964e2a760ce1217bd1893a70ce0c7d4d7fe4fa1"
+CROMITE_COMMIT_ID="9b33511160e6d30427778dd782e915577dc9568f"
 
 declare -A CHROMIUM_COMMITS=(
-	# ["069d424e41f42c6f4a4551334eafc7cfaed6e880"]="." #143+
-	# ["bd9e1afdde061d4870cf69de39b04caac26960f2"]="." #143+
+	["3abf0048fc862a2db04031466be5f45a70c77a6d"]="." #147+
 	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
 	["cd5a0df905a28faa89ff2a4ab44f893f84dc4487"]="net/third_party/quiche/src"
 )
@@ -150,7 +149,7 @@ COMMON_X_DEPEND="
 "
 
 COMMON_SNAPSHOT_DEPEND="
-	system-icu? ( <dev-libs/icu-78:= )
+	system-icu? ( >=dev-libs/icu-78:= )
 	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20250512.0 )
 	system-brotli? ( >=app-arch/brotli-9999 )
 	system-crc32c? ( dev-libs/crc32c )
