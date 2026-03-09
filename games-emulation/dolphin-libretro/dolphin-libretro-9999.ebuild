@@ -50,9 +50,9 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
-PATCHES=(
-	"${FILESDIR}/${P}-fix-for-fmt.patch"
-)
+#PATCHES=(
+#	"${FILESDIR}/${P}-fix-for-fmt.patch"
+#)
 
 # [directory]=license
 declare -A KEEP_BUNDLED=(
