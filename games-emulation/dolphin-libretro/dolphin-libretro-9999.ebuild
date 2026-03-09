@@ -59,21 +59,47 @@ declare -A KEEP_BUNDLED=(
 	# Issues revealed at configure time
 	#
 	# Please keep this list in `CMakeLists.txt` order
-	[Bochs_disasm]=LGPL-2.1+
-	[cpp-optparse]=MIT
-	[glslang]=BSD
-	[imgui]=MIT
-	[xxhash]=BSD-2
-	[minizip]=ZLIB
+#	[xxhash]=BSD-2
+#	[minizip]=ZLIB
+
+        # TODO: use system libraries
+        # bug #873952
+        # https://github.com/dolphin-emu/dolphin/pull/13089
+        [zlib-ng]=ZLIB
+        [minizip-ng]=ZLIB
+        [watcher]=MIT
+        [cpp-optparse]=MIT
+        [cpp-ipc]=MIT
+
+        [Bochs_disasm]=LGPL-2.1+
+        [cpp-optparse]=MIT
+        [imgui]=MIT
+        [implot]=MIT
+        [glslang]=BSD
+
+        [tinygltf]=MIT
+
+        [FreeSurround]=GPL-2+
+        [soundtouch]=LGPL-2.1+
+
+        # FIXME: discord-rpc not packaged
+        [discord-rpc]=MIT
+
+        [mGBA]=MPL-2.0
+
+        [picojson]=BSD-2
+        [expr]=MIT
+        [rangeset]=ZLIB
+        [FatFs]=FatFs
+        [Vulkan-Headers]="|| ( Apache-2.0 MIT )"
+        [VulkanMemoryAllocator]=MIT
+
 	[libpng]=libpng2 # Intentionally static for Libretro
-	[FreeSurround]=GPL-2+
-	[soundtouch]=LGPL-2.1+
 	[curl]=curl # Intentionally static for Libretro
 	[gtest]=BSD
 
 	# Issues revealed at compile time
 	[Libretro]=MIT
-	[picojson]=BSD-2 # Complains about exception handling being disabled
 	[Vulkan]=Apache-2.0 # Relies on `VK_PRESENT_MODE_RANGE_SIZE_KHR`
 )
 
