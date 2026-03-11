@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -8,7 +8,7 @@ CHROMIUM_LANGS="
 	hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr sv
 	sw ta te th tr uk ur vi zh-CN zh-TW
 "
-PYTHON_COMPAT=( python3_{11..13} )
+PYTHON_COMPAT=( python3_{12..14} )
 UPDATE_DISABLER_COMMIT="2f26748a667045d26bc19841f1a731b4be7a7514"
 
 inherit chromium-2 desktop linux-info optfeature python-single-r1 unpacker xdg
@@ -16,11 +16,11 @@ inherit chromium-2 desktop linux-info optfeature python-single-r1 unpacker xdg
 DESCRIPTION="All-in-one voice and text chat for gamers"
 HOMEPAGE="https://discordapp.com"
 SRC_URI="
-	https://dl-ptb.discordapp.net/apps/linux/${PV}/${P}.tar.gz
+	https://dl.discordapp.net/apps/linux/${PV}/${P}.tar.gz
 	https://github.com/flathub/com.discordapp.Discord/raw/${UPDATE_DISABLER_COMMIT}/disable-breaking-updates.py
 		-> discord-disable-breaking-updates-${UPDATE_DISABLER_COMMIT}.py
 "
-S="${WORKDIR}/DiscordPTB"
+S="${WORKDIR}/Discord"
 
 LICENSE="all-rights-reserved"
 SLOT="0"
@@ -83,22 +83,20 @@ src_prepare() {
 	chromium_remove_language_paks
 	popd >/dev/null || die "location reset for language cleanup failed"
 	# fix .desktop exec location
-	sed -i "/Exec/s:/usr/share/discord-ptb/DiscordPTB:${PN}:" \
+	sed -i "/Exec/s:/usr/share/discord/Discord:${PN}:" \
 		"${PN}.desktop" ||
 		die "fixing of exec location on .desktop failed"
-
-	sed -i 's/discord/discordptb/' "${WORKDIR}/disable-breaking-updates.py" || die
 }
 
 src_install() {
-	newicon -s 256 discord.png ${PN}.png
+	doicon -s 256 "${PN}.png"
 
 	# install .desktop file
 	domenu "${PN}.desktop"
 
 	exeinto "${DESTDIR}"
 
-	doexe DiscordPTB chrome-sandbox libEGL.so libffmpeg.so libGLESv2.so libvk_swiftshader.so
+	doexe Discord chrome-sandbox libEGL.so libffmpeg.so libGLESv2.so libvk_swiftshader.so
 
 	insinto "${DESTDIR}"
 	doins chrome_100_percent.pak chrome_200_percent.pak icudtl.dat resources.pak snapshot_blob.bin v8_context_snapshot.bin
@@ -121,7 +119,7 @@ src_install() {
 	${DESTDIR}/disable-breaking-updates.py
 
 	# https://bugs.gentoo.org/935153
-	${DESTDIR}/DiscordPTB $(usev !seccomp --disable-seccomp-filter-sandbox) \\
+	${DESTDIR}/Discord $(usev !seccomp --disable-seccomp-filter-sandbox) \\
 		--enable-features=UseOzonePlatfrom --ozone-platform-hint=auto \\
 		--enable-wayland-ime
 	EOF
@@ -136,6 +134,6 @@ pkg_postinst() {
 
 	optfeature_header "Install the following packages for additional support:"
 	optfeature "sound support" \
-		media-sound/pulseaudio media-sound/apulse[sdk] media-video/pipewire
+		media-sound/pulseaudio-daemon media-sound/apulse[sdk] media-video/pipewire
 	optfeature "emoji support" media-fonts/noto-emoji
 }

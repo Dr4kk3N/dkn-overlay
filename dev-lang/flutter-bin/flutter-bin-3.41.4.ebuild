@@ -17,8 +17,8 @@ S="${WORKDIR}/flutter"
 
 src_prepare() {
   # disable upgrade_flutter
-	sed -i 's/^\(\s\+\)\(upgrade_flutter \)/\1# \2/' "${S}/bin/internal/shared.sh"
-	eapply_user
+  sed -i 's/^\(\s\+\)\(upgrade_flutter \)/\1# \2/' "${S}/bin/internal/shared.sh"
+  eapply_user
 }
 
 src_install() {
