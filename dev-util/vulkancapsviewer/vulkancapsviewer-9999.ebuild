@@ -25,7 +25,7 @@ SLOT="0"
 IUSE="wayland +X"
 
 # minimum Qt version required
-QT_PV="5.15.2:5"
+QT_PV="6.8.3:6"
 
 RDEPEND="
 	~media-libs/vulkan-loader-${PV}:=[${MULTILIB_USEDEP},wayland?,X?]
@@ -35,15 +35,12 @@ RDEPEND="
 	X? (
 		x11-libs/libX11:=[${MULTILIB_USEDEP}]
 		x11-libs/libXrandr:=[${MULTILIB_USEDEP}]
-		>=dev-qt/qtx11extras-${QT_PV}
+		>=dev-qt/qtbase-${QT_PV}
 	)
 "
 DEPEND="${RDEPEND}
 	~dev-util/vulkan-headers-${PV}
-	>=dev-qt/qtcore-${QT_PV}
-	>=dev-qt/qtgui-${QT_PV}
-	>=dev-qt/qtwidgets-${QT_PV}
-	>=dev-qt/qtnetwork-${QT_PV}
+	>=dev-qt/qtbase-${QT_PV}
 "
 
 pkg_setup() {
@@ -59,7 +56,7 @@ multilib_src_configure() {
 #		-DCMAKE_CXX_FLAGS="${CXXFLAGS} -DNDEBUG"
 #		-DCMAKE_SKIP_RPATH=ON
 #		-DBUILD_WERROR=OFF
-		-DBUILD_QT_VERSION=5
+		-DBUILD_QT_VERSION=6
 		-DBUILD_WSI_WAYLAND_SUPPORT=$(usex wayland)
 		-DBUILD_WSI_XCB_SUPPORT=$(usex X)
 		-DBUILD_WSI_XLIB_SUPPORT=$(usex X)
