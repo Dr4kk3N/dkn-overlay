@@ -10,11 +10,25 @@ DESCRIPTION="Examples and demos for the Vulkan API"
 HOMEPAGE="https://github.com/SaschaWillems/Vulkan"
 
 EGIT_REPO_URI="https://github.com/SaschaWillems/Vulkan.git"
-SRC_URI="http://vulkan.gpuinfo.org/downloads/vulkan_asset_pack.zip"
+#SRC_URI="http://vulkan.gpuinfo.org/downloads/vulkan_asset_pack.zip"
+
+if [[ ${PV} == *9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/SaschaWillems/Vulkan"
+	EGIT_SUBMODULES=(
+		assets
+	)
+else
+	ASSETS_COMMIT=a27c0e584434d59b7c7a714e9180eefca6f0ec4b
+	SRC_URI="
+		https://github.com/SaschaWillems/Vulkan-Assets/archive/${ASSETS_COMMIT}.tar.gz
+			-> Vulkan-Assets-${ASSETS_COMMIT}.tar.gz
+	"
+	KEYWORDS="~amd64 ~arm64"
+fi
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS=""
 IUSE="+X wayland d2d headless"
 
 REQUIRED_USE="^^ ( X wayland d2d headless )"
