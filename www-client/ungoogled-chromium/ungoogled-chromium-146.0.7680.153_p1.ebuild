@@ -37,7 +37,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -57,18 +57,19 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="3ef1b41ede373eb9d5eca3eb91f28be78b1a1412"
+# UGC_COMMIT_ID="60225cdd7520d09cdfbfa3d02e0b5d86b36e90c8"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="9b33511160e6d30427778dd782e915577dc9568f"
+CROMITE_COMMIT_ID="21fe58812eb5ef4e043d1e3b418b7760749fec24"
 
 declare -A CHROMIUM_COMMITS=(
 	["3abf0048fc862a2db04031466be5f45a70c77a6d"]="." #147+
-	# ["-da443d7bd3777a5dd0587ecff1fbad1722b106b5"]="."
-	["cd5a0df905a28faa89ff2a4ab44f893f84dc4487"]="net/third_party/quiche/src"
+	["-acb47d9a6b56c4889a2ed4216e9968cfc740086c"]="."
+	["-37c28a19804e47a68eabf3cf882a310689fc325b"]="." #disable style check for cromite
+	# ["cd5a0df905a28faa89ff2a4ab44f893f84dc4487"]="net/third_party/quiche/src"
 )
 
 UGC_PV="${PV/_p/-}"
@@ -150,7 +151,7 @@ COMMON_X_DEPEND="
 
 COMMON_SNAPSHOT_DEPEND="
 	system-icu? ( >=dev-libs/icu-78:= )
-	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20250512.0 )
+	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20260107.0 )
 	system-brotli? ( >=app-arch/brotli-9999 )
 	system-crc32c? ( dev-libs/crc32c )
 	system-double-conversion? ( dev-libs/double-conversion )
@@ -497,7 +498,7 @@ src_prepare() {
 	python_setup
 
 	# cp -f ${WORKDIR}/chromium-patches-${PATCH_V}/*-compiler.patch "${T}/compiler.patch"
-	cp -f ${FILESDIR}/chromium-144-compiler.patch "${T}/compiler.patch"
+	cp -f ${FILESDIR}/chromium-146-compiler.patch "${T}/compiler.patch"
 	if ! use custom-cflags; then #See #25 #92
 		sed -i '/default_stack_frames/Q' "${T}/compiler.patch" || die
 	fi
@@ -521,9 +522,10 @@ src_prepare() {
 		"${FILESDIR}/chromium-134-stdatomic.patch"
 		"${FILESDIR}/font-gc-asan.patch"
 		"${FILESDIR}/chromium-145-crabby.patch"
-		"${FILESDIR}/chromium-145-no-rust.patch"
 		"${FILESDIR}/chromium-145-fontations.patch"
-		"${FILESDIR}/chromium-145-gcc.patch"
+		"${FILESDIR}/chromium-146-gcc.patch"
+		"${FILESDIR}/chromium-146-no-rust.patch"
+		"${FILESDIR}/chromium-146-glibc-2.43.patch"
 	)
 
 	# https://issues.chromium.org/issues/442698344
@@ -610,7 +612,7 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r6.patch"
+			"${FILESDIR}/disable-bluez-r7.patch"
 		)
 	fi
 
@@ -769,7 +771,7 @@ src_prepare() {
 		third_party/webrtc/rtc_base/BUILD.gn || die
 
 	cp -f "${FILESDIR}/rust_static_library.gni" build/rust || die
-	cp -f "${FILESDIR}/json_parser.cc" base/json || die
+	cp -f "${FILESDIR}/json_parser_r1.cc" base/json/json_parser.cc || die
 	cp -f "${FILESDIR}/json_parser.h" base/json || die
 	cp -f "${FILESDIR}/avif_image_decoder.cc" third_party/blink/renderer/platform/image-decoders/avif || die
 	cp -f "${FILESDIR}/avif_image_decoder.h" third_party/blink/renderer/platform/image-decoders/avif || die
@@ -784,13 +786,19 @@ src_prepare() {
 	fi
 
 	if use system-abseil-cpp; then
-		eapply_wrapper "${FILESDIR}/chromium-145-system-abseil.patch"
-		#! not sure about this one :-/ vvvvvvvvvvvvvvvv Any better solution?
+		eapply_wrapper "${FILESDIR}/chromium-146-system-abseil.patch"
+
+		#! SFINAE mangling incompatibility between clang and gcc:
+		#! https://github.com/llvm/llvm-project/issues/85656
+		#! gcc: 	_ZN4absl12lts_202601074CordC1INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEELi0EEEOT_
+		#! clang:	_ZN4absl12lts_202601074CordC1INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEETnNSt9enable_ifIXsr3std7is_sameIT_S8_EE5valueEiE4typeELi0EEEOSA_
+		#! So, either this:
 		eapply_wrapper "${FILESDIR}/chromium-141-system-abseil-cord.patch"
-		#! not sure about this one :-/ ^^^^^^^^^^^^^^^^ Any better solution?
-		cp -f /usr/include/absl/base/options.h third_party/abseil-cpp/absl/base/options.h
-		sed -i '/^#define ABSL_OPTION_USE_STD_ORDERING.*$/{s++#define ABSL_OPTION_USE_STD_ORDERING 1+;h};${x;/./{x;q0};x;q1}' \
-			third_party/abseil-cpp/absl/base/options.h || die
+		#! or build with -fclang-abi-compat=17
+
+		# cp -f /usr/include/absl/base/options.h third_party/abseil-cpp/absl/base/options.h
+		# sed -i '/^#define ABSL_OPTION_USE_STD_ORDERING.*$/{s++#define ABSL_OPTION_USE_STD_ORDERING 1+;h};${x;/./{x;q0};x;q1}' \
+		# 	third_party/abseil-cpp/absl/base/options.h || die
 	fi
 
 	#* Applying UGC PRs here
@@ -912,7 +920,6 @@ src_prepare() {
 		net/third_party/mozilla_security_manager
 		net/third_party/quic
 		net/third_party/uri_template
-		third_party/abseil-cpp/absl/base
 	)
 	use system-abseil-cpp || keeplibs+=(
 		third_party/abseil-cpp
@@ -948,6 +955,7 @@ src_prepare() {
 		third_party/catapult/third_party/html5lib-1.1
 		third_party/catapult/third_party/polymer
 		third_party/catapult/third_party/six
+		third_party/catapult/third_party/typ
 		third_party/catapult/tracing/third_party/d3
 		third_party/catapult/tracing/third_party/gl-matrix
 		third_party/catapult/tracing/third_party/jpeg-js
@@ -1151,7 +1159,6 @@ src_prepare() {
 		third_party/six
 		third_party/skia
 		third_party/skia/include/third_party/vulkan
-		third_party/skia/third_party/vulkan
 		third_party/smhasher
 	)
 	use system-snappy || keeplibs+=(
