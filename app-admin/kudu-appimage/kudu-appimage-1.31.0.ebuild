@@ -13,7 +13,7 @@ RESTRICT="strip"
 inherit xdg-utils
 
 SRC_URI="
-  amd64? ( https://github.com/adventdevinc/kudu/releases/download/v1.30.0/Kudu-1.30.0-x86_64.AppImage -> ${P}-Kudu-${PV}.AppImage )
+  amd64? ( https://github.com/adventdevinc/kudu/releases/download/v${PV}/Kudu-${PV}-x86_64.AppImage -> ${P}-Kudu-${PV}.AppImage )
 "
 
 src_unpack() {
