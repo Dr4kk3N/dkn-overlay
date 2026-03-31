@@ -11,13 +11,14 @@ SRC_URI="https://github.com/mamedev/mame/archive/mame${MY_PV}.tar.gz -> mame-${P
 LICENSE="GPL-2+ BSD-2 MIT CC0-1.0"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="alsa debug opengl openmp tools" 
+IUSE="alsa debug sdl2 sdl3 opengl openmp tools"
 
 RDEPEND="dev-db/sqlite:3
 	 dev-libs/expat
 	 media-libs/fontconfig
 	 media-libs/flac
-	 media-libs/libsdl2[joystick,opengl?,sound,video,X]
+	 sdl2? ( media-libs/libsdl2[joystick,opengl?,sound,video,X] )
+	 sdl3? ( media-libs/libsdl3[opengl?,X] )
 	 media-libs/libpulse
 	 media-libs/portaudio
 	 media-libs/sdl2-ttf
