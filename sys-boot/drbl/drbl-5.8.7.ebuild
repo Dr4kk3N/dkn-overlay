@@ -5,7 +5,7 @@ EAPI=8
 
 DESCRIPTION="Diskless Remote Boot in Linux"
 HOMEPAGE="https://drbl.org"
-SRC_URI="https://github.com/stevenshiau/drbl/archive/refs/tags/v5.8.7-1.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/stevenshiau/drbl/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
