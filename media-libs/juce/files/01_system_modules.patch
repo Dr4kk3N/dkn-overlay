@@ -1,0 +1,13 @@
+diff --git a/extras/Projucer/Source/Settings/jucer_StoredSettings.cpp b/extras/Projucer/Source/Settings/jucer_StoredSettings.cpp
+index 4612b44..5e72c2c 100644
+--- a/extras/Projucer/Source/Settings/jucer_StoredSettings.cpp
++++ b/extras/Projucer/Source/Settings/jucer_StoredSettings.cpp
+@@ -359,7 +359,7 @@ static String getFallbackPathForOS (const Identifier& key, DependencyPathOS os)
+         return (os == TargetOS::windows ? "C:\\JUCE" : "~/JUCE");
+ 
+     if (key == Ids::defaultJuceModulePath)
+-        return (os == TargetOS::windows ? "C:\\JUCE\\modules" : "~/JUCE/modules");
++        return (os == TargetOS::windows ? "C:\\JUCE\\modules" : "/usr/share/juce/modules");
+ 
+     if (key == Ids::defaultUserModulePath)
+         return (os == TargetOS::windows ? "C:\\modules" : "~/modules");
