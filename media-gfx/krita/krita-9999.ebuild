@@ -125,6 +125,7 @@ src_configure() {
 
 	local mycmakeargs=(
 		-DBUILD_WITH_QT6=ON
+		-DALLOW_UNSTABLE=QT6
 		-DENABLE_UPDATERS=OFF
 		-DKRITA_ENABLE_PCH=OFF # big mess.
 		-DCMAKE_DISABLE_FIND_PACKAGE_KSeExpr=ON # not packaged

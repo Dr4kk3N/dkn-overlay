@@ -12,8 +12,8 @@ MY_PV="${MY_PV/_beta/.beta}"
 # Usually the tarballs are moved a lot so this should make everyone happy.
 DEV_URI="
 	https://dev-builds.libreoffice.org/pre-releases/src
-	https://download.documentfoundation.org/libreoffice/src/${MY_PV:0:5}/
-	https://downloadarchive.documentfoundation.org/libreoffice/old/${MY_PV}/src
+#	https://download.documentfoundation.org/libreoffice/src/${MY_PV:0:5}/
+#	https://downloadarchive.documentfoundation.org/libreoffice/old/${MY_PV}/src
 "
 ADDONS_URI="https://dev-www.libreoffice.org/src/"
 
@@ -170,8 +170,8 @@ COMMON_DEPEND="${PYTHON_DEPS}
 	media-libs/tiff:=
 	media-libs/zxing-cpp:=
 	net-misc/curl
-	sci-mathematics/lpsolve:=
-	virtual/zlib
+	libreoffice_extensions_nlpsolver? ( sci-mathematics/lpsolve:= )
+	virtual/zlib:=
 	virtual/opengl
 	x11-libs/cairo
 	x11-libs/libXinerama
@@ -448,6 +448,9 @@ src_configure() {
 		strip-flags
 	fi
 
+	# Workaround for bug #967047
+	tc-is-gcc && [[ $(gcc-major-version) -eq 16 ]] && append-cxxflags -fno-devirtualize-speculatively
+
 	# Show flags set at the end
 	einfo "  Used CFLAGS:    ${CFLAGS}"
 	einfo "  Used LDFLAGS:   ${LDFLAGS}"
@@ -566,6 +569,8 @@ src_configure() {
 		$(use_with odk doxygen)
 		$(use_with valgrind)
 		--enable-skia-vulkan-validation
+		--disable-lpsolve --disable-ext-nlpsolver
+
 	)
 
 	if use eds || use gtk ; then
