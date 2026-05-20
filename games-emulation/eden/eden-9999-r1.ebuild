@@ -3,39 +3,61 @@
 
 EAPI=8
 
-inherit cmake xdg
+inherit cmake xdg toolchain-funcs optfeature
 
-_TZDB_VER=091025
+_TZDB_VER=121125
+
+_COMMON_SRC="
+	https://git.eden-emu.dev/eden-emu/tzdb_to_nx/releases/download/${_TZDB_VER}/${_TZDB_VER}.tar.gz ->
+		nx-tzdb-${_TZDB_VER}.tar.gz
+"
 
 DESCRIPTION="Nintendo Switch Emulator"
 HOMEPAGE="https://eden-emu.dev"
-SRC_URI="
-	https://git.eden-emu.dev/eden-emu/eden/archive/v${PV/_/-}.tar.gz -> ${P}.tar.gz
-	https://git.crueter.xyz/misc/tzdb_to_nx/releases/download/${_TZDB_VER}/${_TZDB_VER}.tar.gz ->
-		nx-tzdb-${_TZDB_VER}.tar.gz
-"
+
+if [[ "${PV}" == 9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://git.eden-emu.dev/eden-emu/eden.git"
+	EGIT_CLONE_TYPE="shallow"
+	EGIT_CHECKOUT_DIR="${WORKDIR}/${PN}"
+
+	SRC_URI="${_COMMON_SRC}"
+else
+	KEYWORDS="~amd64 ~arm64"
+	SRC_URI="
+		${_COMMON_SRC}
+		https://git.eden-emu.dev/eden-emu/eden/archive/v${PV/_/-}.tar.gz -> ${P}.tar.gz
+		https://git.eden-emu.dev/eden-emu/eden/pulls/3967.patch -> ${PN}-0.2.0-fix-httplib-version.patch
+	"
+
+	PATCHES=(
+		"${DISTDIR}/${PN}-0.2.0-fix-httplib-version.patch"
+	)
+fi
 
 S="${WORKDIR}/${PN}"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64"
-IUSE="camera +cubeb discord llvm lto +opengl +qt6 room sdl ssl test +usb web-applet web-service wifi"
+IUSE="camera +cubeb discord llvm lto +opengl +qt6 room sdl test +usb web-applet web-service wifi"
 REQUIRED_USE="
 	!qt6? ( !camera !discord !web-applet )
-	web-service? ( ssl || ( qt6 room ) )
+	web-service? ( || ( qt6 room ) )
 "
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	app-arch/lz4
 	app-arch/zstd
+	dev-cpp/cpp-httplib:=[ssl]
 	dev-libs/libfmt:=
 	dev-libs/mcl
+	dev-libs/openssl:=
 	>=dev-libs/sirit-1.0.1
 	dev-util/spirv-tools
 	games-util/gamemode
 	media-gfx/renderdoc
+	media-libs/libsdl2[haptic,joystick,sound,video]
 	media-libs/libva
 	media-libs/opus
 	media-video/ffmpeg
@@ -46,15 +68,13 @@ RDEPEND="
 	camera? ( dev-qt/qtmultimedia:6 )
 	cubeb? ( media-libs/cubeb )
 	discord? (
-		dev-cpp/cpp-httplib:=[ssl]
 		dev-libs/discord-rpc
 	)
 	qt6? (
-		dev-libs/quazip[qt6]
+		dev-libs/quazip[qt6(+)]
 		dev-qt/qtbase:6[concurrent,dbus,gui,widgets]
+		dev-qt/qtcharts:6
 	)
-	sdl? ( media-libs/libsdl2[haptic,joystick,sound,video] )
-	ssl? ( dev-libs/openssl:= )
 	usb? ( dev-libs/libusb )
 	web-applet? ( dev-qt/qtwebengine:6[widgets] )
 	web-service? ( dev-cpp/cpp-httplib:=[ssl] )
@@ -89,15 +109,11 @@ BDEPEND="
 	test? ( dev-cpp/catch )
 "
 
-PATCHES=(
-	"${FILESDIR}/${PN}-0.0.4_rc2-always-include-common-detached_tasks-in-src-yuzu-main-cpp.patch"
-)
-
 # [directory]=license
 declare -A KEEP_BUNDLED=(
 	# Generated or copied files for internal usage
 	[bc_decoder]=MPL-2.0
-	[cmake-modules]=Boost-1.0
+	[cmake-modules]=LGPL-3+
 	[demangle]=Apache-2.0-with-LLVM-exceptions
 	[FidelityFX-FSR]=MIT
 	[glad]=GPL-2+
@@ -118,6 +134,17 @@ add_bundled_licenses() {
 }
 add_bundled_licenses
 
+src_unpack() {
+	if [[ "${PV}" == 9999 ]]; then
+		git-r3_src_unpack
+
+		# unpack src files
+		unpack "nx-tzdb-${_TZDB_VER}.tar.gz"
+	else
+		default
+	fi
+}
+
 src_prepare() {
 	local s remove=()
 	for s in externals/*; do
@@ -127,21 +154,36 @@ src_prepare() {
 		fi
 	done
 
-	einfo "removing sources: ${remove[*]}"
-	rm -r "${remove[@]}" || die
+	if (( ${#remove[@]} > 0 )); then
+		einfo "removing sources: ${remove[*]}"
+		rm -r "${remove[@]}" || die
+	fi
 
 	cmake_src_prepare
 }
 
 src_configure() {
+	if [[ "${PV}" == 9999 ]]; then
+		eden_ver="$(git rev-parse --short=10 HEAD)-9999"
+	else
+		eden_ver="v${PV/_/-}"
+	fi
+
+	if tc-is-gcc; then
+		eden_comp_id="GCC $(gcc-fullversion)"
+	elif tc-is-clang; then
+		eden_comp_id="Clang $(clang-fullversion)"
+	else
+		eden_comp_id="$(tc-getcc)"
+	fi
+
 	local mycmakeargs=(
 		-DCPMUTIL_FORCE_SYSTEM=yes
-		-DTITLE_BAR_FORMAT_IDLE="Eden | v${PV/_/-}"
-		-DYUZU_TZDB_PATH="${WORKDIR}/${_TZDB_VER}"
-		-DYUZU_USE_FASTER_LD=no
+		-DTITLE_BAR_FORMAT_IDLE="Eden | ${eden_ver} | ${eden_comp_id}"
+		-DYUZU_TZDB_PATH="${WORKDIR}/nx-tzdb-${_TZDB_VER}"
+		-DUSE_FASTER_LINKER=no
 
-		-DDYNARMIC_ENABLE_LTO=$(usex lto)
-		-DYUZU_ENABLE_LTO=$(usex lto)
+		-DENABLE_LTO=$(usex lto)
 
 		-DDYNARMIC_USE_LLVM=$(usex llvm)
 		-DYUZU_DISABLE_LLVM=$(usex !llvm)
@@ -150,15 +192,14 @@ src_configure() {
 		-DENABLE_CUBEB=$(usex cubeb)
 		-DENABLE_LIBUSB=$(usex usb)
 		-DENABLE_OPENGL=$(usex opengl)
-		-DENABLE_OPENSSL=$(usex ssl)
 		-DENABLE_QT=$(usex qt6)
-		-DENABLE_SDL2=$(usex sdl)
 		-DENABLE_WEB_SERVICE=$(usex web-service)
 		-DENABLE_WIFI_SCAN=$(usex wifi)
 		-DUSE_DISCORD_PRESENCE=$(usex discord)
 		-DYUZU_USE_QT_MULTIMEDIA=$(usex camera)
 		-DYUZU_USE_QT_WEB_ENGINE=$(usex web-applet)
 
+		-DYUZU_CMD=$(usex sdl)
 		-DYUZU_ROOM=$(usex room)
 
 		-Wno-dev
@@ -174,4 +215,11 @@ src_test() {
 
 	# See https://git.eden-emu.dev/eden-emu/eden/issues/126
 	./bin/tests "~Fibers::InterExchange" "~RingBuffer: Threaded Test" || die
+}
+
+pkg_postinst() {
+	xdg_pkg_postinst
+
+	optfeature_header "SDL requires HIDRAW access for many controller gyroscopes to work."
+	optfeature "HIDRAW support" games-util/game-device-udev-rules
 }

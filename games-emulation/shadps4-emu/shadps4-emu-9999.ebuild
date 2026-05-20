@@ -4,7 +4,7 @@
 EAPI=8
 
 QTMIN=6.7.1
-LLVM_COMPAT=( {18..20} )
+LLVM_COMPAT=( {18..21} )
 LLVM_OPTIONAL=1
 
 inherit cmake desktop xdg flag-o-matic llvm-r1 toolchain-funcs
@@ -16,6 +16,7 @@ if [[ ${PV} == *9999 ]]
 then
 	EGIT_REPO_URI="https://github.com/shadps4-emu/shadPS4.git"
 	EGIT_SUBMODULES=( 'externals/CLI11' \
+			  'externals/ImGuiFileDialog' \
 			  'externals/LibAtrac9' \
 			  'externals/MoltenVK' \
 			  'externals/cpp-httplib' \
@@ -24,7 +25,6 @@ then
 			  'externals/discord-rpc' \
 			  'externals/epoll-shim' \
 			  'externals/ext-boost' \
-			  'externals/ext-libusb' \
 			  'externals/ext-wepoll' \
 			  'externals/ffmpeg-core' \
 			  'externals/fmt' \
@@ -33,14 +33,17 @@ then
 			  'externals/hwinfo' \
 			  'externals/json' \
 			  'externals/libpng' \
+			  'externals/libressl' \
+			  'externals/libusb' \
 			  'externals/magic_enum' \
+			  'externals/minimp3' \
 			  'externals/miniz' \
 			  'externals/openal-soft' \
 			  'externals/pugixml' \
 			  'externals/robin-map' \
 			  'externals/sdl3' \
-			  'externals/sdl3_mixer' \
 			  'externals/sirit' \
+			  'externals/spdlog' \
 			  'externals/toml11' \
 			  'externals/tracy' \
 			  'externals/vma' \
@@ -50,18 +53,10 @@ then
 			  'externals/zlib-ng' \
 			  'externals/zydis' \
 			  'externals/aacdec/fdk-aac' \
+			  'externals/discord-rpc/thirdparty/rapidjson' \
+			  'externals/discord-rpc/thirdparty/rapidjson/thirdparty/gtest' \
 			  'externals/zydis/dependencies/zycore' \
 			  'externals/zlib-ng/zlibstatic-ngd' \
-			  'externals/sdl3_mixer/external/flac' \
-			  'externals/sdl3_mixer/external/libgme' \
-			  'externals/sdl3_mixer/external/libxmp' \
-			  'externals/sdl3_mixer/external/mpg123' \
-			  'externals/sdl3_mixer/external/ogg' \
-			  'externals/sdl3_mixer/external/opus' \
-			  'externals/sdl3_mixer/external/opusfile' \
-			  'externals/sdl3_mixer/external/tremor' \
-			  'externals/sdl3_mixer/external/vorbis' \
-			  'externals/sdl3_mixer/external/wavpack' \
 			  'externals/sirit/externals/SPIRV-Headers'
 			)
 	inherit git-r3
@@ -86,6 +81,10 @@ REQUIRED_USE="
 "
 
 COMMON_DEPEND="
+	dev-cpp/cli11
+	dev-cpp/magic_enum
+	dev-cpp/nlohmann_json
+	dev-cpp/robin-map
 	app-arch/lz4:=
 	app-arch/xz-utils
 	app-arch/zstd:=
@@ -93,22 +92,35 @@ COMMON_DEPEND="
 	app-text/doxygen
 	media-libs/libglvnd
 	media-libs/libpng:=
+	media-libs/openal
 	media-libs/libsdl3
 	media-libs/sdl3-mixer
 	media-libs/libwebp:=
 	media-video/ffmpeg:=
 	net-libs/libpcap
+	media-gfx/renderdoc
+	dev-libs/boost
+	dev-libs/libfmt
+	dev-libs/half
+	dev-libs/pugixml
+	dev-libs/stb
+	dev-libs/xbyak
+	dev-libs/xxhash
+	media-libs/imgui
 	net-misc/curl
 	dev-cpp/toml11
 	sys-apps/dbus
 	sys-libs/zlib:=
 	virtual/libudev:=
+	virtual/jack
+	virtual/zlib
 	x11-libs/libXrandr
 	alsa? ( media-libs/alsa-lib )
 	pulseaudio? ( media-libs/libpulse )
 	sndio? ( media-sound/sndio:= )
 	vulkan? ( media-libs/vulkan-loader )
 	wayland? ( dev-libs/wayland )
+	test? ( dev-cpp/gtest )
 "
 RDEPEND="
 	${COMMON_DEPEND}
@@ -126,7 +138,10 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}"/shadps4-emu-rpath.patch
+	"${FILESDIR}/shadps4-emu-rpath.patch"
+#	"${FILESDIR}/${P}-SDL3-rename.patch"
+	"${FILESDIR}/${P}-cmake-4.patch"
+	"${FILESDIR}/${P}-executable-stack.patch"
 )
 
 pkg_setup() {
@@ -146,10 +161,20 @@ pkg_setup() {
 
 #  sed -i '/three/cyour text' /tmp/file      work/shadps4-emu-9999_build/externals/zlib-ng/zlibstatic-ngd
 
+src_prepare() {
+	mv src/core/libraries/fiber/fiber_context.s src/core/libraries/fiber/fiber_context.S || die
+	cmake_src_prepare
+}
+
 src_configure() {
+	filter-lto
+	append-flags -fno-strict-aliasing
+
 	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=OFF # to remove after unbundling
 		#-DSDL_SHARED=ON
+		-DENABLE_DISCORD_RPC="$(usex discord ON OFF)"
+		-DENABLE_UPDATER=OFF
 		-DUSE_LINKED_FFMPEG=yes
 		-DCMAKE_C_COMPILER=clang
 		-DCMAKE_CXX_COMPILER=clang++
@@ -158,6 +183,7 @@ src_configure() {
 		-DCHECK_ALSA=$(usex alsa)
 		-DCHECK_PULSE=$(usex pulseaudio)
 		-DCHECK_SNDIO=$(usex sndio)
+		-DENABLE_TESTS="$(usex test ON OFF)"
 	)
 	cmake_src_configure
 }

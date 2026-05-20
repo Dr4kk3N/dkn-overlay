@@ -4,7 +4,7 @@
 EAPI=8
 
 QTMIN=6.7.1
-LLVM_COMPAT=( {18..20} )
+LLVM_COMPAT=( {18..21} )
 LLVM_OPTIONAL=1
 
 inherit cmake desktop xdg fcaps flag-o-matic llvm-r1 toolchain-funcs
@@ -18,9 +18,10 @@ then
 	EGIT_SUBMODULES=( 'externals/MoltenVK' \
 			  'externals/fmt' \
 			  'externals/json' \
-			  'externals/pugixml' \
+			  'externals/openal-soft' \
 			  'externals/sdl3' \
-			  'externals/toml11' \
+			  'externals/spdlog' \
+                          'externals/toml11' \
 			  'externals/volk' \
 			  'externals/vulkan-headers'
 			)
