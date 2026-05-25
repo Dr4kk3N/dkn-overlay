@@ -15,8 +15,6 @@ DESCRIPTION="Unofficial Microsoft Teams client for Linux. Binary precompiled ver
 HOMEPAGE="https://github.com/IsmaelMartinez/teams-for-linux"
 SRC_URI="
 	amd64? ( https://github.com/IsmaelMartinez/${PN}/releases/download/v${PV}/${P}.x86_64.rpm )
-	arm? ( https://github.com/IsmaelMartinez/${PN}/releases/download/v${PV}/${P}.armv7l.rpm )
-	arm64? ( https://github.com/IsmaelMartinez/${PN}/releases/download/v${PV}/${P}.aarch64.rpm )
 "
 S="${WORKDIR}"
 
@@ -43,15 +41,6 @@ RDEPEND="
 	virtual/libudev
 	x11-libs/cairo
 	x11-libs/gtk+:3
-	x11-libs/libX11
-	x11-libs/libxcb
-	x11-libs/libXcomposite
-	x11-libs/libXdamage
-	x11-libs/libXext
-	x11-libs/libXfixes
-	x11-libs/libxkbcommon
-	x11-libs/libXrandr
-	x11-libs/pango
 "
 
 QA_PREBUILT="opt/teams-for-linux/*"
