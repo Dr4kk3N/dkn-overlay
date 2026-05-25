@@ -1,4 +1,4 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -37,9 +37,11 @@ RESTRICT="!test? ( test )"
 COMMON_DEPEND="
 	app-arch/lz4:=
 	app-arch/zstd:=
+	>=dev-cpp/rapidyaml-0.10:=
 	dev-qt/qtbase:6=[X,concurrent,gui,widgets]
 	dev-qt/qtsvg:6
 	>=gui-libs/kddockwidgets-2.3:=
+	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/libglvnd[X]
 	media-libs/libjpeg-turbo:=
@@ -89,6 +91,8 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-1.7.5835-musl-header.patch
 	"${FILESDIR}"/${PN}-1.7.5913-musl-cache.patch
 	"${FILESDIR}"/${PN}-2.5.317-flags.patch
+	"${FILESDIR}"/${PN}-2.6.3-climits.patch
+	"${FILESDIR}"/${PN}-2.6.3-cubeb-alsa.patch
 )
 
 CMAKE_QA_COMPAT_SKIP=1 #957976
@@ -108,7 +112,7 @@ src_prepare() {
 		-i cmake/SearchForStuff.cmake || die
 
 	# pluto(s)vg likewise often restrict versions and Gentoo also does not
-	# have .pc files for it, use sed to avoid rebasing on version changes
+	# have .cmake files for it, use sed to avoid rebasing on version changes
 	sed -e '/^find_package(plutovg/d' \
 		-e '/^find_package(plutosvg/c\
 			find_package(PkgConfig REQUIRED)\
