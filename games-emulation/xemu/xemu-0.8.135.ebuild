@@ -13,15 +13,15 @@ HOMEPAGE="https://xemu.app/ https://github.com/xemu-project/xemu"
 BERKELEY_SOFTFLOAT_SHA="b64af41c3276f97f0e181920400ee056b9c88037"
 BERKELEY_TESTFLOAT_SHA="e7af9751d9f9fd3b47911f51a5cfd08af256a9ab"
 GENCONFIG_SHA="42f85f9a2457e61d7e32542c07723565a284fcd6"
-GLSLANG_SHA="16.2.0"
+GLSLANG_SHA="16.3.0"
 IMGUI_SHA="b911105fca3ca1b025706dd168e5798070f143a1"
 IMPLOT_SHA="8553562dbb2025fd520f4bed57b094767b96c670"
 KEYCODEMAPDB_SHA="f5772a62ec52591ff6870b7e8ef32482371f22c6"
 NV2A_VSH_CPU_SHA="561fe80da57a881f89000256b459440c0178a7ce"
-SPIRV_REFLECT_SHA="vulkan-sdk-1.4.335.0"
+SPIRV_REFLECT_SHA="vulkan-sdk-1.4.350.0"
 TOMLPLUSPLUS_SHA="30172438cee64926dc41fdd9c11fb3ba5b2ba9de"
 VMA_SHA="3.3.0"
-VOLK_SHA="1.4.304"
+VOLK_SHA="1.4.350"
 SRC_URI="https://github.com/xemu-project/xemu/archive/v${PV}.tar.gz -> ${P}.tar.gz
 	https://gitlab.com/qemu-project/keycodemapdb/-/archive/${KEYCODEMAPDB_SHA}/keycodemapdb-${KEYCODEMAPDB_SHA}.tar.bz2 -> ${PN}-keycodemapdb-${KEYCODEMAPDB_SHA:0:7}.tar.bz2
 	https://github.com/abaire/nv2a_vsh_cpu/archive/${NV2A_VSH_CPU_SHA}.tar.gz -> ${PN}-nv2a_vsh_cpu-${NV2A_VSH_CPU_SHA:0:7}.tar.gz
