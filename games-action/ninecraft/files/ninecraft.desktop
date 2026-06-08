@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Ninecraft (Minecraft: Pocket Edition)
+Exec=/usr/bin/ninecraft %u
+Terminal=false
+Type=Application
+Categories=Game;ActionGame;AdventureGame;Simulation;
+Keywords=game;minecraft;pe;mcpe;pocket;ninecraft;
