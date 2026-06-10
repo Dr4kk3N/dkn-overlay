@@ -1,5 +1,5 @@
 EAPI=8
-PYTHON_COMPAT=( python3_{8..14})
+PYTHON_COMPAT=( python3_{8..13})
 inherit desktop python-any-r1 toolchain-funcs qmake-utils xdg-utils
 
 MY_PV="${PV/.}"
@@ -11,14 +11,13 @@ SRC_URI="https://github.com/mamedev/mame/archive/mame${MY_PV}.tar.gz -> mame-${P
 LICENSE="GPL-2+ BSD-2 MIT CC0-1.0"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="alsa debug sdl2 sdl3 opengl openmp tools"
+IUSE="alsa debug opengl openmp tools"
 
 RDEPEND="dev-db/sqlite:3
 	 dev-libs/expat
 	 media-libs/fontconfig
 	 media-libs/flac
-	 sdl2? ( media-libs/libsdl2[joystick,opengl?,sound,video,X] )
-	 sdl3? ( media-libs/libsdl3[opengl?,X] )
+	 media-libs/libsdl2[joystick,opengl?,sound,video,X]
 	 media-libs/libpulse
 	 media-libs/portaudio
 	 media-libs/sdl2-ttf
@@ -27,97 +26,64 @@ RDEPEND="dev-db/sqlite:3
 	 virtual/opengl
 	 alsa? ( media-libs/alsa-lib
 		 media-libs/portmidi )
-	 debug? ( dev-qt/qtcore:5
-		  dev-qt/qtgui:5
-		  dev-qt/qtwidgets:5 )
+	 debug? ( dev-qt/qtcore:6
+		  dev-qt/qtgui:6
+		  dev-qt/qtwidgets:6 )
 	 x11-libs/libX11
 	 x11-libs/libXinerama
 	 dev-libs/libutf8proc
 	 media-libs/glm
 	 dev-libs/rapidjson
-	 dev-libs/pugixml"
+	 dev-libs/pugixml
+	 dev-cpp/asio
+	 app-arch/zstd
+	 dev-db/sqlite"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	x11-base/xorg-proto"
 S=${WORKDIR}/mame-mame${MY_PV}
-
-# Function to disable a makefile option
-disable_feature() {
-	sed -i -e "/^[ 	]*$1.*=/s:^:# :" makefile || die
-}
-
-# Function to enable a makefile option
-enable_feature() {
-	sed -i -e "/^#.*$1.*=/s:^#[ 	]*::"  makefile || die
-}
 
 pkg_setup() {
 	python-any-r1_pkg_setup
 }
 
 src_prepare() {
-	eapply -p1 "${FILESDIR}"/sdlmame-0.282-ffightae_cps2.patch
+        eapply -p1 "${FILESDIR}"/sdlmame-0.282-ffightae_cps2.patch
         eapply_user
-	default
-	# Disable using bundled libraries
-	enable_feature USE_SYSTEM_LIB_UTF8PROC
-	enable_feature USE_SYSTEM_LIB_GLM
-	enable_feature USE_SYSTEM_LIB_RAPIDJSON
-	enable_feature USE_SYSTEM_LIB_PUGIXML
-	enable_feature USE_SYSTEM_LIB_EXPAT
-	enable_feature USE_SYSTEM_LIB_FLAC
-	enable_feature USE_SYSTEM_LIB_JPEG
-# Use bundled lua for now to ensure correct compilation (ref. b.g.o #407091)
-#	enable_feature USE_SYSTEM_LIB_LUA
-	enable_feature USE_SYSTEM_LIB_PORTAUDIO
-	enable_feature USE_SYSTEM_LIB_SQLITE3
-	enable_feature USE_SYSTEM_LIB_ZLIB
+        default
+}
 
-	# Disable warnings being treated as errors and enable verbose build output
-	enable_feature NOWERROR
-	enable_feature VERBOSE
-	enable_feature IGNORE_GIT
-
-	use amd64 && enable_feature PTR64
-	use debug && enable_feature DEBUG
-	use tools && enable_feature TOOLS
-	disable_feature NO_X11 # bgfx needs X
-	use openmp && enable_feature OPENMP
-
-	if use alsa ; then
-		enable_feature USE_SYSTEM_LIB_PORTMIDI
-	else
-		enable_feature NO_USE_MIDI
-	fi
-
-	sed -i \
-		-e 's/-Os//' \
-		-e '/^\(CC\|CXX\|AR\) /s/=/?=/' \
-		3rdparty/genie/build/gmake.linux/genie.make || die
+src_configure() {
+	filter-lto
 }
 
 src_compile() {
-	local targetargs
-	local qtdebug=$(usex debug 1 0)
-
-	function my_emake() {
-		# Workaround conflicting $ARCH variable used by both Gentoo's
-		# portage and by Mame's build scripts
-		PYTHON_EXECUTABLE=${PYTHON} \
-		OVERRIDE_CC=$(tc-getCC) \
-		OVERRIDE_CXX=$(tc-getCXX) \
-		OVERRIDE_LD=$(tc-getCXX) \
-		QT_SELECT=qt5 \
-		QT_HOME="$(qt5_get_libdir)/qt5" \
-		ARCH= \
-			emake "$@" \
-				AR=$(tc-getAR)
-	}
-	my_emake -j1 generate
-
-	my_emake ${targetargs} \
-		SDL_INI_PATH="\$\$\$\$HOME/.sdlmame;/etc/${PN}" \
-		USE_QTDEBUG=${qtdebug}
+	VERBOSE=1 NOWERROR=1 OPTIMIZE=2 \
+	QT_SELECT=qt6 QT_HOME="$(qt6_get_libdir)/qt6" \
+	ARCHOPTS_C="-mtune=native -pipe" ARCHOPTS_CXX="$ARCHOPTS_C" \
+	USE_SYSTEM_LIB_ASIO=1 \
+	USE_SYSTEM_LIB_EXPAT=1 \
+	USE_SYSTEM_LIB_ZLIB=1 \
+	USE_SYSTEM_LIB_ZSTD=1 \
+	USE_SYSTEM_LIB_JPEG=1 \
+	USE_SYSTEM_LIB_FLAC=1 \
+	USE_SYSTEM_LIB_SQLITE3=1 \
+	USE_SYSTEM_LIB_PORTAUDIO=1 USE_SYSTEM_LIB_PORTMIDI=$(usex alsa 1 0) \
+	NO_USE_MIDI=$(usex alsa 0 1) \
+	USE_SYSTEM_LIB_UTF8PROC=1 \
+	USE_SYSTEM_LIB_GLM=1 \
+	USE_SYSTEM_LIB_RAPIDJSON=1 \
+	USE_SYSTEM_LIB_PUGIXML=1 \
+	TOOLS=$(usex tools 1 0) \
+	PTR64=$(usex amd64 1 0) \
+	DEBUG=$(usex debug 1 0) \
+	OPENMP=$(usex openmp 1 0) \
+	PYTHON_EXECUTABLE=${PYTHON} \
+	OVERRIDE_CC=$(tc-getCC) \
+	OVERRIDE_CXX=$(tc-getCXX) \
+	OVERRIDE_LD=$(tc-getCXX) \
+	ARCH= \
+	emake
 }
 
 src_install()

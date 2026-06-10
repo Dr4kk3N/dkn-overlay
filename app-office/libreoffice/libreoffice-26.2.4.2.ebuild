@@ -11,9 +11,9 @@ MY_PV="${MY_PV/_beta/.beta}"
 # experimental ; release ; old
 # Usually the tarballs are moved a lot so this should make everyone happy.
 DEV_URI="
+	https://download.documentfoundation.org/libreoffice/src/${MY_PV:0:5}
+	https://downloadarchive.documentfoundation.org/libreoffice/old/${MY_PV}/src
 	https://dev-builds.libreoffice.org/pre-releases/src
-#	https://download.documentfoundation.org/libreoffice/src/${MY_PV:0:5}/
-#	https://downloadarchive.documentfoundation.org/libreoffice/old/${MY_PV}/src
 "
 ADDONS_URI="https://dev-www.libreoffice.org/src/"
 
@@ -85,7 +85,7 @@ LICENSE="|| ( LGPL-3 MPL-1.1 )"
 SLOT="0"
 
 [[ ${MY_PV} == *9999* ]] || \
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86"
 
 # Extensions that need extra work:
 LO_EXTS="nlpsolver scripting-beanshell scripting-javascript wiki-publisher"
@@ -285,6 +285,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-6.1-nomancompress.patch"
 	"${FILESDIR}/${PN}-24.2-qtdetect.patch"
 	"${FILESDIR}/${PN}-25.2-cflags.patch"
+	"${FILESDIR}/${PN}-26.2.4.2-poppler-26.06.0.patch"
 )
 
 _check_reqs() {
@@ -323,8 +324,8 @@ src_unpack() {
 		branch="master"
 		mypv=${MY_PV/.9999}
 		[[ ${mypv} != ${MY_PV} ]] && branch="${PN}-${mypv/./-}"
-		git-r3_fetch "${base_uri}/${PN}/core" "refs/heads/${branch}"
-		git-r3_checkout "${base_uri}/${PN}/core"
+		git-r3_fetch "${base_uri}/core" "refs/heads/${branch}"
+		git-r3_checkout "${base_uri}/core"
 		LOCOREGIT_VERSION=${EGIT_VERSION}
 
 		git-r3_fetch "${base_uri}/${PN}/help" "refs/heads/master"
@@ -449,7 +450,7 @@ src_configure() {
 	fi
 
 	# Workaround for bug #967047
-	tc-is-gcc && [[ $(gcc-major-version) -eq 16 ]] && append-cxxflags -fno-devirtualize-speculatively
+	tc-is-gcc && [[ $(gcc-major-version) -ge 16 ]] && append-cxxflags -fno-devirtualize-speculatively
 
 	# Show flags set at the end
 	einfo "  Used CFLAGS:    ${CFLAGS}"
@@ -485,7 +486,6 @@ src_configure() {
 	# --without-system-sane: just sane.h header that is used for scan in writer,
 	#   not linked or anything else, worthless to depend on
 	# --disable-pdfium: not yet packaged
-	# --disable-qt6-multimedia: TODO
 	# --disable-cpdb: not yet packaged
 	local myeconfargs=(
 		--with-system-dicts
